@@ -6,8 +6,7 @@ import Element
 import Color
 import Tile exposing (Tile)
 import Size exposing (Size)
-import Window
-import Task exposing (perform)
+import Random exposing (Generator)
 
 
 -- MODEL
@@ -22,14 +21,14 @@ type alias Model =
 initialModel : ( Model, Cmd Msg )
 initialModel =
     let
+        size =
+            20
+
         tiles =
             [ [] ]
     in
-        ( Model tiles Size.emptySize
-        , Cmd.batch
-            [ perform SetWindowHeight Window.height
-            , perform SetWindowWidth Window.width
-            ]
+        ( Model tiles (Size.square (floor (gridSize * size)))
+        , Random.generate GenerateTiles (generateTiles size)
         )
 
 
@@ -38,34 +37,19 @@ initialModel =
 
 
 type Msg
-    = SetWindowWidth Int
-    | SetWindowHeight Int
-    | WindowResize Window.Size
+    = GenerateTiles (List (List Tile))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetWindowWidth width ->
-            let
-                size =
-                    Size.setWidth width model.size
-            in
-                ( { model | size = size }, Cmd.none )
+        GenerateTiles tiles ->
+            ( { model | tiles = tiles }, Cmd.none )
 
-        SetWindowHeight height ->
-            let
-                size =
-                    Size.setHeight (height - 123) model.size
-            in
-                ( { model | size = size }, Cmd.none )
 
-        WindowResize size ->
-            let
-                newSize =
-                    Size.rectangle size.width (size.height - 123)
-            in
-                ( { model | size = newSize }, Cmd.none )
+generateTiles : Int -> Generator (List (List Tile))
+generateTiles size =
+    Random.list size <| Random.list size Tile.getRandomGrassTile
 
 
 
@@ -74,7 +58,7 @@ update msg model =
 
 subscriptions : Sub Msg
 subscriptions =
-    Window.resizes WindowResize
+    Sub.none
 
 
 
@@ -83,17 +67,64 @@ subscriptions =
 
 view : Model -> Html msg
 view model =
-    let
-        size =
-            model.size
-    in
-        Collage.collage size.width size.height [ drawGrid size ]
-            |> Element.toHtml
+    Collage.collage model.size.width
+        model.size.height
+        [ drawBackgroundTiles model ]
+        |> Element.toHtml
 
 
 gridSize : Float
 gridSize =
     32.0
+
+
+drawBackgroundTiles : Model -> Form
+drawBackgroundTiles model =
+    let
+        size =
+            model.size
+
+        width =
+            toFloat size.width
+
+        height =
+            toFloat size.height
+
+        rows =
+            height / gridSize
+
+        columns =
+            width / gridSize
+
+        tiles =
+            model.tiles
+                |> List.indexedMap
+                    (\rid r ->
+                        r
+                            |> List.indexedMap
+                                (\cid c ->
+                                    let
+                                        tileSize =
+                                            floor gridSize
+
+                                        element =
+                                            Element.image tileSize tileSize c.image
+
+                                        position =
+                                            ( (toFloat rid) * gridSize - width / 2 + gridSize / 2
+                                            , height / 2 - (toFloat cid) * gridSize - gridSize / 2
+                                            )
+
+                                        form =
+                                            Collage.toForm element
+                                                |> Collage.move position
+                                    in
+                                        form
+                                )
+                    )
+                |> List.concat
+    in
+        Collage.group tiles
 
 
 drawGrid : Size -> Form
