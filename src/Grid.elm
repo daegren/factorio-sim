@@ -6,72 +6,90 @@ import Element
 import Color
 
 
-view : Html msg
-view =
-    div []
-        [ h2 [] [ text "Grid" ]
-        , Collage.collage 400 400 [ drawGrid ]
-            |> Element.toHtml
-        ]
+emptySize : Size
+emptySize =
+    Size 0 0
 
 
-drawGrid : Form
-drawGrid =
+type alias Size =
+    { width : Int
+    , height : Int
+    }
+
+
+setWidth : Int -> Size -> Size
+setWidth width size =
+    { size | width = width }
+
+
+setHeight : Int -> Size -> Size
+setHeight height size =
+    { size | height = height }
+
+
+view : Size -> Html msg
+view size =
+    Collage.collage size.width size.height [ drawGrid size ]
+        |> Element.toHtml
+
+
+drawGrid : Size -> Form
+drawGrid size =
     let
         width =
-            400.0
+            toFloat size.width
 
         height =
-            400.0
+            toFloat size.height
 
         gridSize =
             25.0
 
         rows =
-            width / gridSize
-
-        columns =
             height / gridSize
 
-        rowSegements =
-            List.range 0 (floor rows)
-                |> List.map
-                    (\r ->
-                        let
-                            x =
-                                (toFloat r) * gridSize - height / 2
-
-                            start =
-                                ( x, -height / 2 )
-
-                            end =
-                                ( x, height / 2 )
-                        in
-                            segment start end
-                    )
+        columns =
+            width / gridSize
 
         columnSegments =
             List.range 0 (floor columns)
                 |> List.map
                     (\r ->
                         let
-                            y =
+                            x =
                                 (toFloat r) * gridSize - width / 2
 
                             start =
-                                ( -width / 2, y )
+                                ( x, height / 2 )
 
                             end =
+                                ( x, -height / 2 )
+                        in
+                            segment start end
+                    )
+
+        rowSegments =
+            List.range 0 (floor rows)
+                |> List.map
+                    (\r ->
+                        let
+                            y =
+                                height / 2 - (toFloat r) * gridSize
+
+                            start =
                                 ( width / 2, y )
+
+                            end =
+                                ( -width / 2, y )
                         in
                             segment start end
                     )
 
         gridSegments =
-            List.append rowSegements columnSegments
+            List.append rowSegments columnSegments
 
         form =
-            List.map (\r -> traced (solid Color.black) r) gridSegments
+            List.map (\r -> traced (solid Color.grey) r) gridSegments
                 |> Collage.group
     in
         form
