@@ -5,39 +5,63 @@ import Material.Layout as Layout
 import Material.Scheme as Scheme
 import Material.Color as Color
 import Html exposing (Html, h1, div, text)
-import Task
-import Window
 import Grid
-import Size exposing (Size)
+
+
+-- MODEL
 
 
 type alias Model =
     { mdl : Material.Model
-    , windowSize : Window.Size
-    , gridSize : Size
+    , gridModel : Grid.Model
     }
 
 
-type Msg
-    = Mdl (Material.Msg Msg)
-    | WindowResize Window.Size
-    | SetWindowWidth Int
-    | SetWindowHeight Int
 
-
-initialModel : Model
-initialModel =
-    Model Material.model Size.emptySize Size.emptySize
+-- INIT
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel
-    , Cmd.batch
-        [ Task.perform SetWindowHeight Window.height
-        , Task.perform SetWindowWidth Window.width
-        ]
-    )
+    let
+        ( gridModel, gridCmd ) =
+            Grid.initialModel
+    in
+        ( Model Material.model gridModel
+        , Cmd.map GridMsg gridCmd
+        )
+
+
+
+-- MAIN
+
+
+main : Program Never Model Msg
+main =
+    Html.program
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.map GridMsg Grid.subscriptions
+
+
+
+-- UPDATE
+
+
+type Msg
+    = Mdl (Material.Msg Msg)
+    | GridMsg Grid.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,32 +70,16 @@ update msg model =
         Mdl subMsg ->
             Material.update Mdl subMsg model
 
-        WindowResize size ->
+        GridMsg subMsg ->
             let
-                gridSize =
-                    Size.rectangle size.width (size.height - 123)
+                ( gridModel, gridCmd ) =
+                    Grid.update subMsg model.gridModel
             in
-                ( { model | windowSize = size, gridSize = gridSize }, Cmd.none )
+                ( { model | gridModel = gridModel }, Cmd.map GridMsg gridCmd )
 
-        SetWindowWidth width ->
-            let
-                windowSize =
-                    Size.setWidth width model.windowSize
 
-                gridSize =
-                    Size.setWidth width model.gridSize
-            in
-                ( { model | windowSize = windowSize, gridSize = gridSize }, Cmd.none )
 
-        SetWindowHeight height ->
-            let
-                windowSize =
-                    Size.setHeight height model.windowSize
-
-                gridSize =
-                    Size.setHeight (height - 123) model.gridSize
-            in
-                ( { model | windowSize = windowSize, gridSize = gridSize }, Cmd.none )
+-- VIEW
 
 
 view : Model -> Html Msg
@@ -84,16 +92,6 @@ view model =
             { header = [ h1 [] [ text "Factorio Simulator" ] ]
             , drawer = []
             , tabs = ( [], [] )
-            , main = [ Grid.view model.gridSize ]
+            , main = [ Grid.view model.gridModel ]
             }
         )
-
-
-main : Program Never Model Msg
-main =
-    Html.program
-        { init = init
-        , update = update
-        , subscriptions = \_ -> Window.resizes WindowResize
-        , view = view
-        }
