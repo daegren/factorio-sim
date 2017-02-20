@@ -8,12 +8,13 @@ import Html exposing (Html, h1, div, text)
 import Task
 import Window
 import Grid
+import Size exposing (Size)
 
 
 type alias Model =
     { mdl : Material.Model
     , windowSize : Window.Size
-    , gridSize : Grid.Size
+    , gridSize : Size
     }
 
 
@@ -26,7 +27,7 @@ type Msg
 
 initialModel : Model
 initialModel =
-    Model Material.model Grid.emptySize Grid.emptySize
+    Model Material.model Size.emptySize Size.emptySize
 
 
 init : ( Model, Cmd Msg )
@@ -48,27 +49,27 @@ update msg model =
         WindowResize size ->
             let
                 gridSize =
-                    Grid.Size size.width (size.height - 123)
+                    Size.rectangle size.width (size.height - 123)
             in
                 ( { model | windowSize = size, gridSize = gridSize }, Cmd.none )
 
         SetWindowWidth width ->
             let
                 windowSize =
-                    Grid.setWidth width model.windowSize
+                    Size.setWidth width model.windowSize
 
                 gridSize =
-                    Grid.setWidth width model.gridSize
+                    Size.setWidth width model.gridSize
             in
                 ( { model | windowSize = windowSize, gridSize = gridSize }, Cmd.none )
 
         SetWindowHeight height ->
             let
                 windowSize =
-                    Grid.setHeight height model.windowSize
+                    Size.setHeight height model.windowSize
 
                 gridSize =
-                    Grid.setHeight (height - 123) model.gridSize
+                    Size.setHeight (height - 123) model.gridSize
             in
                 ( { model | windowSize = windowSize, gridSize = gridSize }, Cmd.none )
 

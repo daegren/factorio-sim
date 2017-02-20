@@ -4,27 +4,12 @@ import Html exposing (Html, div, h2, text)
 import Collage exposing (traced, segment, solid, Form)
 import Element
 import Color
+import Size exposing (Size)
 
 
-emptySize : Size
-emptySize =
-    Size 0 0
-
-
-type alias Size =
-    { width : Int
-    , height : Int
     }
 
 
-setWidth : Int -> Size -> Size
-setWidth width size =
-    { size | width = width }
-
-
-setHeight : Int -> Size -> Size
-setHeight height size =
-    { size | height = height }
 
 
 view : Size -> Html msg
