@@ -24,11 +24,11 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( gridModel, gridCmd ) =
-            Grid.initialModel
+        grid =
+            Grid.initialModel ( 20, 20 ) ( 25, 25 ) ( 0, 123 ) (0)
     in
-        ( Model Material.model gridModel
-        , Cmd.map GridMsg gridCmd
+        ( Model Material.model grid
+        , Cmd.none
         )
 
 
@@ -51,8 +51,8 @@ main =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.map GridMsg Grid.subscriptions
+subscriptions model =
+    Sub.map GridMsg (Grid.subscriptions model.gridModel)
 
 
 

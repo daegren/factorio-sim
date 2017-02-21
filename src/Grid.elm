@@ -1,187 +1,220 @@
 module Grid exposing (..)
 
-import Html exposing (Html, div, h2, text)
-import Collage exposing (traced, segment, solid, Form)
-import Element
+import Collage exposing (collage, move, Form, filled, rect, segment)
+import Element exposing (Element)
 import Color
-import Tile exposing (Tile)
-import Size exposing (Size)
-import Random exposing (Generator)
+import Mouse
+import Html exposing (Html)
 
 
+--------
 -- MODEL
+--------
 
 
-type alias Model =
-    { tiles : List (List Tile)
-    , size : Size
+type alias Cell =
+    { position : { x : Float, y : Float }
+    , dimensions : { width : Float, height : Float }
+    , isHovered : Bool
     }
 
 
-initialModel : ( Model, Cmd Msg )
-initialModel =
+type alias Grid =
+    { cells : List Cell
+    , dimensions : { width : Float, height : Float }
+    , windowOffset : { x : Float, y : Float }
+    }
+
+
+emptyGrid : Grid
+emptyGrid =
+    Grid [] { width = 0, height = 0 } { x = 0, y = 0 }
+
+
+type alias Model =
+    { grid : Grid }
+
+
+grid : ( Int, Int ) -> ( Float, Float ) -> ( Float, Float ) -> Float -> Grid
+grid ( rows, columns ) ( width, height ) ( offsetX, offsetY ) margin =
+    if rows <= 0 || columns <= 0 then
+        emptyGrid
+    else
+        let
+            viewWidth =
+                toFloat columns
+                    * (width + margin)
+
+            viewHeight =
+                toFloat rows
+                    * (height + margin)
+
+            gridIter : List ( Int, List Int )
+            gridIter =
+                List.map (\x -> ( x, (List.range 1 columns) )) (List.range 1 rows)
+
+            makeCell : ( Int, Int ) -> Cell
+            makeCell ( row, col ) =
+                let
+                    fCol =
+                        toFloat col
+
+                    fRow =
+                        toFloat row
+                in
+                    { position =
+                        { x = fCol * width + margin * fCol - viewWidth / 2 - width / 2
+                        , y = fRow * height + margin * fRow - height / 2 - viewHeight / 2
+                        }
+                    , dimensions =
+                        { width = width, height = height }
+                    , isHovered = False
+                    }
+
+            makeRow : ( Int, List Int ) -> List Cell
+            makeRow ( row, col ) =
+                List.map (\c -> makeCell ( row, c )) col
+
+            makeGrid : List ( Int, List Int ) -> List Cell
+            makeGrid =
+                List.concat << List.map makeRow
+        in
+            { cells = makeGrid gridIter
+            , dimensions = { width = viewWidth, height = viewHeight }
+            , windowOffset = { x = offsetX, y = offsetY }
+            }
+
+
+initialModel : ( Int, Int ) -> ( Float, Float ) -> ( Float, Float ) -> Float -> Model
+initialModel gridSize cellSize offset margin =
+    { grid = grid gridSize cellSize offset margin }
+
+
+
+-------
+-- VIEW
+-------
+
+
+drawCell : Cell -> Form
+drawCell cell =
     let
-        size =
-            20
-
-        tiles =
-            [ [] ]
+        cellColor =
+            if cell.isHovered then
+                Color.yellow
+            else
+                Color.red
     in
-        ( Model tiles (Size.square (floor (gridSize * size)))
-        , Random.generate GenerateBackgroundTiles (generateBackgroundTiles size)
-        )
+        move ( cell.position.x, cell.position.y ) <|
+            filled cellColor <|
+                rect cell.dimensions.width cell.dimensions.height
+
+
+drawGrid : Grid -> List Form
+drawGrid grid =
+    List.map drawCell grid.cells
+
+
+view : Model -> Html msg
+view model =
+    let
+        grid =
+            model.grid
+
+        width =
+            floor grid.dimensions.width
+
+        height =
+            floor grid.dimensions.height
+    in
+        collage width height (drawGrid grid)
+            |> Element.toHtml
 
 
 
+--------
+-- INPUT
+--------
+
+
+type alias Input =
+    { mousePosition : ( Int, Int ) }
+
+
+convertToViewCoordinates : Grid -> ( Int, Int ) -> ( Int, Int )
+convertToViewCoordinates grid ( x, y ) =
+    let
+        xOffset =
+            floor (grid.dimensions.width / 2 + grid.windowOffset.x)
+
+        yOffset =
+            floor (grid.dimensions.height / 2 + grid.windowOffset.y)
+    in
+        ( x - xOffset, yOffset - y )
+
+
+
+---------
 -- UPDATE
+---------
 
 
 type Msg
-    = GenerateBackgroundTiles (List (List Tile))
+    = MouseMoves Mouse.Position
+
+
+stepCell : Input -> Cell -> Cell
+stepCell input cell =
+    let
+        ( mouseX, mouseY ) =
+            input.mousePosition
+    in
+        if
+            toFloat mouseX
+                > cell.position.x
+                - cell.dimensions.width
+                / 2
+                && toFloat mouseX
+                < cell.position.x
+                + cell.dimensions.width
+                / 2
+                && toFloat mouseY
+                > cell.position.y
+                - cell.dimensions.height
+                / 2
+                && toFloat mouseY
+                < cell.position.y
+                + cell.dimensions.height
+                / 2
+        then
+            { cell | isHovered = True }
+        else
+            { cell | isHovered = False }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GenerateBackgroundTiles tiles ->
-            ( { model | tiles = tiles }, Cmd.none )
+        MouseMoves p ->
+            let
+                grid =
+                    model.grid
+
+                input =
+                    Input (convertToViewCoordinates grid ( p.x, p.y ))
+
+                cells =
+                    List.map (stepCell input) grid.cells
+            in
+                ( { model | grid = { grid | cells = cells } }, Cmd.none )
 
 
 
-generateBackgroundTiles : Int -> Generator (List (List Tile))
-generateBackgroundTiles size =
-    Random.list size <| Random.list size Tile.getRandomGrassTile
-
-
-
+----------------
 -- SUBSCRIPTIONS
+----------------
 
 
-subscriptions : Sub Msg
-subscriptions =
-    Sub.none
-
-
-
--- VIEW
-
-
-view : Model -> Html msg
-view model =
-    Collage.collage model.size.width
-        model.size.height
-        [ drawBackgroundTiles model ]
-        |> Element.toHtml
-
-
-gridSize : Float
-gridSize =
-    32.0
-
-
-drawBackgroundTiles : Model -> Form
-drawBackgroundTiles model =
-    let
-        size =
-            model.size
-
-        width =
-            toFloat size.width
-
-        height =
-            toFloat size.height
-
-        rows =
-            height / gridSize
-
-        columns =
-            width / gridSize
-
-        tiles =
-            model.tiles
-                |> List.indexedMap
-                    (\rid r ->
-                        r
-                            |> List.indexedMap
-                                (\cid c ->
-                                    let
-                                        tileSize =
-                                            floor gridSize
-
-                                        element =
-                                            Element.image tileSize tileSize c.image
-
-                                        position =
-                                            ( (toFloat rid) * gridSize - width / 2 + gridSize / 2
-                                            , height / 2 - (toFloat cid) * gridSize - gridSize / 2
-                                            )
-
-                                        form =
-                                            Collage.toForm element
-                                                |> Collage.move position
-                                    in
-                                        form
-                                )
-                    )
-                |> List.concat
-    in
-        Collage.group tiles
-
-
-drawGrid : Size -> Form
-drawGrid size =
-    let
-        width =
-            toFloat size.width
-
-        height =
-            toFloat size.height
-
-        rows =
-            height / gridSize
-
-        columns =
-            width / gridSize
-
-        columnSegments =
-            List.range 0 (floor columns)
-                |> List.map
-                    (\r ->
-                        let
-                            x =
-                                (toFloat r) * gridSize - width / 2
-
-                            start =
-                                ( x, height / 2 )
-
-                            end =
-                                ( x, -height / 2 )
-                        in
-                            segment start end
-                    )
-
-        rowSegments =
-            List.range 0 (floor rows)
-                |> List.map
-                    (\r ->
-                        let
-                            y =
-                                height / 2 - (toFloat r) * gridSize
-
-                            start =
-                                ( width / 2, y )
-
-                            end =
-                                ( -width / 2, y )
-                        in
-                            segment start end
-                    )
-
-        gridSegments =
-            List.append rowSegments columnSegments
-
-        form =
-            List.map (\r -> traced (solid Color.grey) r) gridSegments
-                |> Collage.group
-    in
-        form
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Mouse.moves MouseMoves
