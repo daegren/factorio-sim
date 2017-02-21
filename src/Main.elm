@@ -25,7 +25,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         grid =
-            Grid.initialModel ( 20, 20 ) ( 25, 25 ) ( 0, 123 ) (0)
+            Grid.initialModel ( 20, 20 ) ( 32, 32 ) ( 0, 123 ) (0)
     in
         ( Model Material.model grid
         , Cmd.none

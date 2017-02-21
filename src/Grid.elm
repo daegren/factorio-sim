@@ -1,7 +1,7 @@
 module Grid exposing (..)
 
 import Collage exposing (collage, move, Form, filled, rect, segment)
-import Element exposing (Element)
+import Element exposing (Element, image)
 import Color
 import Mouse
 import Html exposing (Html)
@@ -16,6 +16,7 @@ type alias Cell =
     { position : { x : Float, y : Float }
     , dimensions : { width : Float, height : Float }
     , isHovered : Bool
+    , background : String
     }
 
 
@@ -69,6 +70,7 @@ grid ( rows, columns ) ( width, height ) ( offsetX, offsetY ) margin =
                     , dimensions =
                         { width = width, height = height }
                     , isHovered = False
+                    , background = "/assets/images/grass/0.png"
                     }
 
             makeRow : ( Int, List Int ) -> List Cell
@@ -78,8 +80,11 @@ grid ( rows, columns ) ( width, height ) ( offsetX, offsetY ) margin =
             makeGrid : List ( Int, List Int ) -> List Cell
             makeGrid =
                 List.concat << List.map makeRow
+
+            cells =
+                makeGrid gridIter
         in
-            { cells = makeGrid gridIter
+            { cells = cells
             , dimensions = { width = viewWidth, height = viewHeight }
             , windowOffset = { x = offsetX, y = offsetY }
             }
@@ -106,8 +111,8 @@ drawCell cell =
                 Color.red
     in
         move ( cell.position.x, cell.position.y ) <|
-            filled cellColor <|
-                rect cell.dimensions.width cell.dimensions.height
+            Collage.toForm <|
+                image (floor cell.dimensions.width) (floor cell.dimensions.height) cell.background
 
 
 drawGrid : Grid -> List Form
