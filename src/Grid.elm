@@ -28,7 +28,7 @@ initialModel =
             [ [] ]
     in
         ( Model tiles (Size.square (floor (gridSize * size)))
-        , Random.generate GenerateTiles (generateTiles size)
+        , Random.generate GenerateBackgroundTiles (generateBackgroundTiles size)
         )
 
 
@@ -37,18 +37,19 @@ initialModel =
 
 
 type Msg
-    = GenerateTiles (List (List Tile))
+    = GenerateBackgroundTiles (List (List Tile))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GenerateTiles tiles ->
+        GenerateBackgroundTiles tiles ->
             ( { model | tiles = tiles }, Cmd.none )
 
 
-generateTiles : Int -> Generator (List (List Tile))
-generateTiles size =
+
+generateBackgroundTiles : Int -> Generator (List (List Tile))
+generateBackgroundTiles size =
     Random.list size <| Random.list size Tile.getRandomGrassTile
 
 
