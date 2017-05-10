@@ -12,15 +12,19 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
-    loaders: [{
+    rules: [{
       test: /\.elm$/,
-      exclude: [/elm-stuff/, /node_modules/],
-      loader: 'elm-webpack-loader'
+      exclude: [/elm-stuff/, /node_modules/, /Stylesheets\.elm$/],
+      use: 'elm-webpack-loader?debug=true'
     },
     {
       test:    /\.html$/,
       exclude: /node_modules/,
-      loader:  'file-loader?name=[name].[ext]',
+      use:  'file-loader?name=[name].[ext]',
+    },
+    {
+      test: /Stylesheets\.elm$/,
+      use: ['style-loader', 'css-loader', 'elm-css-webpack-loader']
     },]
   },
   devServer: {

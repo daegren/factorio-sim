@@ -1,11 +1,11 @@
 module Main exposing (..)
 
 import Material
-import Material.Layout as Layout
-import Material.Scheme as Scheme
-import Material.Color as Color
-import Html exposing (Html, h1, div, text)
-import Grid
+import Html exposing (Html, h1, div, text, img)
+import Html.Attributes exposing (src)
+import Random exposing (Generator)
+import GridStyles exposing (Classes(..))
+import Html.CssHelpers
 
 
 -- MODEL
@@ -13,8 +13,32 @@ import Grid
 
 type alias Model =
     { mdl : Material.Model
-    , gridModel : Grid.Model
+    , grid : Grid
     }
+
+
+type alias Grid =
+    List (List Cell)
+
+
+type alias Cell =
+    { image : String
+    }
+
+
+getGrassCell : Int -> Cell
+getGrassCell num =
+    Cell ("/assets/images/grass/" ++ (toString num) ++ ".png")
+
+
+generateRandomGrassCell : Generator Cell
+generateRandomGrassCell =
+    Random.map (\i -> getGrassCell i) (Random.int 0 15)
+
+
+generateGrid : Int -> Generator Grid
+generateGrid size =
+    Random.list size (Random.list size generateRandomGrassCell)
 
 
 
@@ -23,13 +47,9 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    let
-        grid =
-            Grid.initialModel ( 20, 20 ) ( 32, 32 ) ( 0, 123 ) (0)
-    in
-        ( Model Material.model grid
-        , Cmd.none
-        )
+    ( Model Material.model []
+    , Random.generate RandomGrid (generateGrid 20)
+    )
 
 
 
@@ -52,7 +72,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map GridMsg (Grid.subscriptions model.gridModel)
+    Sub.none
 
 
 
@@ -61,7 +81,7 @@ subscriptions model =
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | GridMsg Grid.Msg
+    | RandomGrid Grid
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -70,12 +90,16 @@ update msg model =
         Mdl subMsg ->
             Material.update Mdl subMsg model
 
-        GridMsg subMsg ->
-            let
-                ( gridModel, gridCmd ) =
-                    Grid.update subMsg model.gridModel
-            in
-                ( { model | gridModel = gridModel }, Cmd.map GridMsg gridCmd )
+        RandomGrid grid ->
+            ( { model | grid = grid }, Cmd.none )
+
+
+
+-- CSS
+
+
+{ id, class, classList } =
+    Html.CssHelpers.withNamespace "grid"
 
 
 
@@ -84,14 +108,21 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    Scheme.topWithScheme Color.Green
-        Color.Purple
-        (Layout.render Mdl
-            model.mdl
-            [ Layout.fixedHeader ]
-            { header = [ h1 [] [ text "Factorio Simulator" ] ]
-            , drawer = []
-            , tabs = ( [], [] )
-            , main = [ Grid.view model.gridModel ]
-            }
-        )
+    div [] [ gridView model.grid ]
+
+
+gridView : Grid -> Html msg
+gridView grid =
+    div [] (List.map buildRow grid)
+
+
+buildRow : List Cell -> Html msg
+buildRow row =
+    div [ class [ Row ] ] (List.map buildCell row)
+
+
+buildCell : Cell -> Html msg
+buildCell cell =
+    div [ class [ GridStyles.Cell ] ]
+        [ img [ src cell.image ] []
+        ]
