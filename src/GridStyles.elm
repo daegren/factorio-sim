@@ -8,12 +8,21 @@ import Css.Colors exposing (yellow)
 type Classes
     = Row
     | Cell
+    | Grid
+    | Info
 
 
 css : Stylesheet
 css =
     (stylesheet << namespace "grid")
-        [ class Row
+        [ id Grid
+            [ flex2 (int 0) (int 0) ]
+        , id Info
+            [ flex2 (int 1) (int 0)
+            , flexBasis auto
+            , marginLeft (px 24)
+            ]
+        , class Row
             [ displayFlex ]
         , class Cell
             [ width (px 32)
