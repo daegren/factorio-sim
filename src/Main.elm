@@ -14,14 +14,25 @@ import Mouse
 
 type alias Model =
     { grid : Grid
-    , offset : ( Int, Int )
-    , mouseGridPosition : ( Int, Int )
-    , currentMousePosition : ( Int, Int )
+    , offset : Point
+    , mouseGridPosition : Point
+    , currentMousePosition : Point
     }
 
 
 type alias Grid =
     List (List Cell)
+
+
+type alias Point =
+    { x : Int
+    , y : Int
+    }
+
+
+zeroPoint : Point
+zeroPoint =
+    { x = 0, y = 0 }
 
 
 type alias Cell =
@@ -50,7 +61,7 @@ generateGrid size =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [] ( 0, 0 ) ( 0, 0 ) ( 0, 0 )
+    ( Model [] zeroPoint zeroPoint zeroPoint
     , Cmd.batch
         [ Random.generate RandomGrid (generateGrid 20)
         , getOffsetOfGrid ()
@@ -100,28 +111,25 @@ update msg model =
         RandomGrid grid ->
             ( { model | grid = grid }, Cmd.none )
 
-        GridOffset offset ->
-            ( { model | offset = offset }, Cmd.none )
+        GridOffset ( x, y ) ->
+            ( { model | offset = (Point x y) }, Cmd.none )
 
         MouseMoved position ->
             let
-                ( offsetX, offsetY ) =
-                    model.offset
-
                 gridSize =
                     20
 
                 x =
-                    floor ((toFloat (position.x - offsetX)) / 32)
+                    floor ((toFloat (position.x - model.offset.x)) / 32)
                         |> clamp 0 (gridSize - 1)
 
                 y =
-                    floor ((toFloat (position.y - offsetY)) / 32)
+                    floor ((toFloat (position.y - model.offset.y)) / 32)
                         |> clamp 0 (gridSize - 1)
             in
                 ( { model
-                    | currentMousePosition = ( position.x, position.y )
-                    , mouseGridPosition = ( x, y )
+                    | currentMousePosition = (Point position.x position.y)
+                    , mouseGridPosition = (Point x y)
                   }
                 , Cmd.none
                 )
@@ -172,8 +180,8 @@ infoView model =
         ]
 
 
-pointView : ( Int, Int ) -> Html msg
-pointView ( x, y ) =
+pointView : Point -> Html msg
+pointView { x, y } =
     let
         pointText =
             "{ " ++ (toString x) ++ ", " ++ (toString y) ++ " }"
