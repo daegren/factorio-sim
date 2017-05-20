@@ -8,7 +8,10 @@ import Css.Colors exposing (yellow)
 type Classes
     = Row
     | Cell
-    | Grid
+
+
+type Ids
+    = Grid
     | Info
 
 

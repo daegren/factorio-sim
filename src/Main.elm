@@ -3,10 +3,11 @@ port module Main exposing (..)
 import Html exposing (Html, h1, div, text, img)
 import Html.Attributes exposing (src)
 import Random exposing (Generator)
-import GridStyles exposing (Classes(..))
+import GridStyles exposing (Classes(..), Ids(..))
 import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Mouse
+import Toolbox
 
 
 -- MODEL
@@ -17,6 +18,7 @@ type alias Model =
     , offset : Point
     , mouseGridPosition : Point
     , currentMousePosition : Point
+    , toolbox : Toolbox.Model
     }
 
 
@@ -61,7 +63,7 @@ generateGrid size =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [] zeroPoint zeroPoint zeroPoint
+    ( Model [] zeroPoint zeroPoint zeroPoint Toolbox.initialModel
     , Cmd.batch
         [ Random.generate RandomGrid (generateGrid 20)
         , getOffsetOfGrid ()
@@ -103,6 +105,7 @@ type Msg
     = RandomGrid Grid
     | GridOffset ( Int, Int )
     | MouseMoved Mouse.Position
+    | ToolboxMsg Toolbox.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -133,6 +136,13 @@ update msg model =
                   }
                 , Cmd.none
                 )
+
+        ToolboxMsg msg ->
+            let
+                ( toolboxModel, toolboxCmd ) =
+                    Toolbox.update msg model.toolbox
+            in
+                ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
 
 
 
@@ -165,7 +175,7 @@ view model =
         ]
 
 
-infoView : Model -> Html msg
+infoView : Model -> Html Msg
 infoView model =
     div [ id [ Info ] ]
         [ h1 [] [ text "Factorio Simulator" ]
@@ -177,6 +187,8 @@ infoView model =
             [ text "Current Grid Position: "
             , pointView model.mouseGridPosition
             ]
+        , div []
+            [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
         ]
 
 
