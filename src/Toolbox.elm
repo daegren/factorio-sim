@@ -12,13 +12,8 @@ import Html.Events exposing (onClick)
 
 type alias Model =
     { tools : List Tool
-    , currentTool : ToolSelection
+    , currentTool : Tool
     }
-
-
-type ToolSelection
-    = None
-    | Selected Tool
 
 
 type alias Tool =
@@ -30,9 +25,14 @@ type alias Tool =
 initialModel : Model
 initialModel =
     { tools =
-        generateTransportBeltTools
-    , currentTool = None
+        clearTool :: generateTransportBeltTools
+    , currentTool = clearTool
     }
+
+
+clearTool : Tool
+clearTool =
+    Tool "Clear Tool" "/assets/images/cancel.png"
 
 
 generateTransportBeltTools : List Tool
@@ -56,7 +56,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SelectTool tool ->
-            ( { model | currentTool = Selected tool }, Cmd.none )
+            ( { model | currentTool = tool }, Cmd.none )
 
 
 
@@ -75,20 +75,20 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ text "ToolBox"
-        , div [] [ currentToolView model.currentTool ]
-        , div [] [ text "Available Tools:" ]
-        , div [ id [ ToolboxStyles.Toolbox ] ] (List.map selectableToolView model.tools)
+        , div []
+            [ text "Current Tool:"
+            , div [ class [ CurrentTool ] ] [ currentToolView model.currentTool ]
+            ]
+        , div []
+            [ text "Available Tools:"
+            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map selectableToolView model.tools)
+            ]
         ]
 
 
-currentToolView : ToolSelection -> Html msg
-currentToolView toolSelection =
-    case toolSelection of
-        None ->
-            div [] [ text "No tool selected" ]
-
-        Selected tool ->
-            toolView tool
+currentToolView : Tool -> Html msg
+currentToolView tool =
+    toolView tool
 
 
 selectableToolView : Tool -> Html Msg

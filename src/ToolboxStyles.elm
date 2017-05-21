@@ -7,6 +7,7 @@ import Css.Elements exposing (img)
 
 type Classes
     = Tool
+    | CurrentTool
 
 
 type Ids
@@ -20,6 +21,7 @@ css =
         [ id Container
             [ border2 (px 1) solid
             , margin2 (px 8) zero
+            , padding (px 8)
             , width (px 200)
             ]
         , id Toolbox
@@ -38,6 +40,15 @@ css =
                     [ textAlign center
                     , alignSelf center
                     , width (px 32)
+                    , height (px 32)
+                    ]
+                ]
+            ]
+        , class CurrentTool
+            [ margin (px 8)
+            , children
+                [ img
+                    [ width (px 32)
                     , height (px 32)
                     ]
                 ]
