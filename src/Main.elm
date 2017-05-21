@@ -8,6 +8,7 @@ import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Mouse
 import Toolbox
+import Css
 
 
 -- MODEL
@@ -163,6 +164,11 @@ port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
     Html.CssHelpers.withNamespace "grid"
 
 
+styles : List Css.Mixin -> Html.Attribute msg
+styles =
+    Css.asPairs >> Html.Attributes.style
+
+
 
 -- VIEW
 
@@ -213,6 +219,8 @@ buildRow row =
 
 buildCell : Cell -> Html msg
 buildCell cell =
-    div [ class [ GridStyles.Cell ] ]
-        [ img [ src cell.image ] []
+    div
+        [ class [ GridStyles.Cell ]
+        , styles [ Css.backgroundImage (Css.url cell.image) ]
         ]
+        []
