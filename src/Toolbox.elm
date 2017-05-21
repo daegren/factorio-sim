@@ -11,7 +11,7 @@ import Html.Events exposing (onClick)
 
 
 type alias Model =
-    { tools : List Tool
+    { tools : List ToolGroup
     , currentTool : Tool
     }
 
@@ -22,17 +22,37 @@ type alias Tool =
     }
 
 
+type alias ToolGroup =
+    { name : String
+    , tools : List Tool
+    }
+
+
 initialModel : Model
 initialModel =
     { tools =
-        clearTool :: generateTransportBeltTools
+        [ clearGroup, transportBeltGroup ]
     , currentTool = clearTool
+    }
+
+
+clearGroup : ToolGroup
+clearGroup =
+    { name = "Clear"
+    , tools = [ clearTool ]
     }
 
 
 clearTool : Tool
 clearTool =
     Tool "Clear Tool" "/assets/images/cancel.png"
+
+
+transportBeltGroup : ToolGroup
+transportBeltGroup =
+    { name = "Transport Belt"
+    , tools = generateTransportBeltTools
+    }
 
 
 generateTransportBeltTools : List Tool
@@ -81,8 +101,16 @@ view model =
             ]
         , div []
             [ text "Available Tools:"
-            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map selectableToolView model.tools)
+            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map toolGroupView model.tools)
             ]
+        ]
+
+
+toolGroupView : ToolGroup -> Html Msg
+toolGroupView toolGroup =
+    div []
+        [ text toolGroup.name
+        , div [ class [ ToolList ] ] (List.map selectableToolView toolGroup.tools)
         ]
 
 

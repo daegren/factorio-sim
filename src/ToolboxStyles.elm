@@ -8,6 +8,7 @@ import Css.Elements exposing (img)
 type Classes
     = Tool
     | CurrentTool
+    | ToolList
 
 
 type Ids
@@ -52,5 +53,8 @@ css =
                     , height (px 32)
                     ]
                 ]
+            ]
+        , class ToolList
+            [ displayFlex
             ]
         ]
