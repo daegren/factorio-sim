@@ -9,6 +9,7 @@ import Html.CssHelpers
 import Mouse
 import Toolbox
 import Css
+import Array exposing (Array)
 
 
 -- MODEL
@@ -39,7 +40,7 @@ type alias Grid =
 
 emptyGrid : Grid
 emptyGrid =
-    Grid [] [] 32 20 zeroPoint
+    Grid Array.empty [] 32 20 zeroPoint
 
 
 setOffset : Point -> Grid -> Grid
@@ -48,7 +49,44 @@ setOffset point grid =
 
 
 type alias Cells =
-    List (List Cell)
+    Array (Array Cell)
+
+
+getCellAtPoint : Point -> Cells -> Maybe Cell
+getCellAtPoint point cells =
+    case Array.get point.y cells of
+        Nothing ->
+            Nothing
+
+        Just row ->
+            case Array.get point.x row of
+                Nothing ->
+                    Nothing
+
+                Just cell ->
+                    Just cell
+
+
+setEntityOnCellAtPoint : Point -> Entity -> Cells -> Cells
+setEntityOnCellAtPoint point entity cells =
+    let
+        cell =
+            case getCellAtPoint point cells of
+                Nothing ->
+                    Debug.crash "Invalid grid position"
+
+                Just cell ->
+                    { cell | entity = Just entity }
+
+        row =
+            case Array.get point.y cells of
+                Nothing ->
+                    Debug.crash "Impossible!"
+
+                Just row ->
+                    row
+    in
+        Array.set point.y (Array.set point.x cell row) cells
 
 
 {-| Represents a point in a coordinate system
@@ -68,12 +106,13 @@ zeroPoint =
 
 type alias Cell =
     { image : String
+    , entity : Maybe Entity
     }
 
 
 getGrassCell : Int -> Cell
 getGrassCell num =
-    Cell ("/assets/images/grass/" ++ (toString num) ++ ".png")
+    Cell ("/assets/images/grass/" ++ (toString num) ++ ".png") Nothing
 
 
 generateRandomGrassCell : Generator Cell
@@ -81,9 +120,14 @@ generateRandomGrassCell =
     Random.map (\i -> getGrassCell i) (Random.int 0 15)
 
 
+generateArray : Int -> Generator a -> Generator (Array a)
+generateArray size gen =
+    Random.map Array.fromList (Random.list size gen)
+
+
 generateGrid : Int -> Generator Cells
 generateGrid size =
-    Random.list size (Random.list size generateRandomGrassCell)
+    generateArray size (generateArray size generateRandomGrassCell)
 
 
 
@@ -127,6 +171,7 @@ subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
         , Mouse.moves MouseMoved
+        , Mouse.clicks MouseClicked
         ]
 
 
@@ -138,6 +183,7 @@ type Msg
     = RandomGrid Cells
     | GridOffset ( Int, Int )
     | MouseMoved Mouse.Position
+    | MouseClicked Mouse.Position
     | ToolboxMsg Toolbox.Msg
 
 
@@ -168,6 +214,27 @@ update msg model =
               }
             , Cmd.none
             )
+
+        MouseClicked position ->
+            case positionToGridPoint model.grid position of
+                Just point ->
+                    let
+                        entity =
+                            Entity point model.toolbox.currentTool.image
+
+                        cells =
+                            setEntityOnCellAtPoint point entity model.grid.cells
+
+                        grid =
+                            model.grid
+
+                        updatedGrid =
+                            { grid | cells = cells }
+                    in
+                        ( { model | grid = updatedGrid }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         ToolboxMsg msg ->
             let
@@ -267,18 +334,40 @@ pointView { x, y } =
 
 gridView : Grid -> Html msg
 gridView grid =
-    div [ id [ GridStyles.Grid ] ] (List.map buildRow grid.cells)
+    let
+        rows =
+            Array.toList grid.cells
+    in
+        div [ id [ GridStyles.Grid ] ] (List.map buildRow rows)
 
 
-buildRow : List Cell -> Html msg
+buildRow : Array Cell -> Html msg
 buildRow row =
-    div [ class [ Row ] ] (List.map buildCell row)
+    let
+        cells =
+            Array.toList row
+    in
+        div [ class [ Row ] ] (List.map buildCell cells)
 
 
 buildCell : Cell -> Html msg
 buildCell cell =
-    div
-        [ class [ GridStyles.Cell ]
-        , styles [ Css.backgroundImage (Css.url cell.image) ]
-        ]
-        []
+    let
+        entity =
+            case cell.entity of
+                Just e ->
+                    entityView e
+
+                Nothing ->
+                    text ""
+    in
+        div
+            [ class [ GridStyles.Cell ]
+            , styles [ Css.backgroundImage (Css.url cell.image) ]
+            ]
+            [ entity ]
+
+
+entityView : Entity -> Html msg
+entityView entity =
+    img [ src entity.image ] []
