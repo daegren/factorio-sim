@@ -26,8 +26,10 @@ type alias Entity =
     { position : Point
     , image : String
     }
+
+
 type alias Grid =
-    { background : BackgroundGrid
+    { cells : Cells
     , entities : List Entity
     , cellSize : Int
     , size : Int
@@ -45,7 +47,7 @@ setOffset point grid =
     { grid | offset = point }
 
 
-type alias BackgroundGrid =
+type alias Cells =
     List (List Cell)
 
 
@@ -79,7 +81,7 @@ generateRandomGrassCell =
     Random.map (\i -> getGrassCell i) (Random.int 0 15)
 
 
-generateGrid : Int -> Generator BackgroundGrid
+generateGrid : Int -> Generator Cells
 generateGrid size =
     Random.list size (Random.list size generateRandomGrassCell)
 
@@ -133,7 +135,7 @@ subscriptions model =
 
 
 type Msg
-    = RandomGrid BackgroundGrid
+    = RandomGrid Cells
     | GridOffset ( Int, Int )
     | MouseMoved Mouse.Position
     | ToolboxMsg Toolbox.Msg
@@ -148,7 +150,7 @@ update msg model =
                     model.grid
 
                 gridModel =
-                    { existingGrid | background = grid }
+                    { existingGrid | cells = grid }
             in
                 ( { model | grid = gridModel }, Cmd.none )
 
@@ -265,7 +267,7 @@ pointView { x, y } =
 
 gridView : Grid -> Html msg
 gridView grid =
-    div [ id [ GridStyles.Grid ] ] (List.map buildRow grid.background)
+    div [ id [ GridStyles.Grid ] ] (List.map buildRow grid.cells)
 
 
 buildRow : List Cell -> Html msg
