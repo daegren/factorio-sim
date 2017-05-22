@@ -23,10 +23,29 @@ type alias Model =
     }
 
 
+type alias Entity =
+    { position : Point
+    , image : String
+    }
 type alias Grid =
+    { background : BackgroundGrid
+    , entities : List Entity
+    }
+
+
+emptyGrid : Grid
+emptyGrid =
+    Grid [] []
+
+
+type alias BackgroundGrid =
     List (List Cell)
 
 
+{-| Represents a point in a coordinate system
+
+    Point 10 12
+-}
 type alias Point =
     { x : Int
     , y : Int
@@ -53,7 +72,7 @@ generateRandomGrassCell =
     Random.map (\i -> getGrassCell i) (Random.int 0 15)
 
 
-generateGrid : Int -> Generator Grid
+generateGrid : Int -> Generator BackgroundGrid
 generateGrid size =
     Random.list size (Random.list size generateRandomGrassCell)
 
@@ -64,7 +83,7 @@ generateGrid size =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [] zeroPoint zeroPoint zeroPoint Toolbox.initialModel
+    ( Model emptyGrid zeroPoint zeroPoint zeroPoint Toolbox.initialModel
     , Cmd.batch
         [ Random.generate RandomGrid (generateGrid 20)
         , getOffsetOfGrid ()
@@ -103,7 +122,7 @@ subscriptions model =
 
 
 type Msg
-    = RandomGrid Grid
+    = RandomGrid BackgroundGrid
     | GridOffset ( Int, Int )
     | MouseMoved Mouse.Position
     | ToolboxMsg Toolbox.Msg
@@ -113,7 +132,14 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         RandomGrid grid ->
-            ( { model | grid = grid }, Cmd.none )
+            let
+                existingGrid =
+                    model.grid
+
+                gridModel =
+                    { existingGrid | background = grid }
+            in
+                ( { model | grid = gridModel }, Cmd.none )
 
         GridOffset ( x, y ) ->
             ( { model | offset = (Point x y) }, Cmd.none )
@@ -209,7 +235,7 @@ pointView { x, y } =
 
 gridView : Grid -> Html msg
 gridView grid =
-    div [ id [ Grid ] ] (List.map buildRow grid)
+    div [ id [ GridStyles.Grid ] ] (List.map buildRow grid.background)
 
 
 buildRow : List Cell -> Html msg
