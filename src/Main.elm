@@ -7,7 +7,7 @@ import GridStyles exposing (Classes(..), Ids(..))
 import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Mouse
-import Toolbox
+import Toolbox exposing (ToolType(..))
 import Css
 import Array exposing (Array)
 
@@ -67,7 +67,7 @@ getCellAtPoint point cells =
                     Just cell
 
 
-setEntityOnCellAtPoint : Point -> Entity -> Cells -> Cells
+setEntityOnCellAtPoint : Point -> Maybe Entity -> Cells -> Cells
 setEntityOnCellAtPoint point entity cells =
     let
         cell =
@@ -76,7 +76,7 @@ setEntityOnCellAtPoint point entity cells =
                     Debug.crash "Invalid grid position"
 
                 Just cell ->
-                    { cell | entity = Just entity }
+                    { cell | entity = entity }
 
         row =
             case Array.get point.y cells of
@@ -87,6 +87,11 @@ setEntityOnCellAtPoint point entity cells =
                     row
     in
         Array.set point.y (Array.set point.x cell row) cells
+
+
+removeEntityOnCellAtPotint : Point -> Cells -> Cells
+removeEntityOnCellAtPotint point cells =
+    setEntityOnCellAtPoint point Nothing cells
 
 
 {-| Represents a point in a coordinate system
@@ -219,11 +224,19 @@ update msg model =
             case positionToGridPoint model.grid position of
                 Just point ->
                     let
+                        toolbox =
+                            model.toolbox
+
                         entity =
-                            Entity point model.toolbox.currentTool.image
+                            Entity point toolbox.currentTool.image
 
                         cells =
-                            setEntityOnCellAtPoint point entity model.grid.cells
+                            case toolbox.currentTool.toolType of
+                                Place ->
+                                    setEntityOnCellAtPoint point (Just entity) model.grid.cells
+
+                                Clear ->
+                                    removeEntityOnCellAtPotint point model.grid.cells
 
                         grid =
                             model.grid

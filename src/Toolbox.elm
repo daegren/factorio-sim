@@ -19,7 +19,13 @@ type alias Model =
 type alias Tool =
     { name : String
     , image : String
+    , toolType : ToolType
     }
+
+
+type ToolType
+    = Clear
+    | Place
 
 
 type alias ToolGroup =
@@ -45,7 +51,7 @@ clearGroup =
 
 clearTool : Tool
 clearTool =
-    Tool "Clear Tool" "/assets/images/cancel.png"
+    Tool "Clear Tool" "/assets/images/cancel.png" Clear
 
 
 transportBeltGroup : ToolGroup
@@ -61,7 +67,7 @@ generateTransportBeltTools =
         directions =
             [ "up", "right", "down", "left" ]
     in
-        List.map (\a -> Tool ("Transport belt " ++ a) ("/assets/images/belt/belt-" ++ a ++ ".png")) directions
+        List.map (\a -> Tool ("Transport belt " ++ a) ("/assets/images/belt/belt-" ++ a ++ ".png") Place) directions
 
 
 
