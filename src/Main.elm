@@ -16,8 +16,7 @@ import Css
 
 type alias Model =
     { grid : Grid
-    , offset : Point
-    , mouseGridPosition : Point
+    , mouseGridPosition : Maybe Point
     , currentMousePosition : Point
     , toolbox : Toolbox.Model
     }
@@ -30,12 +29,20 @@ type alias Entity =
 type alias Grid =
     { background : BackgroundGrid
     , entities : List Entity
+    , cellSize : Int
+    , size : Int
+    , offset : Point
     }
 
 
 emptyGrid : Grid
 emptyGrid =
-    Grid [] []
+    Grid [] [] 32 20 zeroPoint
+
+
+setOffset : Point -> Grid -> Grid
+setOffset point grid =
+    { grid | offset = point }
 
 
 type alias BackgroundGrid =
@@ -83,12 +90,16 @@ generateGrid size =
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model emptyGrid zeroPoint zeroPoint zeroPoint Toolbox.initialModel
-    , Cmd.batch
-        [ Random.generate RandomGrid (generateGrid 20)
-        , getOffsetOfGrid ()
-        ]
-    )
+    let
+        model =
+            Model emptyGrid Nothing zeroPoint Toolbox.initialModel
+    in
+        ( model
+        , Cmd.batch
+            [ Random.generate RandomGrid (generateGrid model.grid.size)
+            , getOffsetOfGrid ()
+            ]
+        )
 
 
 
@@ -142,27 +153,19 @@ update msg model =
                 ( { model | grid = gridModel }, Cmd.none )
 
         GridOffset ( x, y ) ->
-            ( { model | offset = (Point x y) }, Cmd.none )
+            let
+                point =
+                    Point x y
+            in
+                ( { model | grid = (setOffset point model.grid) }, Cmd.none )
 
         MouseMoved position ->
-            let
-                gridSize =
-                    20
-
-                x =
-                    floor ((toFloat (position.x - model.offset.x)) / 32)
-                        |> clamp 0 (gridSize - 1)
-
-                y =
-                    floor ((toFloat (position.y - model.offset.y)) / 32)
-                        |> clamp 0 (gridSize - 1)
-            in
-                ( { model
-                    | currentMousePosition = (Point position.x position.y)
-                    , mouseGridPosition = (Point x y)
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | currentMousePosition = (Point position.x position.y)
+                , mouseGridPosition = positionToGridPoint model.grid position
+              }
+            , Cmd.none
+            )
 
         ToolboxMsg msg ->
             let
@@ -170,6 +173,28 @@ update msg model =
                     Toolbox.update msg model.toolbox
             in
                 ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
+
+
+{-| Converts a mouse position to it's respective grid position.
+
+Returns `Nothing` if Mouse is outside of the grid bounds.
+-}
+positionToGridPoint : Grid -> Mouse.Position -> Maybe Point
+positionToGridPoint grid position =
+    let
+        x =
+            floor ((toFloat (position.x - grid.offset.x)) / (toFloat grid.cellSize))
+
+        y =
+            floor ((toFloat (position.y - grid.offset.y)) / (toFloat grid.cellSize))
+
+        gridSize =
+            grid.size - 1
+    in
+        if x > gridSize || x < 0 || y > gridSize || y < 0 then
+            Nothing
+        else
+            Just (Point x y)
 
 
 
@@ -217,7 +242,12 @@ infoView model =
             ]
         , div []
             [ text "Current Grid Position: "
-            , pointView model.mouseGridPosition
+            , case model.mouseGridPosition of
+                Just point ->
+                    pointView point
+
+                Nothing ->
+                    div [] [ text "Off grid" ]
             ]
         , div []
             [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
