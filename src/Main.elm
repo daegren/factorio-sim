@@ -10,6 +10,7 @@ import Mouse
 import Toolbox exposing (ToolType(..))
 import Css
 import Array exposing (Array)
+import Point exposing (Point, zeroPoint)
 
 
 -- MODEL
@@ -92,21 +93,6 @@ setEntityOnCellAtPoint point entity cells =
 removeEntityOnCellAtPotint : Point -> Cells -> Cells
 removeEntityOnCellAtPotint point cells =
     setEntityOnCellAtPoint point Nothing cells
-
-
-{-| Represents a point in a coordinate system
-
-    Point 10 12
--}
-type alias Point =
-    { x : Int
-    , y : Int
-    }
-
-
-zeroPoint : Point
-zeroPoint =
-    { x = 0, y = 0 }
 
 
 type alias Cell =
@@ -320,13 +306,13 @@ infoView model =
         [ h1 [] [ text "Factorio Simulator" ]
         , div []
             [ text "Current Mouse Position: "
-            , pointView model.currentMousePosition
+            , Point.view model.currentMousePosition
             ]
         , div []
             [ text "Current Grid Position: "
             , case model.mouseGridPosition of
                 Just point ->
-                    pointView point
+                    Point.view point
 
                 Nothing ->
                     div [] [ text "Off grid" ]
@@ -334,15 +320,6 @@ infoView model =
         , div []
             [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
         ]
-
-
-pointView : Point -> Html msg
-pointView { x, y } =
-    let
-        pointText =
-            "{ " ++ (toString x) ++ ", " ++ (toString y) ++ " }"
-    in
-        div [] [ text pointText ]
 
 
 gridView : Grid -> Html msg
