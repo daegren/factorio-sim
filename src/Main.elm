@@ -63,6 +63,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map GridMsg (Grid.subscriptions model.grid)
+        , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , Mouse.moves MouseMoved
         ]
 

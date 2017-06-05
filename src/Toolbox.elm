@@ -5,69 +5,85 @@ import Html.Attributes exposing (src, alt)
 import Html.CssHelpers
 import ToolboxStyles exposing (Classes(..), Ids(..))
 import Html.Events exposing (onClick)
+import Keyboard
+import Input exposing (mapKeyboardToInput, Input(..))
 
 
 -- MODEL
 
 
 type alias Model =
-    { tools : List ToolGroup
+    { tools : List Tool
     , currentTool : Tool
+    , currentOrientation : Orientation
     }
 
 
 type alias Tool =
     { name : String
-    , image : String
     , toolType : ToolType
     }
 
 
 type ToolType
     = Clear
-    | Place
+    | TransportBelt
 
 
-type alias ToolGroup =
-    { name : String
-    , tools : List Tool
-    }
+type Orientation
+    = North
+    | East
+    | South
+    | West
 
 
 initialModel : Model
 initialModel =
     { tools =
-        [ clearGroup, transportBeltGroup ]
+        [ clearTool, transportBeltTool ]
     , currentTool = clearTool
-    }
-
-
-clearGroup : ToolGroup
-clearGroup =
-    { name = "Clear"
-    , tools = [ clearTool ]
+    , currentOrientation = North
     }
 
 
 clearTool : Tool
 clearTool =
-    Tool "Clear Tool" "/assets/images/cancel.png" Clear
+    Tool "Clear Tool" Clear
 
 
-transportBeltGroup : ToolGroup
-transportBeltGroup =
-    { name = "Transport Belt"
-    , tools = generateTransportBeltTools
-    }
+transportBeltTool : Tool
+transportBeltTool =
+    Tool "Transport Belt" TransportBelt
 
 
-generateTransportBeltTools : List Tool
-generateTransportBeltTools =
-    let
-        directions =
-            [ "up", "right", "down", "left" ]
-    in
-        List.map (\a -> Tool ("Transport belt " ++ a) ("/assets/images/belt/belt-" ++ a ++ ".png") Place) directions
+imageForTool : Orientation -> Tool -> String
+imageForTool orientation tool =
+    case tool.toolType of
+        Clear ->
+            "/assets/images/cancel.png"
+
+        TransportBelt ->
+            case orientation of
+                North ->
+                    "/assets/images/belt/belt-up.png"
+
+                East ->
+                    "/assets/images/belt/belt-right.png"
+
+                South ->
+                    "/assets/images/belt/belt-down.png"
+
+                West ->
+                    "/assets/images/belt/belt-left.png"
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Keyboard.presses KeyPressed
 
 
 
@@ -76,6 +92,7 @@ generateTransportBeltTools =
 
 type Msg
     = SelectTool Tool
+    | KeyPressed Keyboard.KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -83,6 +100,32 @@ update msg model =
     case msg of
         SelectTool tool ->
             ( { model | currentTool = tool }, Cmd.none )
+
+        KeyPressed keyCode ->
+            case mapKeyboardToInput keyCode of
+                Just input ->
+                    case input of
+                        Rotate ->
+                            ( { model | currentOrientation = rotateOrientation model.currentOrientation }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+
+rotateOrientation : Orientation -> Orientation
+rotateOrientation orientation =
+    case orientation of
+        North ->
+            East
+
+        East ->
+            South
+
+        South ->
+            West
+
+        West ->
+            North
 
 
 
@@ -103,33 +146,28 @@ view model =
         [ text "ToolBox"
         , div []
             [ text "Current Tool:"
-            , div [ class [ CurrentTool ] ] [ currentToolView model.currentTool ]
+            , div [ class [ CurrentTool ] ] [ currentToolView model model.currentTool ]
             ]
         , div []
             [ text "Available Tools:"
-            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map toolGroupView model.tools)
+            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map (selectableToolView model) model.tools)
             ]
         ]
 
 
-toolGroupView : ToolGroup -> Html Msg
-toolGroupView toolGroup =
-    div []
-        [ text toolGroup.name
-        , div [ class [ ToolList ] ] (List.map selectableToolView toolGroup.tools)
+currentToolView : Model -> Tool -> Html msg
+currentToolView model tool =
+    toolView model tool
+
+
+selectableToolView : Model -> Tool -> Html Msg
+selectableToolView model tool =
+    div [ class [ ToolboxStyles.Tool ], onClick (SelectTool tool) ]
+        [ text tool.name
+        , toolView model tool
         ]
 
 
-currentToolView : Tool -> Html msg
-currentToolView tool =
-    toolView tool
-
-
-selectableToolView : Tool -> Html Msg
-selectableToolView tool =
-    div [ class [ ToolboxStyles.Tool ], onClick (SelectTool tool) ] [ toolView tool ]
-
-
-toolView : Tool -> Html msg
-toolView tool =
-    img [ src tool.image, alt tool.name ] []
+toolView : Model -> Tool -> Html msg
+toolView model tool =
+    img [ src (imageForTool model.currentOrientation tool), alt tool.name ] []

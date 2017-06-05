@@ -81,6 +81,11 @@ type alias Entity =
     }
 
 
+entityFromToolbox : Toolbox.Model -> Point -> Entity
+entityFromToolbox toolbox point =
+    { position = point, image = Toolbox.imageForTool toolbox.currentOrientation toolbox.currentTool }
+
+
 type alias Cell =
     { image : String
     , entity : Maybe Entity
@@ -172,11 +177,11 @@ update msg toolbox model =
                 Just point ->
                     let
                         entity =
-                            Entity point toolbox.currentTool.image
+                            entityFromToolbox toolbox point
 
                         cells =
                             case toolbox.currentTool.toolType of
-                                Place ->
+                                TransportBelt ->
                                     setEntityOnCellAtPoint point (Just entity) model.cells
 
                                 Clear ->
