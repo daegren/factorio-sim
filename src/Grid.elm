@@ -6,10 +6,12 @@ import Html.CssHelpers
 import Css
 import Array exposing (Array)
 import GridStyles exposing (Classes(..))
+import Entity.Image
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (ToolType(..))
+import Entity exposing (Entity)
 
 
 -- MODEL
@@ -70,20 +72,15 @@ setEntityOnCellAtPoint point entity cells =
         Array.set point.y (Array.set point.x cell row) cells
 
 
-removeEntityOnCellAtPotint : Point -> Cells -> Cells
-removeEntityOnCellAtPotint point cells =
+removeEntityOnCellAtPoint : Point -> Cells -> Cells
+removeEntityOnCellAtPoint point cells =
     setEntityOnCellAtPoint point Nothing cells
 
 
-type alias Entity =
-    { position : Point
-    , image : String
-    }
 
-
-entityFromToolbox : Toolbox.Model -> Point -> Entity
-entityFromToolbox toolbox point =
-    { position = point, image = Toolbox.imageForTool toolbox.currentOrientation toolbox.currentTool }
+-- entityFromToolbox : Toolbox.Model -> Point -> Entity
+-- entityFromToolbox toolbox point =
+--     { position = point, image = Toolbox.imageForTool toolbox.currentOrientation toolbox.currentTool }
 
 
 type alias Cell =
@@ -177,15 +174,15 @@ update msg toolbox model =
                 Just point ->
                     let
                         entity =
-                            entityFromToolbox toolbox point
+                            Toolbox.currentToolToEntity toolbox { x = toFloat point.x, y = toFloat point.y }
 
                         cells =
                             case toolbox.currentTool.toolType of
                                 TransportBelt ->
-                                    setEntityOnCellAtPoint point (Just entity) model.cells
+                                    setEntityOnCellAtPoint point entity model.cells
 
                                 Clear ->
-                                    removeEntityOnCellAtPotint point model.cells
+                                    removeEntityOnCellAtPoint point model.cells
                     in
                         ( { model | cells = cells }, Cmd.none )
 
@@ -220,6 +217,9 @@ positionToGridPoint grid position =
 
 
 port getOffsetOfGrid : () -> Cmd msg
+
+
+port loadBlueprint : () -> Cmd msg
 
 
 port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
@@ -280,4 +280,8 @@ buildCell cell =
 
 entityView : Entity -> Html msg
 entityView entity =
-    img [ src entity.image ] []
+    let
+        imageSource =
+            Entity.Image.image entity
+    in
+        img [ src imageSource ] []
