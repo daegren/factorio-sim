@@ -6,6 +6,7 @@ import Html.CssHelpers
 import Css
 import Array exposing (Array)
 import GridStyles exposing (Classes(..))
+import Color
 import Entity.Image
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
@@ -214,6 +215,24 @@ positionToGridPoint grid position =
             Just (Point x y)
 
 
+pointToCollageOffset : Model -> Point -> ( Float, Float )
+pointToCollageOffset { cellSize, size } point =
+    let
+        halfSize =
+            (toFloat size * toFloat cellSize / 2)
+
+        offset =
+            (toFloat cellSize / 2)
+
+        x =
+            (toFloat point.x * toFloat cellSize + offset - halfSize)
+
+        y =
+            (halfSize - toFloat point.y * toFloat cellSize - offset)
+    in
+        ( x, y )
+
+
 
 -- PORTS
 
@@ -244,8 +263,8 @@ styles =
 -- VIEW
 
 
-view : Model -> Html msg
-view model =
+view : Maybe Point -> Model -> Html msg
+view currentGridPosition model =
     let
         gridSize =
             model.cellSize * model.size
@@ -255,9 +274,23 @@ view model =
                 gridSize
                 [ backgroundGrid model
                     |> Collage.toForm
+                , hoverBlock currentGridPosition model
                 ]
                 |> Element.toHtml
             ]
+
+
+hoverBlock : Maybe Point -> Model -> Collage.Form
+hoverBlock maybePoint model =
+    case maybePoint of
+        Just point ->
+            Collage.rect 32 32
+                |> Collage.filled (Color.rgba 255 255 0 0.25)
+                |> Collage.move (pointToCollageOffset model point)
+
+        Nothing ->
+            Collage.rect 0 0
+                |> Collage.filled (Color.rgba 0 0 0 0)
 
 
 backgroundGrid : Model -> Element.Element
