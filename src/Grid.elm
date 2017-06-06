@@ -72,8 +72,8 @@ setEntityOnCellAtPoint point entity cells =
         Array.set point.y (Array.set point.x cell row) cells
 
 
-removeEntityOnCellAtPotint : Point -> Cells -> Cells
-removeEntityOnCellAtPotint point cells =
+removeEntityOnCellAtPoint : Point -> Cells -> Cells
+removeEntityOnCellAtPoint point cells =
     setEntityOnCellAtPoint point Nothing cells
 
 
@@ -174,15 +174,15 @@ update msg toolbox model =
                 Just point ->
                     let
                         entity =
-                            Entity Entity.TransportBelt { x = toFloat point.x, y = toFloat point.y } Entity.Up
+                            Toolbox.currentToolToEntity toolbox { x = toFloat point.x, y = toFloat point.y }
 
                         cells =
                             case toolbox.currentTool.toolType of
                                 TransportBelt ->
-                                    setEntityOnCellAtPoint point (Just entity) model.cells
+                                    setEntityOnCellAtPoint point entity model.cells
 
                                 Clear ->
-                                    removeEntityOnCellAtPotint point model.cells
+                                    removeEntityOnCellAtPoint point model.cells
                     in
                         ( { model | cells = cells }, Cmd.none )
 
@@ -217,6 +217,9 @@ positionToGridPoint grid position =
 
 
 port getOffsetOfGrid : () -> Cmd msg
+
+
+port loadBlueprint : () -> Cmd msg
 
 
 port receiveOffset : (( Int, Int ) -> msg) -> Sub msg

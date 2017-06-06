@@ -7,7 +7,7 @@ import ToolboxStyles exposing (Classes(..), Ids(..))
 import Html.Events exposing (onClick)
 import Keyboard
 import Input exposing (mapKeyboardToInput, Input(..))
-import Entity exposing (Entity, Direction(..))
+import Entity exposing (Entity, EntityName(..), Direction(..))
 
 
 -- MODEL
@@ -38,6 +38,16 @@ initialModel =
     , currentTool = clearTool
     , currentDirection = Up
     }
+
+
+currentToolToEntity : Model -> Entity.Position -> Maybe Entity
+currentToolToEntity { currentTool, currentDirection } position =
+    case currentTool.toolType of
+        Clear ->
+            Nothing
+
+        TransportBelt ->
+            Just (Entity Entity.TransportBelt position currentDirection)
 
 
 clearTool : Tool
