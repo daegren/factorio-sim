@@ -12,6 +12,8 @@ import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (ToolType(..))
 import Entity exposing (Entity)
+import Collage
+import Element
 
 
 -- MODEL
@@ -243,7 +245,37 @@ styles =
 
 
 view : Model -> Html msg
-view grid =
+view model =
+    let
+        gridSize =
+            model.cellSize * model.size
+    in
+        div [ id [ GridStyles.Grid ] ]
+            [ Collage.collage gridSize
+                gridSize
+                [ backgroundGrid model
+                    |> Collage.toForm
+                ]
+                |> Element.toHtml
+            ]
+
+
+backgroundGrid : Model -> Element.Element
+backgroundGrid model =
+    Array.map (\row -> elementRow model.cellSize row) model.cells
+        |> Array.toList
+        |> Element.flow Element.down
+
+
+elementRow : Int -> Array Cell -> Element.Element
+elementRow size cells =
+    Array.map (\c -> Element.image 32 32 c.image) cells
+        |> Array.toList
+        |> Element.flow Element.right
+
+
+view2 : Model -> Html msg
+view2 grid =
     let
         rows =
             Array.toList grid.cells
