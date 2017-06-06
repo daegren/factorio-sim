@@ -7,6 +7,7 @@ import ToolboxStyles exposing (Classes(..), Ids(..))
 import Html.Events exposing (onClick)
 import Keyboard
 import Input exposing (mapKeyboardToInput, Input(..))
+import Entity exposing (Entity, Direction(..))
 
 
 -- MODEL
@@ -15,7 +16,7 @@ import Input exposing (mapKeyboardToInput, Input(..))
 type alias Model =
     { tools : List Tool
     , currentTool : Tool
-    , currentOrientation : Orientation
+    , currentDirection : Direction
     }
 
 
@@ -30,19 +31,12 @@ type ToolType
     | TransportBelt
 
 
-type Orientation
-    = North
-    | East
-    | South
-    | West
-
-
 initialModel : Model
 initialModel =
     { tools =
         [ clearTool, transportBeltTool ]
     , currentTool = clearTool
-    , currentOrientation = North
+    , currentDirection = Up
     }
 
 
@@ -56,24 +50,24 @@ transportBeltTool =
     Tool "Transport Belt" TransportBelt
 
 
-imageForTool : Orientation -> Tool -> String
-imageForTool orientation tool =
+imageForTool : Direction -> Tool -> String
+imageForTool direction tool =
     case tool.toolType of
         Clear ->
             "/assets/images/cancel.png"
 
         TransportBelt ->
-            case orientation of
-                North ->
+            case direction of
+                Up ->
                     "/assets/images/belt/belt-up.png"
 
-                East ->
+                Right ->
                     "/assets/images/belt/belt-right.png"
 
-                South ->
+                Down ->
                     "/assets/images/belt/belt-down.png"
 
-                West ->
+                Left ->
                     "/assets/images/belt/belt-left.png"
 
 
@@ -106,26 +100,26 @@ update msg model =
                 Just input ->
                     case input of
                         Rotate ->
-                            ( { model | currentOrientation = rotateOrientation model.currentOrientation }, Cmd.none )
+                            ( { model | currentDirection = rotateDirection model.currentDirection }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
 
 
-rotateOrientation : Orientation -> Orientation
-rotateOrientation orientation =
+rotateDirection : Direction -> Direction
+rotateDirection orientation =
     case orientation of
-        North ->
-            East
+        Up ->
+            Right
 
-        East ->
-            South
+        Right ->
+            Down
 
-        South ->
-            West
+        Down ->
+            Left
 
-        West ->
-            North
+        Left ->
+            Up
 
 
 
@@ -170,4 +164,4 @@ selectableToolView model tool =
 
 toolView : Model -> Tool -> Html msg
 toolView model tool =
-    img [ src (imageForTool model.currentOrientation tool), alt tool.name ] []
+    img [ src (imageForTool model.currentDirection tool), alt tool.name ] []
