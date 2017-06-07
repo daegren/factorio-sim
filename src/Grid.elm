@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
+import Json.Decode exposing (Value)
 import Color
 import Entity.Image
 import Point exposing (Point, zeroPoint)
@@ -123,7 +124,24 @@ subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
         , Mouse.clicks MouseClicked
+        , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.decodeEntity) >> SentBlueprint)
         ]
+
+
+
+-- PORTS
+
+
+port getOffsetOfGrid : () -> Cmd msg
+
+
+port parseBlueprint : String -> Cmd msg
+
+
+port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
+
+
+port loadBlueprint : (Value -> msg) -> Sub msg
 
 
 
@@ -136,6 +154,7 @@ type Msg
     | MouseClicked Mouse.Position
     | LoadBlueprint
     | BlueprintChanged String
+    | SentBlueprint (Result String (List Entity))
 
 
 update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
@@ -176,6 +195,13 @@ update msg toolbox model =
 
         BlueprintChanged str ->
             ( { model | blueprintString = str }, Cmd.none )
+
+        SentBlueprint res ->
+            let
+                a =
+                    Debug.log "result" res
+            in
+                ( model, Cmd.none )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -219,19 +245,6 @@ pointToCollageOffset { cellSize, size } point =
             (halfSize - toFloat point.y * toFloat cellSize - offset)
     in
         ( x, y )
-
-
-
--- PORTS
-
-
-port getOffsetOfGrid : () -> Cmd msg
-
-
-port parseBlueprint : String -> Cmd msg
-
-
-port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
 
 
 
