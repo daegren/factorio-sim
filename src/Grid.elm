@@ -31,14 +31,9 @@ type alias Model =
     }
 
 
-defaultBlueprint : String
-defaultBlueprint =
-    "0eNqV0dsKwjAMBuB3yXUH26xj9lVEZIcggS0tbSeO0Xe33W4UJ+hl2uRr+LtAO0xoLLEHtQB1mh2o8wKObtwM6czPBkEBeRxBADdjqrxt2Bltfdbi4CEIIO7xAaoIFwHInjzhJq3FfOVpbNHGhm+GAKNdHNOcXo1UFltnUHnEe7LYbVdVEB9m+a+ZFWGHOfzM5HubyR1S/knGxd7MMsW5Rq9efkrAHa3b4pCyPFb1Ka/rEJ7nRpp8"
-
-
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint defaultBlueprint
+    Model [] [] 32 15 zeroPoint ""
 
 
 type alias Cells =
