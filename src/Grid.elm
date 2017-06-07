@@ -38,7 +38,7 @@ defaultBlueprint =
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 20 zeroPoint defaultBlueprint
+    Model [] [] 32 15 zeroPoint defaultBlueprint
 
 
 type alias Cells =
@@ -197,11 +197,16 @@ update msg toolbox model =
             ( { model | blueprintString = str }, Cmd.none )
 
         SentBlueprint res ->
-            let
-                a =
-                    Debug.log "result" res
-            in
-                ( model, Cmd.none )
+            case res of
+                Ok entities ->
+                    ( { model | entities = entities }, Cmd.none )
+
+                Err err ->
+                    let
+                        a =
+                            Debug.log "SentBlueprint error" err
+                    in
+                        ( model, Cmd.none )
 
 
 {-| Converts a mouse position to it's respective grid position.
