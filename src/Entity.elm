@@ -1,7 +1,5 @@
 module Entity exposing (..)
 
-import Json.Decode exposing (..)
-
 
 type alias Position =
     { x : Float
@@ -28,24 +26,6 @@ type Direction
     | Left
 
 
-decodePosition : Decoder Position
-decodePosition =
-    map2 Position
-        (field "x" float)
-        (field "y" float)
-
-
-decodeEntity : Decoder Entity
-decodeEntity =
-    map3 Entity
-        (map entityName (field "name" string))
-        (field "position" decodePosition)
-        ((field "direction" int)
-            |> maybe
-            |> map direction
-        )
-
-
 direction : Maybe Int -> Direction
 direction int =
     case int of
@@ -67,6 +47,22 @@ direction int =
             Up
 
 
+directionToInt : Direction -> Maybe Int
+directionToInt direction =
+    case direction of
+        Down ->
+            Just 4
+
+        Right ->
+            Just 2
+
+        Left ->
+            Just 6
+
+        Up ->
+            Nothing
+
+
 entityName : String -> EntityName
 entityName name =
     case name of
@@ -75,3 +71,13 @@ entityName name =
 
         _ ->
             Other name
+
+
+nameToString : EntityName -> String
+nameToString entityName =
+    case entityName of
+        TransportBelt ->
+            "transport-belt"
+
+        Other str ->
+            str
