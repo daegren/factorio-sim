@@ -53,31 +53,22 @@ getCellAtPoint point cells =
                     Just cell
 
 
-setEntityOnCellAtPoint : Point -> Maybe Entity -> Cells -> Cells
-setEntityOnCellAtPoint point entity cells =
-    let
-        cell =
-            case getCellAtPoint point cells of
-                Nothing ->
-                    Debug.crash "Invalid grid position"
+addEntity : Point -> Maybe Entity -> List Entity -> List Entity
+addEntity point entityMaybe entityList =
+    case entityMaybe of
+        Just entity ->
+            entity :: List.foldl (removeEntity point) [] entityList
 
-                Just cell ->
-                    { cell | entity = entity }
-
-        row =
-            case Array.get point.y cells of
-                Nothing ->
-                    Debug.crash "Impossible!"
-
-                Just row ->
-                    row
-    in
-        Array.set point.y (Array.set point.x cell row) cells
+        Nothing ->
+            entityList
 
 
-removeEntityOnCellAtPoint : Point -> Cells -> Cells
-removeEntityOnCellAtPoint point cells =
-    setEntityOnCellAtPoint point Nothing cells
+removeEntity : Point -> Entity -> List Entity -> List Entity
+removeEntity point entity acc =
+    if floor entity.position.x /= point.x || floor entity.position.y /= point.y then
+        entity :: acc
+    else
+        acc
 
 
 
@@ -173,24 +164,30 @@ update msg toolbox model =
                 ( { model | offset = point }, Cmd.none )
 
         MouseClicked position ->
-            case positionToGridPoint model position of
-                Just point ->
-                    let
-                        entity =
-                            Toolbox.currentToolToEntity toolbox { x = toFloat point.x, y = toFloat point.y }
+            let
+                p =
+                    positionToGridPoint model position
+                        |> Debug.log "p"
+            in
+                case positionToGridPoint model position of
+                    Just point ->
+                        let
+                            entity =
+                                Toolbox.currentToolToEntity toolbox { x = toFloat point.x, y = toFloat point.y }
+                                    |> Debug.log "entity"
 
-                        cells =
-                            case toolbox.currentTool.toolType of
-                                TransportBelt ->
-                                    setEntityOnCellAtPoint point entity model.cells
+                            cells =
+                                case toolbox.currentTool.toolType of
+                                    TransportBelt ->
+                                        addEntity point entity model.entities
 
-                                Clear ->
-                                    removeEntityOnCellAtPoint point model.cells
-                    in
-                        ( { model | cells = cells }, Cmd.none )
+                                    Clear ->
+                                        List.foldl (removeEntity point) [] model.entities
+                        in
+                            ( { model | entities = cells }, Cmd.none )
 
-                Nothing ->
-                    ( model, Cmd.none )
+                    Nothing ->
+                        ( model, Cmd.none )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -274,10 +271,24 @@ view currentGridPosition model =
                 gridSize
                 [ backgroundGrid model
                     |> Collage.toForm
+                , entities model model.entities
                 , hoverBlock currentGridPosition model
                 ]
                 |> Element.toHtml
             ]
+
+
+entities : Model -> List Entity -> Collage.Form
+entities model entityList =
+    let
+        buildEntity : Entity.Entity -> Collage.Form
+        buildEntity entity =
+            Element.image 32 32 (Entity.Image.image entity)
+                |> Collage.toForm
+                |> Collage.move (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y })
+    in
+        List.map buildEntity entityList
+            |> Collage.group
 
 
 hoverBlock : Maybe Point -> Model -> Collage.Form
