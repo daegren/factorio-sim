@@ -216,16 +216,32 @@ Returns `Nothing` if Mouse is outside of the grid bounds.
 positionToGridPoint : Model -> Mouse.Position -> Maybe Point
 positionToGridPoint grid position =
     let
+        width =
+            grid.size * grid.cellSize
+
+        halfWidth =
+            toFloat width / 2
+
+        offset =
+            (toFloat grid.cellSize / 2)
+
         x =
-            floor ((toFloat (position.x - grid.offset.x)) / (toFloat grid.cellSize))
+            floor ((toFloat (position.x - grid.offset.x) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
         y =
-            floor ((toFloat (position.y - grid.offset.y)) / (toFloat grid.cellSize))
+            floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
         gridSize =
             grid.size - 1
+
+        gridMax =
+            (toFloat width / 2 / toFloat grid.cellSize)
+                |> floor
+
+        gridMin =
+            gridMax * -1
     in
-        if x > gridSize || x < 0 || y > gridSize || y < 0 then
+        if x > gridMax || x < gridMin || y > gridMax || y < gridMin then
             Nothing
         else
             Just (Point x y)
@@ -236,20 +252,7 @@ positionToGridPoint grid position =
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
 pointToCollageOffset { cellSize, size } point =
-    let
-        halfSize =
-            (toFloat size * toFloat cellSize / 2)
-
-        offset =
-            (toFloat cellSize / 2)
-
-        x =
-            (toFloat point.x * toFloat cellSize + offset - halfSize)
-
-        y =
-            (halfSize - toFloat point.y * toFloat cellSize - offset)
-    in
-        ( x, y )
+    ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
 
 
 

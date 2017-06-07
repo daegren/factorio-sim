@@ -132,7 +132,7 @@ view model =
 infoView : Model -> Html Msg
 infoView model =
     div [ id [ Info ] ]
-        [ h1 [] [ text "Factorio Simulator" ]
+        [ h1 [] [ text "Blueprint Maker" ]
         , div []
             [ text "Current Mouse Position: "
             , Point.view model.currentMousePosition
