@@ -6,6 +6,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
+import Entity.Decoder
 import Json.Decode exposing (Value)
 import Color
 import Entity.Image
@@ -119,7 +120,7 @@ subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
         , Mouse.clicks MouseClicked
-        , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.decodeEntity) >> SentBlueprint)
+        , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
         ]
 
 

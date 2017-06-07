@@ -1,7 +1,5 @@
 module Entity exposing (..)
 
-import Json.Decode exposing (..)
-
 
 type alias Position =
     { x : Float
@@ -26,24 +24,6 @@ type Direction
     | Right
     | Down
     | Left
-
-
-decodePosition : Decoder Position
-decodePosition =
-    map2 Position
-        (field "x" float)
-        (field "y" float)
-
-
-decodeEntity : Decoder Entity
-decodeEntity =
-    map3 Entity
-        (map entityName (field "name" string))
-        (field "position" decodePosition)
-        ((field "direction" int)
-            |> maybe
-            |> map direction
-        )
 
 
 direction : Maybe Int -> Direction
