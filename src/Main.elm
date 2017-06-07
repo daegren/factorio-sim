@@ -124,7 +124,7 @@ styles =
 view : Model -> Html Msg
 view model =
     div [ id [ Main ] ]
-        [ Grid.view model.grid
+        [ Grid.view model.mouseGridPosition model.grid
         , infoView model
         ]
 

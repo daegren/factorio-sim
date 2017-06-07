@@ -1,17 +1,19 @@
 port module Grid exposing (..)
 
-import Html exposing (Html, div, text, img)
-import Html.Attributes exposing (src)
+import Html exposing (Html, div)
+import Html.Attributes
 import Html.CssHelpers
 import Css
-import Array exposing (Array)
 import GridStyles exposing (Classes(..))
+import Color
 import Entity.Image
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (ToolType(..))
 import Entity exposing (Entity)
+import Collage
+import Element
 
 
 -- MODEL
@@ -28,84 +30,55 @@ type alias Model =
 
 emptyGrid : Model
 emptyGrid =
-    Model Array.empty [] 32 20 zeroPoint
+    Model [] [] 32 20 zeroPoint
 
 
 type alias Cells =
-    Array (Array Cell)
+    List (List BackgroundCell)
 
 
-getCellAtPoint : Point -> Cells -> Maybe Cell
-getCellAtPoint point cells =
-    case Array.get point.y cells of
+type alias BackgroundCell =
+    String
+
+
+{-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
+
+    addEntity { x = 0, y = 1} entity entities
+-}
+addEntity : Point -> Maybe Entity -> List Entity -> List Entity
+addEntity point entityMaybe entityList =
+    case entityMaybe of
+        Just entity ->
+            entity :: List.foldl (removeEntity point) [] entityList
+
         Nothing ->
-            Nothing
-
-        Just row ->
-            case Array.get point.x row of
-                Nothing ->
-                    Nothing
-
-                Just cell ->
-                    Just cell
+            entityList
 
 
-setEntityOnCellAtPoint : Point -> Maybe Entity -> Cells -> Cells
-setEntityOnCellAtPoint point entity cells =
-    let
-        cell =
-            case getCellAtPoint point cells of
-                Nothing ->
-                    Debug.crash "Invalid grid position"
+{-| Remove an entity from a list of entities. Intended to be used with `List.foldl`
 
-                Just cell ->
-                    { cell | entity = entity }
-
-        row =
-            case Array.get point.y cells of
-                Nothing ->
-                    Debug.crash "Impossible!"
-
-                Just row ->
-                    row
-    in
-        Array.set point.y (Array.set point.x cell row) cells
-
-
-removeEntityOnCellAtPoint : Point -> Cells -> Cells
-removeEntityOnCellAtPoint point cells =
-    setEntityOnCellAtPoint point Nothing cells
-
-
-
--- entityFromToolbox : Toolbox.Model -> Point -> Entity
--- entityFromToolbox toolbox point =
---     { position = point, image = Toolbox.imageForTool toolbox.currentOrientation toolbox.currentTool }
-
-
-type alias Cell =
-    { image : String
-    , entity : Maybe Entity
-    }
+    List.foldl (removeEntity point) entities
+-}
+removeEntity : Point -> Entity -> List Entity -> List Entity
+removeEntity point entity acc =
+    if floor entity.position.x /= point.x || floor entity.position.y /= point.y then
+        entity :: acc
+    else
+        acc
 
 
 
 -- GENERATORS
 
 
-getGrassCell : Int -> Cell
+getGrassCell : Int -> BackgroundCell
 getGrassCell num =
-    Cell ("/assets/images/grass/" ++ (toString num) ++ ".png") Nothing
+    "/assets/images/grass/" ++ (toString num) ++ ".png"
 
 
-generateRandomGrassCell : Generator Cell
+generateRandomGrassCell : Generator BackgroundCell
 generateRandomGrassCell =
     Random.map (\i -> getGrassCell i) (Random.int 0 15)
-
-
-generateArray : Int -> Generator a -> Generator (Array a)
-generateArray size gen =
-    Random.map Array.fromList (Random.list size gen)
 
 
 {-| Generate a grid with random background cells
@@ -113,7 +86,7 @@ generateArray size gen =
 -}
 generateGrid : Int -> Generator Cells
 generateGrid size =
-    generateArray size (generateArray size generateRandomGrassCell)
+    Random.list size (Random.list size generateRandomGrassCell)
 
 
 
@@ -179,12 +152,12 @@ update msg toolbox model =
                         cells =
                             case toolbox.currentTool.toolType of
                                 TransportBelt ->
-                                    setEntityOnCellAtPoint point entity model.cells
+                                    addEntity point entity model.entities
 
                                 Clear ->
-                                    removeEntityOnCellAtPoint point model.cells
+                                    List.foldl (removeEntity point) [] model.entities
                     in
-                        ( { model | cells = cells }, Cmd.none )
+                        ( { model | entities = cells }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -210,6 +183,27 @@ positionToGridPoint grid position =
             Nothing
         else
             Just (Point x y)
+
+
+{-| Converts a grid point into an {x, y} coordinate in the collage.
+
+-}
+pointToCollageOffset : Model -> Point -> ( Float, Float )
+pointToCollageOffset { cellSize, size } point =
+    let
+        halfSize =
+            (toFloat size * toFloat cellSize / 2)
+
+        offset =
+            (toFloat cellSize / 2)
+
+        x =
+            (toFloat point.x * toFloat cellSize + offset - halfSize)
+
+        y =
+            (halfSize - toFloat point.y * toFloat cellSize - offset)
+    in
+        ( x, y )
 
 
 
@@ -242,46 +236,57 @@ styles =
 -- VIEW
 
 
-view : Model -> Html msg
-view grid =
+view : Maybe Point -> Model -> Html msg
+view currentGridPosition model =
     let
-        rows =
-            Array.toList grid.cells
+        gridSize =
+            model.cellSize * model.size
     in
-        div [ id [ GridStyles.Grid ] ] (List.map buildRow rows)
-
-
-buildRow : Array Cell -> Html msg
-buildRow row =
-    let
-        cells =
-            Array.toList row
-    in
-        div [ class [ Row ] ] (List.map buildCell cells)
-
-
-buildCell : Cell -> Html msg
-buildCell cell =
-    let
-        entity =
-            case cell.entity of
-                Just e ->
-                    entityView e
-
-                Nothing ->
-                    text ""
-    in
-        div
-            [ class [ GridStyles.Cell ]
-            , styles [ Css.backgroundImage (Css.url cell.image) ]
+        div [ id [ GridStyles.Grid ] ]
+            [ Collage.collage gridSize
+                gridSize
+                [ backgroundGrid model
+                    |> Collage.toForm
+                , entities model model.entities
+                , hoverBlock currentGridPosition model
+                ]
+                |> Element.toHtml
             ]
-            [ entity ]
 
 
-entityView : Entity -> Html msg
-entityView entity =
+entities : Model -> List Entity -> Collage.Form
+entities model entityList =
     let
-        imageSource =
-            Entity.Image.image entity
+        buildEntity : Entity.Entity -> Collage.Form
+        buildEntity entity =
+            Element.image 32 32 (Entity.Image.image entity)
+                |> Collage.toForm
+                |> Collage.move (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y })
     in
-        img [ src imageSource ] []
+        List.map buildEntity entityList
+            |> Collage.group
+
+
+hoverBlock : Maybe Point -> Model -> Collage.Form
+hoverBlock maybePoint model =
+    case maybePoint of
+        Just point ->
+            Collage.rect 32 32
+                |> Collage.filled (Color.rgba 255 255 0 0.25)
+                |> Collage.move (pointToCollageOffset model point)
+
+        Nothing ->
+            Collage.rect 0 0
+                |> Collage.filled (Color.black)
+
+
+backgroundGrid : Model -> Element.Element
+backgroundGrid model =
+    List.map (\row -> elementRow model.cellSize row) model.cells
+        |> Element.flow Element.down
+
+
+elementRow : Int -> List BackgroundCell -> Element.Element
+elementRow size cells =
+    List.map (\c -> Element.image size size c) cells
+        |> Element.flow Element.right
