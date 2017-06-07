@@ -28,3 +28,9 @@ app.ports.parseBlueprint.subscribe((blueprintString) => {
     app.ports.loadBlueprint.send(json.blueprint.entities)
   })
 })
+
+app.ports.exportBlueprint.subscribe((json) => {
+  blueprint.exportBlueprint(json, (str) => {
+    prompt("Export String", str)
+  })
+})

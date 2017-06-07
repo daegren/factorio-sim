@@ -6,6 +6,8 @@ import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
+import Entity.Encoder
+import Json.Encode
 import Entity.Decoder
 import Json.Decode exposing (Value)
 import Color
@@ -134,6 +136,9 @@ port getOffsetOfGrid : () -> Cmd msg
 port parseBlueprint : String -> Cmd msg
 
 
+port exportBlueprint : Value -> Cmd msg
+
+
 port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
 
 
@@ -151,6 +156,7 @@ type Msg
     | LoadBlueprint
     | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
+    | ExportBlueprint
 
 
 update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
@@ -203,6 +209,9 @@ update msg toolbox model =
                             Debug.log "SentBlueprint error" err
                     in
                         ( model, Cmd.none )
+
+        ExportBlueprint ->
+            ( model, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity model.entities)) )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -286,6 +295,7 @@ view currentGridPosition model =
             , div []
                 [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
                 , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
+                , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
                 ]
             ]
 
