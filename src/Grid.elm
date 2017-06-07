@@ -1,7 +1,8 @@
 port module Grid exposing (..)
 
-import Html exposing (Html, div)
-import Html.Attributes
+import Html exposing (Html, div, input, textarea)
+import Html.Attributes exposing (type_, value)
+import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
@@ -25,12 +26,18 @@ type alias Model =
     , cellSize : Int
     , size : Int
     , offset : Point
+    , blueprintString : String
     }
+
+
+defaultBlueprint : String
+defaultBlueprint =
+    "0eNqV0dsKwjAMBuB3yXUH26xj9lVEZIcggS0tbSeO0Xe33W4UJ+hl2uRr+LtAO0xoLLEHtQB1mh2o8wKObtwM6czPBkEBeRxBADdjqrxt2Bltfdbi4CEIIO7xAaoIFwHInjzhJq3FfOVpbNHGhm+GAKNdHNOcXo1UFltnUHnEe7LYbVdVEB9m+a+ZFWGHOfzM5HubyR1S/knGxd7MMsW5Rq9efkrAHa3b4pCyPFb1Ka/rEJ7nRpp8"
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 20 zeroPoint
+    Model [] [] 32 20 zeroPoint defaultBlueprint
 
 
 type alias Cells =
@@ -127,6 +134,8 @@ type Msg
     = RandomGrid Cells
     | GridOffset ( Int, Int )
     | MouseClicked Mouse.Position
+    | LoadBlueprint
+    | BlueprintChanged String
 
 
 update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
@@ -161,6 +170,12 @@ update msg toolbox model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        LoadBlueprint ->
+            ( model, parseBlueprint model.blueprintString )
+
+        BlueprintChanged str ->
+            ( { model | blueprintString = str }, Cmd.none )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -213,7 +228,7 @@ pointToCollageOffset { cellSize, size } point =
 port getOffsetOfGrid : () -> Cmd msg
 
 
-port loadBlueprint : () -> Cmd msg
+port parseBlueprint : String -> Cmd msg
 
 
 port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
@@ -236,7 +251,7 @@ styles =
 -- VIEW
 
 
-view : Maybe Point -> Model -> Html msg
+view : Maybe Point -> Model -> Html Msg
 view currentGridPosition model =
     let
         gridSize =
@@ -251,6 +266,10 @@ view currentGridPosition model =
                 , hoverBlock currentGridPosition model
                 ]
                 |> Element.toHtml
+            , div []
+                [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
+                , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
+                ]
             ]
 
 

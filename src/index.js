@@ -5,6 +5,11 @@ require('./index.html');
 
 // require stylesheet
 require('./Stylesheets.elm');
+
+// import helper libs
+const blueprint = require('./lib/blueprint')
+
+// load app
 var Elm = require('./Main.elm');
 var mountNode = document.getElementById('app');
 
@@ -16,4 +21,10 @@ app.ports.getOffsetOfGrid.subscribe(() => {
   const grid = document.getElementById('Grid')
   const rect = grid.getBoundingClientRect()
   app.ports.receiveOffset.send([rect.top, rect.left])
+})
+
+app.ports.parseBlueprint.subscribe((blueprintString) => {
+  blueprint.parse(blueprintString, (json) => {
+    console.log(json)
+  })
 })
