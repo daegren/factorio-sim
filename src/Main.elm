@@ -124,7 +124,7 @@ styles =
 view : Model -> Html Msg
 view model =
     div [ id [ Main ] ]
-        [ Grid.view model.mouseGridPosition model.grid
+        [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
         , infoView model
         ]
 
@@ -132,7 +132,7 @@ view model =
 infoView : Model -> Html Msg
 infoView model =
     div [ id [ Info ] ]
-        [ h1 [] [ text "Factorio Simulator" ]
+        [ h1 [] [ text "Blueprint Maker" ]
         , div []
             [ text "Current Mouse Position: "
             , Point.view model.currentMousePosition

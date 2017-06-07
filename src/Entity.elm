@@ -52,10 +52,10 @@ direction int =
         Just dir ->
             case dir of
                 4 ->
-                    Right
+                    Down
 
                 2 ->
-                    Down
+                    Right
 
                 6 ->
                     Left

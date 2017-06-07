@@ -1,10 +1,12 @@
 port module Grid exposing (..)
 
-import Html exposing (Html, div)
-import Html.Attributes
+import Html exposing (Html, div, input, textarea)
+import Html.Attributes exposing (type_, value)
+import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
+import Json.Decode exposing (Value)
 import Color
 import Entity.Image
 import Point exposing (Point, zeroPoint)
@@ -25,12 +27,13 @@ type alias Model =
     , cellSize : Int
     , size : Int
     , offset : Point
+    , blueprintString : String
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 20 zeroPoint
+    Model [] [] 32 15 zeroPoint ""
 
 
 type alias Cells =
@@ -116,7 +119,24 @@ subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
         , Mouse.clicks MouseClicked
+        , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.decodeEntity) >> SentBlueprint)
         ]
+
+
+
+-- PORTS
+
+
+port getOffsetOfGrid : () -> Cmd msg
+
+
+port parseBlueprint : String -> Cmd msg
+
+
+port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
+
+
+port loadBlueprint : (Value -> msg) -> Sub msg
 
 
 
@@ -127,6 +147,9 @@ type Msg
     = RandomGrid Cells
     | GridOffset ( Int, Int )
     | MouseClicked Mouse.Position
+    | LoadBlueprint
+    | BlueprintChanged String
+    | SentBlueprint (Result String (List Entity))
 
 
 update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
@@ -162,6 +185,24 @@ update msg toolbox model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        LoadBlueprint ->
+            ( model, parseBlueprint model.blueprintString )
+
+        BlueprintChanged str ->
+            ( { model | blueprintString = str }, Cmd.none )
+
+        SentBlueprint res ->
+            case res of
+                Ok entities ->
+                    ( { model | entities = entities }, Cmd.none )
+
+                Err err ->
+                    let
+                        a =
+                            Debug.log "SentBlueprint error" err
+                    in
+                        ( model, Cmd.none )
+
 
 {-| Converts a mouse position to it's respective grid position.
 
@@ -170,16 +211,32 @@ Returns `Nothing` if Mouse is outside of the grid bounds.
 positionToGridPoint : Model -> Mouse.Position -> Maybe Point
 positionToGridPoint grid position =
     let
+        width =
+            grid.size * grid.cellSize
+
+        halfWidth =
+            toFloat width / 2
+
+        offset =
+            (toFloat grid.cellSize / 2)
+
         x =
-            floor ((toFloat (position.x - grid.offset.x)) / (toFloat grid.cellSize))
+            floor ((toFloat (position.x - grid.offset.x) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
         y =
-            floor ((toFloat (position.y - grid.offset.y)) / (toFloat grid.cellSize))
+            floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
         gridSize =
             grid.size - 1
+
+        gridMax =
+            (toFloat width / 2 / toFloat grid.cellSize)
+                |> floor
+
+        gridMin =
+            gridMax * -1
     in
-        if x > gridSize || x < 0 || y > gridSize || y < 0 then
+        if x > gridMax || x < gridMin || y > gridMax || y < gridMin then
             Nothing
         else
             Just (Point x y)
@@ -190,33 +247,7 @@ positionToGridPoint grid position =
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
 pointToCollageOffset { cellSize, size } point =
-    let
-        halfSize =
-            (toFloat size * toFloat cellSize / 2)
-
-        offset =
-            (toFloat cellSize / 2)
-
-        x =
-            (toFloat point.x * toFloat cellSize + offset - halfSize)
-
-        y =
-            (halfSize - toFloat point.y * toFloat cellSize - offset)
-    in
-        ( x, y )
-
-
-
--- PORTS
-
-
-port getOffsetOfGrid : () -> Cmd msg
-
-
-port loadBlueprint : () -> Cmd msg
-
-
-port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
+    ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
 
 
 
@@ -236,7 +267,7 @@ styles =
 -- VIEW
 
 
-view : Maybe Point -> Model -> Html msg
+view : Maybe Point -> Model -> Html Msg
 view currentGridPosition model =
     let
         gridSize =
@@ -251,6 +282,10 @@ view currentGridPosition model =
                 , hoverBlock currentGridPosition model
                 ]
                 |> Element.toHtml
+            , div []
+                [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
+                , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
+                ]
             ]
 
 
