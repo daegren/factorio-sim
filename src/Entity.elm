@@ -47,6 +47,22 @@ direction int =
             Up
 
 
+directionToInt : Direction -> Maybe Int
+directionToInt direction =
+    case direction of
+        Down ->
+            Just 4
+
+        Right ->
+            Just 2
+
+        Left ->
+            Just 6
+
+        Up ->
+            Nothing
+
+
 entityName : String -> EntityName
 entityName name =
     case name of
@@ -55,3 +71,13 @@ entityName name =
 
         _ ->
             Other name
+
+
+nameToString : EntityName -> String
+nameToString entityName =
+    case entityName of
+        TransportBelt ->
+            "transport-belt"
+
+        Other str ->
+            str
