@@ -157,6 +157,7 @@ type Msg
     | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
     | ExportBlueprint
+    | ClearEntities
 
 
 update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
@@ -212,6 +213,9 @@ update msg toolbox model =
 
         ExportBlueprint ->
             ( model, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity model.entities)) )
+
+        ClearEntities ->
+            ( { model | entities = [] }, Cmd.none )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -296,6 +300,7 @@ view currentGridPosition model =
                 [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
                 , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
                 , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
+                , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
                 ]
             ]
 
