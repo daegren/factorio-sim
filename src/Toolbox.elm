@@ -64,21 +64,21 @@ imageForTool : Direction -> Tool -> String
 imageForTool direction tool =
     case tool.toolType of
         Clear ->
-            "/assets/images/cancel.png"
+            "assets/images/cancel.png"
 
         TransportBelt ->
             case direction of
                 Up ->
-                    "/assets/images/belt/belt-up.png"
+                    "assets/images/belt/belt-up.png"
 
                 Right ->
-                    "/assets/images/belt/belt-right.png"
+                    "assets/images/belt/belt-right.png"
 
                 Down ->
-                    "/assets/images/belt/belt-down.png"
+                    "assets/images/belt/belt-down.png"
 
                 Left ->
-                    "/assets/images/belt/belt-left.png"
+                    "assets/images/belt/belt-left.png"
 
 
 
