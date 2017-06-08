@@ -79,7 +79,7 @@ removeEntity point entity acc =
 
 getGrassCell : Int -> BackgroundCell
 getGrassCell num =
-    "/assets/images/grass/" ++ (toString num) ++ ".png"
+    "assets/images/grass/" ++ (toString num) ++ ".png"
 
 
 generateRandomGrassCell : Generator BackgroundCell

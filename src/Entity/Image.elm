@@ -8,7 +8,7 @@ import Entity exposing (Entity, EntityName(..), Direction(..))
 
 basePath : String
 basePath =
-    "/assets/images/"
+    "assets/images/"
 
 
 image : Entity -> String
