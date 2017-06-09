@@ -7,11 +7,21 @@ type alias Position =
     }
 
 
+zeroPosition : Position
+zeroPosition =
+    { x = 0.0, y = 0.0 }
+
+
 type alias Entity =
     { name : EntityName
     , position : Position
     , direction : Direction
     }
+
+
+toolboxEntity : EntityName -> Entity
+toolboxEntity name =
+    Entity name zeroPosition Up
 
 
 type EntityName
@@ -24,3 +34,13 @@ type Direction
     | Right
     | Down
     | Left
+
+
+readableName : EntityName -> String
+readableName entityName =
+    case entityName of
+        TransportBelt ->
+            "Transport Belt"
+
+        Other str ->
+            str

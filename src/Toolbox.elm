@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, img)
 import Html.Attributes exposing (src, alt)
 import Html.CssHelpers
 import ToolboxStyles exposing (Classes(..), Ids(..))
+import Entity.Image
 import Html.Events exposing (onClick)
 import Keyboard
 import Input exposing (mapKeyboardToInput, Input(..))
@@ -20,15 +21,9 @@ type alias Model =
     }
 
 
-type alias Tool =
-    { name : String
-    , toolType : ToolType
-    }
-
-
-type ToolType
-    = Clear
-    | Set
+type Tool
+    = Placeable Entity
+    | Clear
 
 
 initialModel : Model
@@ -42,32 +37,22 @@ initialModel =
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
 currentToolToEntity { currentTool, currentDirection } position =
-    case currentTool.toolType of
+    case currentTool of
         Clear ->
             Nothing
 
-        Set ->
-            Just (Entity Entity.TransportBelt position currentDirection)
+        Placeable entity ->
+            Just { entity | position = position, direction = currentDirection }
 
 
 clearTool : Tool
 clearTool =
-    Tool "Clear Tool" Clear
+    Clear
 
 
 transportBeltTool : Tool
 transportBeltTool =
-    Tool "Transport Belt" Set
-
-
-imageForTool : Tool -> String
-imageForTool tool =
-    case tool.toolType of
-        Clear ->
-            "assets/images/cancel.png"
-
-        Set ->
-            "assets/images/icons/transport-belt.png"
+    Placeable (Entity.toolboxEntity TransportBelt)
 
 
 
@@ -161,6 +146,13 @@ selectableToolView model tool =
 
 toolView : Model -> Tool -> Html msg
 toolView model tool =
-    div [ class [ Button ] ]
-        [ img [ src (imageForTool tool), alt tool.name ] []
-        ]
+    case tool of
+        Clear ->
+            div [ class [ Button ] ]
+                [ img [ src "assets/images/cancel.png", alt "Clear" ] []
+                ]
+
+        Placeable entity ->
+            div [ class [ Button ] ]
+                [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
+                ]

@@ -1,4 +1,4 @@
-module Entity.Image exposing (image)
+module Entity.Image exposing (image, icon)
 
 {-| Mapping for entities to their respective images
 -}
@@ -9,6 +9,11 @@ import Entity exposing (Entity, EntityName(..), Direction(..))
 basePath : String
 basePath =
     "assets/images/"
+
+
+iconPath : String
+iconPath =
+    basePath ++ "icons/"
 
 
 image : Entity -> String
@@ -34,3 +39,13 @@ image entity =
 
         Other name ->
             basePath ++ "/" ++ name ++ ".png"
+
+
+icon : Entity -> String
+icon entity =
+    case entity.name of
+        TransportBelt ->
+            iconPath ++ "transport-belt.png"
+
+        Other str ->
+            iconPath ++ str ++ ".png"
