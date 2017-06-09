@@ -8,22 +8,40 @@ import Css.Colors exposing (yellow)
 type Classes
     = Row
     | Cell
+    | Input
 
 
 type Ids
-    = Grid
-    | Info
+    = GridContainer
+    | Grid
+    | Toolbox
+    | BlueprintInput
 
 
 css : Stylesheet
 css =
     (stylesheet << namespace "grid")
-        [ id Grid
-            [ flex2 (int 0) (int 0) ]
-        , id Info
+        [ id GridContainer
+            [ displayFlex
+            , padding (px 8)
+            ]
+        , id Grid
+            [ flex2 (int 0) (int 0)
+            , paddingRight (px 8)
+            ]
+        , id Toolbox
             [ flex2 (int 1) (int 0)
             , flexBasis auto
             , marginLeft (px 24)
+            ]
+        , id BlueprintInput
+            [ margin2 (px 8) zero
+            , children
+                [ class Input
+                    [ width (pct 100)
+                    , height (px 150)
+                    ]
+                ]
             ]
         , class Row
             [ displayFlex ]
