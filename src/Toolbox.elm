@@ -132,20 +132,8 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ text "ToolBox"
-        , div []
-            [ text "Current Tool:"
-            , div [ class [ CurrentTool ] ] [ currentToolView model model.currentTool ]
-            ]
-        , div []
-            [ text "Available Tools:"
-            , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
-            ]
+        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
         ]
-
-
-currentToolView : Model -> Tool -> Html msg
-currentToolView model tool =
-    toolView model tool
 
 
 selectableToolView : Model -> Tool -> Html Msg
@@ -163,6 +151,13 @@ toolView model tool =
                 ]
 
         Placeable entity ->
-            div [ class [ Button ] ]
-                [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
-                ]
+            let
+                classes =
+                    if tool == model.currentTool then
+                        [ Button, SelectedButton ]
+                    else
+                        [ Button ]
+            in
+                div [ class classes ]
+                    [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
+                    ]
