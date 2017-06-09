@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, h1, div, text, img)
+import Html exposing (Html, h1, h2, div, text, img)
 import Html.Attributes exposing (src)
 import GridStyles exposing (Classes(..), Ids(..))
 import SharedStyles exposing (Classes(..))
@@ -146,6 +146,16 @@ infoView model =
                 Nothing ->
                     div [] [ text "Off grid" ]
             ]
+        , helpText
         , div []
             [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
+        ]
+
+
+helpText : Html Msg
+helpText =
+    div []
+        [ h2 [] [ text "Help" ]
+        , div [] [ text "Click on an item in the toolbox to set it as your current tool" ]
+        , div [] [ text "R to rotate" ]
         ]
