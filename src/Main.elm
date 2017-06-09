@@ -117,6 +117,9 @@ view model =
             [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
             , infoView model
             ]
+        , div [ id [ Copyright ] ]
+            [ text "Images ©Wube Software Inc."
+            ]
         ]
 
 
