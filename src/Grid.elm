@@ -15,7 +15,7 @@ import Entity.Image
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
-import Toolbox exposing (ToolType(..))
+import Toolbox exposing (Tool(..))
 import Entity exposing (Entity)
 import Collage
 import Element
@@ -180,13 +180,14 @@ update msg model =
             case positionToGridPoint model position of
                 Just point ->
                     let
-                        entity =
-                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
-
                         cells =
-                            case model.toolbox.currentTool.toolType of
-                                TransportBelt ->
-                                    addEntity point entity model.entities
+                            case model.toolbox.currentTool of
+                                Placeable entity ->
+                                    let
+                                        newEntity =
+                                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
+                                    in
+                                        addEntity point newEntity model.entities
 
                                 Clear ->
                                     List.foldl (removeEntity point) [] model.entities

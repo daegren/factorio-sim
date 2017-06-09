@@ -1,4 +1,4 @@
-module Entity.Image exposing (image)
+module Entity.Image exposing (image, icon)
 
 {-| Mapping for entities to their respective images
 -}
@@ -11,26 +11,66 @@ basePath =
     "assets/images/"
 
 
+iconPath : String
+iconPath =
+    basePath ++ "icons/"
+
+
+entityImage : Direction -> String -> String
+entityImage direction path =
+    case direction of
+        Up ->
+            path ++ "up.png"
+
+        Right ->
+            path ++ "right.png"
+
+        Down ->
+            path ++ "down.png"
+
+        Left ->
+            path ++ "left.png"
+
+
 image : Entity -> String
 image entity =
     case entity.name of
         TransportBelt ->
             let
                 path =
-                    basePath ++ "/belt/"
+                    basePath ++ "belt/"
             in
-                case entity.direction of
-                    Up ->
-                        path ++ "belt-up.png"
+                entityImage entity.direction path
 
-                    Right ->
-                        path ++ "belt-right.png"
+        FastTransportBelt ->
+            let
+                path =
+                    basePath ++ "fast-belt/"
+            in
+                entityImage entity.direction path
 
-                    Down ->
-                        path ++ "belt-down.png"
-
-                    Left ->
-                        path ++ "belt-left.png"
+        ExpressTransportBelt ->
+            let
+                path =
+                    basePath ++ "express-belt/"
+            in
+                entityImage entity.direction path
 
         Other name ->
-            basePath ++ "/" ++ name ++ ".png"
+            basePath ++ name ++ ".png"
+
+
+icon : Entity -> String
+icon entity =
+    case entity.name of
+        TransportBelt ->
+            iconPath ++ "transport-belt.png"
+
+        FastTransportBelt ->
+            iconPath ++ "fast-transport-belt.png"
+
+        ExpressTransportBelt ->
+            iconPath ++ "express-transport-belt.png"
+
+        Other str ->
+            iconPath ++ str ++ ".png"

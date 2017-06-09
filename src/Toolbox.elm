@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, img)
 import Html.Attributes exposing (src, alt)
 import Html.CssHelpers
 import ToolboxStyles exposing (Classes(..), Ids(..))
+import Entity.Image
 import Html.Events exposing (onClick)
 import Keyboard
 import Input exposing (mapKeyboardToInput, Input(..))
@@ -20,21 +21,15 @@ type alias Model =
     }
 
 
-type alias Tool =
-    { name : String
-    , toolType : ToolType
-    }
-
-
-type ToolType
-    = Clear
-    | TransportBelt
+type Tool
+    = Placeable Entity
+    | Clear
 
 
 initialModel : Model
 initialModel =
     { tools =
-        [ clearTool, transportBeltTool ]
+        [ clearTool, transportBeltTool, fastTransportBeltTool, expressTransportBeltTool ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -42,32 +37,32 @@ initialModel =
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
 currentToolToEntity { currentTool, currentDirection } position =
-    case currentTool.toolType of
+    case currentTool of
         Clear ->
             Nothing
 
-        TransportBelt ->
-            Just (Entity Entity.TransportBelt position currentDirection)
+        Placeable entity ->
+            Just { entity | position = position, direction = currentDirection }
 
 
 clearTool : Tool
 clearTool =
-    Tool "Clear Tool" Clear
+    Clear
 
 
 transportBeltTool : Tool
 transportBeltTool =
-    Tool "Transport Belt" TransportBelt
+    Placeable (Entity.toolboxEntity TransportBelt)
 
 
-imageForTool : Tool -> String
-imageForTool tool =
-    case tool.toolType of
-        Clear ->
-            "assets/images/cancel.png"
+fastTransportBeltTool : Tool
+fastTransportBeltTool =
+    Placeable (Entity.toolboxEntity FastTransportBelt)
 
-        TransportBelt ->
-            "assets/images/icons/transport-belt.png"
+
+expressTransportBeltTool : Tool
+expressTransportBeltTool =
+    Placeable (Entity.toolboxEntity ExpressTransportBelt)
 
 
 
@@ -161,6 +156,13 @@ selectableToolView model tool =
 
 toolView : Model -> Tool -> Html msg
 toolView model tool =
-    div [ class [ Button ] ]
-        [ img [ src (imageForTool tool), alt tool.name ] []
-        ]
+    case tool of
+        Clear ->
+            div [ class [ Button ] ]
+                [ img [ src "assets/images/cancel.png", alt "Clear" ] []
+                ]
+
+        Placeable entity ->
+            div [ class [ Button ] ]
+                [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
+                ]
