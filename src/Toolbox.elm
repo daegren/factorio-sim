@@ -28,7 +28,7 @@ type alias Tool =
 
 type ToolType
     = Clear
-    | TransportBelt
+    | Set
 
 
 initialModel : Model
@@ -46,7 +46,7 @@ currentToolToEntity { currentTool, currentDirection } position =
         Clear ->
             Nothing
 
-        TransportBelt ->
+        Set ->
             Just (Entity Entity.TransportBelt position currentDirection)
 
 
@@ -57,7 +57,7 @@ clearTool =
 
 transportBeltTool : Tool
 transportBeltTool =
-    Tool "Transport Belt" TransportBelt
+    Tool "Transport Belt" Set
 
 
 imageForTool : Tool -> String
@@ -66,7 +66,7 @@ imageForTool tool =
         Clear ->
             "assets/images/cancel.png"
 
-        TransportBelt ->
+        Set ->
             "assets/images/icons/transport-belt.png"
 
 

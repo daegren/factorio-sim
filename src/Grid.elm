@@ -185,7 +185,7 @@ update msg model =
 
                         cells =
                             case model.toolbox.currentTool.toolType of
-                                TransportBelt ->
+                                Set ->
                                     addEntity point entity model.entities
 
                                 Clear ->
