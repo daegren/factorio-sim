@@ -29,7 +29,7 @@ type Tool
 initialModel : Model
 initialModel =
     { tools =
-        [ clearTool, transportBeltTool, fastTransportBeltTool ]
+        [ clearTool, transportBeltTool, fastTransportBeltTool, expressTransportBeltTool ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -58,6 +58,11 @@ transportBeltTool =
 fastTransportBeltTool : Tool
 fastTransportBeltTool =
     Placeable (Entity.toolboxEntity FastTransportBelt)
+
+
+expressTransportBeltTool : Tool
+expressTransportBeltTool =
+    Placeable (Entity.toolboxEntity ExpressTransportBelt)
 
 
 

@@ -39,6 +39,9 @@ nameToString entityName =
         FastTransportBelt ->
             "fast-transport-belt"
 
+        ExpressTransportBelt ->
+            "express-transport-belt"
+
         Other str ->
             str
 

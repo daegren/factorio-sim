@@ -49,6 +49,13 @@ image entity =
             in
                 entityImage entity.direction path
 
+        ExpressTransportBelt ->
+            let
+                path =
+                    basePath ++ "express-belt/"
+            in
+                entityImage entity.direction path
+
         Other name ->
             basePath ++ name ++ ".png"
 
@@ -61,6 +68,9 @@ icon entity =
 
         FastTransportBelt ->
             iconPath ++ "fast-transport-belt.png"
+
+        ExpressTransportBelt ->
+            iconPath ++ "express-transport-belt.png"
 
         Other str ->
             iconPath ++ str ++ ".png"

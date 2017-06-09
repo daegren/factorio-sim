@@ -27,6 +27,7 @@ toolboxEntity name =
 type EntityName
     = TransportBelt
     | FastTransportBelt
+    | ExpressTransportBelt
     | Other String
 
 
@@ -45,6 +46,9 @@ readableName entityName =
 
         FastTransportBelt ->
             "Fast Transport Belt"
+
+        ExpressTransportBelt ->
+            "Express Transport Belt"
 
         Other str ->
             str
