@@ -310,14 +310,19 @@ view currentGridPosition model =
                 ]
             , div []
                 [ Html.map ToolboxMsg (Toolbox.view model.toolbox)
-                , div []
-                    [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
-                    , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
-                    , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
-                    , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
-                    ]
+                , blueprintInput model
                 ]
             ]
+
+
+blueprintInput : Model -> Html Msg
+blueprintInput model =
+    div [ id [ GridStyles.BlueprintInput ] ]
+        [ textarea [ class [ GridStyles.Input ], onInput BlueprintChanged, value model.blueprintString ] []
+        , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
+        , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
+        , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
+        ]
 
 
 entities : Model -> List Entity -> Collage.Form

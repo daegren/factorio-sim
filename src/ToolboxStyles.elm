@@ -21,7 +21,6 @@ css =
     (stylesheet << namespace "toolbox")
         [ id Container
             [ border2 (px 1) solid
-            , margin2 (px 8) zero
             , padding (px 8)
             , width (px 200)
             ]
