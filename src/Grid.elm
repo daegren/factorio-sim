@@ -139,7 +139,7 @@ port parseBlueprint : String -> Cmd msg
 port exportBlueprint : Value -> Cmd msg
 
 
-port receiveOffset : (( Int, Int ) -> msg) -> Sub msg
+port receiveOffset : (( Float, Float ) -> msg) -> Sub msg
 
 
 port loadBlueprint : (Value -> msg) -> Sub msg
@@ -151,7 +151,7 @@ port loadBlueprint : (Value -> msg) -> Sub msg
 
 type Msg
     = RandomGrid Cells
-    | GridOffset ( Int, Int )
+    | GridOffset ( Float, Float )
     | MouseClicked Mouse.Position
     | LoadBlueprint
     | BlueprintChanged String
@@ -169,7 +169,7 @@ update msg toolbox model =
         GridOffset ( x, y ) ->
             let
                 point =
-                    Point x y
+                    Point (floor x) (floor y)
             in
                 ( { model | offset = point }, Cmd.none )
 

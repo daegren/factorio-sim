@@ -123,17 +123,19 @@ styles =
 
 view : Model -> Html Msg
 view model =
-    div [ id [ Main ] ]
-        [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
-        , infoView model
+    div []
+        [ h1 [] [ text "Blueprint Maker" ]
+        , div [ id [ Main ] ]
+            [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
+            , infoView model
+            ]
         ]
 
 
 infoView : Model -> Html Msg
 infoView model =
     div [ id [ Info ] ]
-        [ h1 [] [ text "Blueprint Maker" ]
-        , div []
+        [ div []
             [ text "Current Mouse Position: "
             , Point.view model.currentMousePosition
             ]

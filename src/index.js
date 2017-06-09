@@ -17,7 +17,7 @@ var app = Elm.Main.embed(mountNode);
 app.ports.getOffsetOfGrid.subscribe(() => {
   const grid = document.getElementById('Grid')
   const rect = grid.getBoundingClientRect()
-  app.ports.receiveOffset.send([rect.top, rect.left])
+  app.ports.receiveOffset.send([rect.left, rect.top])
 })
 
 app.ports.parseBlueprint.subscribe((blueprintString) => {
