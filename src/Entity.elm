@@ -26,6 +26,7 @@ toolboxEntity name =
 
 type EntityName
     = TransportBelt
+    | FastTransportBelt
     | Other String
 
 
@@ -41,6 +42,9 @@ readableName entityName =
     case entityName of
         TransportBelt ->
             "Transport Belt"
+
+        FastTransportBelt ->
+            "Fast Transport Belt"
 
         Other str ->
             str

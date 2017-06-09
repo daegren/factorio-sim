@@ -49,5 +49,8 @@ entityName name =
         "transport-belt" ->
             TransportBelt
 
+        "fast-transport-belt" ->
+            FastTransportBelt
+
         _ ->
             Other name

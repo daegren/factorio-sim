@@ -22,7 +22,7 @@ image entity =
         TransportBelt ->
             let
                 path =
-                    basePath ++ "/belt/"
+                    basePath ++ "belt/"
             in
                 case entity.direction of
                     Up ->
@@ -38,7 +38,25 @@ image entity =
                         path ++ "belt-left.png"
 
         Other name ->
-            basePath ++ "/" ++ name ++ ".png"
+            basePath ++ name ++ ".png"
+
+        FastTransportBelt ->
+            let
+                path =
+                    basePath ++ "fast-belt/"
+            in
+                case entity.direction of
+                    Up ->
+                        path ++ "up.png"
+
+                    Right ->
+                        path ++ "right.png"
+
+                    Down ->
+                        path ++ "down.png"
+
+                    Left ->
+                        path ++ "left.png"
 
 
 icon : Entity -> String
@@ -46,6 +64,9 @@ icon entity =
     case entity.name of
         TransportBelt ->
             iconPath ++ "transport-belt.png"
+
+        FastTransportBelt ->
+            iconPath ++ "fast-transport-belt.png"
 
         Other str ->
             iconPath ++ str ++ ".png"
