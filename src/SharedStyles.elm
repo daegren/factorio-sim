@@ -12,5 +12,5 @@ css : Stylesheet
 css =
     (stylesheet << namespace "main")
         [ id Main
-            [ displayFlex ]
+            []
         ]

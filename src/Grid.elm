@@ -31,12 +31,13 @@ type alias Model =
     , size : Int
     , offset : Point
     , blueprintString : String
+    , toolbox : Toolbox.Model
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint ""
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel
 
 
 type alias Cells =
@@ -123,6 +124,7 @@ subscriptions model =
         [ receiveOffset GridOffset
         , Mouse.clicks MouseClicked
         , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
+        , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         ]
 
 
@@ -158,10 +160,11 @@ type Msg
     | SentBlueprint (Result String (List Entity))
     | ExportBlueprint
     | ClearEntities
+    | ToolboxMsg Toolbox.Msg
 
 
-update : Msg -> Toolbox.Model -> Model -> ( Model, Cmd Msg )
-update msg toolbox model =
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
     case msg of
         RandomGrid grid ->
             ( { model | cells = grid }, Cmd.none )
@@ -178,10 +181,10 @@ update msg toolbox model =
                 Just point ->
                     let
                         entity =
-                            Toolbox.currentToolToEntity toolbox { x = toFloat point.x, y = toFloat point.y }
+                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
 
                         cells =
-                            case toolbox.currentTool.toolType of
+                            case model.toolbox.currentTool.toolType of
                                 TransportBelt ->
                                     addEntity point entity model.entities
 
@@ -216,6 +219,13 @@ update msg toolbox model =
 
         ClearEntities ->
             ( { model | entities = [] }, Cmd.none )
+
+        ToolboxMsg msg ->
+            let
+                ( toolboxModel, toolboxCmd ) =
+                    Toolbox.update msg model.toolbox
+            in
+                ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
 
 
 {-| Converts a mouse position to it's respective grid position.
@@ -287,20 +297,25 @@ view currentGridPosition model =
         gridSize =
             model.cellSize * model.size
     in
-        div [ id [ GridStyles.Grid ] ]
-            [ Collage.collage gridSize
-                gridSize
-                [ backgroundGrid model
-                    |> Collage.toForm
-                , entities model model.entities
-                , hoverBlock currentGridPosition model
+        div [ id [ GridStyles.GridContainer ] ]
+            [ div [ id [ GridStyles.Grid ] ]
+                [ Collage.collage gridSize
+                    gridSize
+                    [ backgroundGrid model
+                        |> Collage.toForm
+                    , entities model model.entities
+                    , hoverBlock currentGridPosition model
+                    ]
+                    |> Element.toHtml
                 ]
-                |> Element.toHtml
             , div []
-                [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
-                , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
-                , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
-                , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
+                [ Html.map ToolboxMsg (Toolbox.view model.toolbox)
+                , div []
+                    [ textarea [ onInput BlueprintChanged, value model.blueprintString ] []
+                    , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
+                    , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
+                    , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
+                    ]
                 ]
             ]
 
