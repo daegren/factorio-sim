@@ -28,6 +28,6 @@ app.ports.parseBlueprint.subscribe((blueprintString) => {
 
 app.ports.exportBlueprint.subscribe((json) => {
   blueprint.exportBlueprint(json, (str) => {
-    prompt("Export String", str)
+    app.ports.receiveExportedBlueprint.send(str)
   })
 })

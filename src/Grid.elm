@@ -125,6 +125,7 @@ subscriptions model =
         , Mouse.clicks MouseClicked
         , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
         , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
+        , receiveExportedBlueprint ReceiveExportedBlueprint
         ]
 
 
@@ -147,6 +148,9 @@ port receiveOffset : (( Float, Float ) -> msg) -> Sub msg
 port loadBlueprint : (Value -> msg) -> Sub msg
 
 
+port receiveExportedBlueprint : (String -> msg) -> Sub msg
+
+
 
 -- UPDATE
 
@@ -160,6 +164,7 @@ type Msg
     | SentBlueprint (Result String (List Entity))
     | ExportBlueprint
     | ClearEntities
+    | ReceiveExportedBlueprint String
     | ToolboxMsg Toolbox.Msg
 
 
@@ -192,7 +197,7 @@ update msg model =
                                 Clear ->
                                     List.foldl (removeEntity point) [] model.entities
                     in
-                        ( { model | entities = cells }, Cmd.none )
+                        ( { model | entities = cells }, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity cells)) )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -219,7 +224,10 @@ update msg model =
             ( model, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity model.entities)) )
 
         ClearEntities ->
-            ( { model | entities = [] }, Cmd.none )
+            ( { model | entities = [], blueprintString = "" }, Cmd.none )
+
+        ReceiveExportedBlueprint blueprintString ->
+            ( { model | blueprintString = blueprintString }, Cmd.none )
 
         ToolboxMsg msg ->
             let
