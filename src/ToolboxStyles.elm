@@ -9,11 +9,12 @@ type Classes
     = Tool
     | CurrentTool
     | ToolList
+    | Button
 
 
 type Ids
     = Container
-    | Toolbox
+    | ToolboxItems
 
 
 css : Stylesheet
@@ -24,23 +25,25 @@ css =
             , padding (px 8)
             , width (px 200)
             ]
-        , id Toolbox
+        , id ToolboxItems
             [ displayFlex
             , flexWrap wrap
-            , justifyContent spaceAround
             , textAlign center
             ]
         , class Tool
-            [ displayFlex
-            , flexDirection column
-            , margin (px 8)
-            , flex2 zero zero
+            [ flex2 zero zero ]
+        , class Button
+            [ textAlign center
+            , alignSelf center
+            , backgroundImage (url "/assets/images/gui.png")
+            , backgroundPosition2 (px 204) (px 148)
+            , width (px 36)
+            , height (px 36)
             , children
                 [ img
-                    [ textAlign center
-                    , alignSelf center
-                    , width (px 32)
+                    [ width (px 32)
                     , height (px 32)
+                    , padding2 (px 2) zero
                     ]
                 ]
             ]

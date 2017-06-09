@@ -60,25 +60,14 @@ transportBeltTool =
     Tool "Transport Belt" TransportBelt
 
 
-imageForTool : Direction -> Tool -> String
-imageForTool direction tool =
+imageForTool : Tool -> String
+imageForTool tool =
     case tool.toolType of
         Clear ->
             "assets/images/cancel.png"
 
         TransportBelt ->
-            case direction of
-                Up ->
-                    "assets/images/belt/belt-up.png"
-
-                Right ->
-                    "assets/images/belt/belt-right.png"
-
-                Down ->
-                    "assets/images/belt/belt-down.png"
-
-                Left ->
-                    "assets/images/belt/belt-left.png"
+            "assets/images/icons/transport-belt.png"
 
 
 
@@ -154,7 +143,7 @@ view model =
             ]
         , div []
             [ text "Available Tools:"
-            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map (selectableToolView model) model.tools)
+            , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
             ]
         ]
 
@@ -167,11 +156,11 @@ currentToolView model tool =
 selectableToolView : Model -> Tool -> Html Msg
 selectableToolView model tool =
     div [ class [ ToolboxStyles.Tool ], onClick (SelectTool tool) ]
-        [ text tool.name
-        , toolView model tool
-        ]
+        [ toolView model tool ]
 
 
 toolView : Model -> Tool -> Html msg
 toolView model tool =
-    img [ src (imageForTool model.currentDirection tool), alt tool.name ] []
+    div [ class [ Button ] ]
+        [ img [ src (imageForTool tool), alt tool.name ] []
+        ]
