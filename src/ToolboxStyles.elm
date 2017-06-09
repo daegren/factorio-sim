@@ -10,6 +10,7 @@ type Classes
     | CurrentTool
     | ToolList
     | Button
+    | SelectedButton
 
 
 type Ids
@@ -29,6 +30,7 @@ css =
             [ displayFlex
             , flexWrap wrap
             , textAlign center
+            , margin2 (px 8) zero
             ]
         , class Tool
             [ flex2 zero zero ]
@@ -46,6 +48,9 @@ css =
                     , padding2 (px 2) zero
                     ]
                 ]
+            ]
+        , class SelectedButton
+            [ backgroundPosition2 (px 204) zero
             ]
         , class CurrentTool
             [ margin (px 8)
