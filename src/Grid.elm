@@ -351,13 +351,28 @@ hoverBlock : Maybe Point -> Model -> Collage.Form
 hoverBlock maybePoint model =
     case maybePoint of
         Just point ->
-            Collage.rect 32 32
-                |> Collage.filled (Color.rgba 255 255 0 0.25)
-                |> Collage.move (pointToCollageOffset model point)
+            let
+                item =
+                    case model.toolbox.currentTool of
+                        Clear ->
+                            Collage.rect 32 32
+                                |> Collage.filled (Color.rgba 255 255 0 0.25)
+
+                        Placeable entity ->
+                            let
+                                dummyEntity =
+                                    { entity | direction = model.toolbox.currentDirection }
+                            in
+                                Element.image 32 32 (Entity.Image.image dummyEntity)
+                                    |> Element.opacity 0.66
+                                    |> Collage.toForm
+            in
+                item
+                    |> Collage.move (pointToCollageOffset model point)
 
         Nothing ->
             Collage.rect 0 0
-                |> Collage.filled (Color.black)
+                |> Collage.filled Color.black
 
 
 backgroundGrid : Model -> Element.Element
