@@ -9,7 +9,7 @@ module.exports = {
   output : {
     path: path.resolve(__dirname, 'build'),
     filename: '[name].js',
-    publicPath: '/build/',
+    publicPath: '/factorio-sim/build/',
   },
   resolve: {
     alias: {
