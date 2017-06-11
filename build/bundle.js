@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/build/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 52);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,7 +82,7 @@
 
 
 var base64 = __webpack_require__(23)
-var ieee754 = __webpack_require__(29)
+var ieee754 = __webpack_require__(30)
 var isArray = __webpack_require__(12)
 
 exports.Buffer = Buffer
@@ -2988,7 +2988,7 @@ util.inherits = __webpack_require__(3);
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(46)
+  deprecate: __webpack_require__(47)
 };
 /*</replacement>*/
 
@@ -3475,7 +3475,7 @@ function CorkedRequest(state) {
     }
   };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(45).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(46).setImmediate))
 
 /***/ }),
 /* 11 */
@@ -3508,11 +3508,11 @@ var EE = __webpack_require__(6).EventEmitter;
 var inherits = __webpack_require__(3);
 
 inherits(Stream, EE);
-Stream.Readable = __webpack_require__(39);
-Stream.Writable = __webpack_require__(40);
-Stream.Duplex = __webpack_require__(37);
+Stream.Readable = __webpack_require__(40);
+Stream.Writable = __webpack_require__(41);
+Stream.Duplex = __webpack_require__(38);
 Stream.Transform = __webpack_require__(18);
-Stream.PassThrough = __webpack_require__(38);
+Stream.PassThrough = __webpack_require__(39);
 
 // Backwards-compat with node 0.4.x
 Stream.Stream = Stream;
@@ -3810,7 +3810,7 @@ util.inherits = __webpack_require__(3);
 /*</replacement>*/
 
 /*<replacement>*/
-var debugUtil = __webpack_require__(50);
+var debugUtil = __webpack_require__(51);
 var debug = undefined;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
@@ -5410,7 +5410,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(48);
+exports.isBuffer = __webpack_require__(49);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -5454,7 +5454,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(47);
+exports.inherits = __webpack_require__(48);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -5482,10 +5482,10 @@ function hasOwnProperty(obj, prop) {
 
 
 // require stylesheet
-__webpack_require__(44);
+__webpack_require__(45);
 
 // import helper libs
-const blueprint = __webpack_require__(49)
+const blueprint = __webpack_require__(50)
 
 // load app
 var Elm = __webpack_require__(28);
@@ -5509,7 +5509,6 @@ app.ports.parseBlueprint.subscribe((blueprintString) => {
 
 app.ports.exportBlueprint.subscribe((json) => {
   blueprint.exportBlueprint(json, (str) => {
-    console.log(json);
     app.ports.receiveExportedBlueprint.send(str)
   })
 })
@@ -6139,10 +6138,10 @@ function fromByteArray (uint8) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, Buffer) {var msg = __webpack_require__(15);
-var zstream = __webpack_require__(36);
-var zlib_deflate = __webpack_require__(31);
-var zlib_inflate = __webpack_require__(33);
-var constants = __webpack_require__(30);
+var zstream = __webpack_require__(37);
+var zlib_deflate = __webpack_require__(32);
+var zlib_inflate = __webpack_require__(34);
+var constants = __webpack_require__(31);
 
 for (var key in constants) {
   exports[key] = constants[key];
@@ -7003,7 +7002,7 @@ exports = module.exports = __webpack_require__(27)(undefined);
 
 
 // module
-exports.push([module.i, "#Copyright {\n    margin: 20px 0;\n}\n\n#GridContainer {\n    display: flex;\n    padding: 8px;\n}\n\n#Grid {\n    flex: 0 0;\n    padding-right: 8px;\n}\n\n#Toolbox {\n    flex: 1 0;\n    flex-basis: auto;\n    margin-left: 24px;\n}\n\n#BlueprintInput {\n    margin: 8px 0;\n}\n\n#BlueprintInput > .gridInput {\n    width: 100%;\n    height: 150px;\n}\n\n.gridRow {\n    display: flex;\n}\n\n.gridCell {\n    width: 32px;\n    height: 32px;\n}\n\n.gridCell:hover::before {\n    content: '';\n    position: absolute;\n    background-color: #FFDC00;\n    opacity: 0.25;\n    width: 32px;\n    height: 32px;\n}\n\n#Container {\n    border: 1px solid;\n    padding: 8px;\n    width: 200px;\n}\n\n#ToolboxItems {\n    display: flex;\n    flex-wrap: wrap;\n    text-align: center;\n    margin: 8px 0;\n}\n\n.toolboxTool {\n    flex: 0 0;\n}\n\n.toolboxButton {\n    text-align: center;\n    align-self: center;\n    background-image: url(/assets/images/gui.png);\n    background-position: 204px 148px;\n    width: 36px;\n    height: 36px;\n}\n\n.toolboxButton > img {\n    width: 32px;\n    height: 32px;\n    padding: 2px 0;\n}\n\n.toolboxSelectedButton {\n    background-position: 204px 0;\n}\n\n.toolboxCurrentTool {\n    margin: 8px;\n}\n\n.toolboxCurrentTool > img {\n    width: 32px;\n    height: 32px;\n}\n\n.toolboxToolList {\n    display: flex;\n}", ""]);
+exports.push([module.i, "#Copyright {\n    margin: 20px 0;\n}\n\n#GridContainer {\n    display: flex;\n    padding: 8px;\n}\n\n#Grid {\n    flex: 0 0;\n    padding-right: 8px;\n}\n\n#Toolbox {\n    flex: 1 0;\n    flex-basis: auto;\n    margin-left: 24px;\n}\n\n#BlueprintInput {\n    margin: 8px 0;\n}\n\n#BlueprintInput > .gridInput {\n    width: 100%;\n    height: 150px;\n}\n\n.gridRow {\n    display: flex;\n}\n\n.gridCell {\n    width: 32px;\n    height: 32px;\n}\n\n.gridCell:hover::before {\n    content: '';\n    position: absolute;\n    background-color: #FFDC00;\n    opacity: 0.25;\n    width: 32px;\n    height: 32px;\n}\n\n#Container {\n    border: 1px solid;\n    padding: 8px;\n    width: 200px;\n}\n\n#ToolboxItems {\n    display: flex;\n    flex-wrap: wrap;\n    text-align: center;\n    margin: 8px 0;\n}\n\n.toolboxTool {\n    flex: 0 0;\n}\n\n.toolboxButton {\n    text-align: center;\n    align-self: center;\n    background-image: url(" + __webpack_require__(29) + ");\n    background-position: 204px 148px;\n    width: 36px;\n    height: 36px;\n}\n\n.toolboxButton > img {\n    width: 32px;\n    height: 32px;\n    padding: 2px 0;\n}\n\n.toolboxSelectedButton {\n    background-position: 204px 0;\n}\n\n.toolboxCurrentTool {\n    margin: 8px;\n}\n\n.toolboxCurrentTool > img {\n    width: 32px;\n    height: 32px;\n}\n\n.toolboxToolList {\n    display: flex;\n}", ""]);
 
 // exports
 
@@ -25149,7 +25148,7 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 								_1: {
 									ctor: '::',
 									_0: _rtfeldman$elm_css$Css$backgroundImage(
-										_rtfeldman$elm_css$Css$url('/assets/images/gui.png')),
+										_rtfeldman$elm_css$Css$url('~assets/images/gui.png')),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -26373,6 +26372,12 @@ for (var publicModule in Elm)
 
 /***/ }),
 /* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "gui.png";
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -26462,7 +26467,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26519,14 +26524,14 @@ module.exports = {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils   = __webpack_require__(7);
-var trees   = __webpack_require__(35);
+var trees   = __webpack_require__(36);
 var adler32 = __webpack_require__(13);
 var crc32   = __webpack_require__(14);
 var msg     = __webpack_require__(15);
@@ -28381,7 +28386,7 @@ exports.deflateTune = deflateTune;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28714,7 +28719,7 @@ module.exports = function inflate_fast(strm, start) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28724,8 +28729,8 @@ module.exports = function inflate_fast(strm, start) {
 var utils         = __webpack_require__(7);
 var adler32       = __webpack_require__(13);
 var crc32         = __webpack_require__(14);
-var inflate_fast  = __webpack_require__(32);
-var inflate_table = __webpack_require__(34);
+var inflate_fast  = __webpack_require__(33);
+var inflate_table = __webpack_require__(35);
 
 var CODES = 0;
 var LENS = 1;
@@ -30259,7 +30264,7 @@ exports.inflateUndermine = inflateUndermine;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30593,7 +30598,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31802,7 +31807,7 @@ exports._tr_align = _tr_align;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31838,21 +31843,21 @@ module.exports = ZStream;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(2)
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(16)
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Stream = (function (){
@@ -31870,14 +31875,14 @@ exports.PassThrough = __webpack_require__(16);
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(10)
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -32070,7 +32075,7 @@ module.exports = __webpack_require__(10)
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(1)))
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -32107,7 +32112,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(43);
+	fixUrls = __webpack_require__(44);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -32383,7 +32388,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 
@@ -32478,7 +32483,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -32492,7 +32497,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(42)(content, options);
+var update = __webpack_require__(43)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -32509,7 +32514,7 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -32562,13 +32567,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(41);
+__webpack_require__(42);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -32642,7 +32647,7 @@ function config (name) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -32671,7 +32676,7 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -32682,7 +32687,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -32737,13 +32742,13 @@ function exportBlueprint(entities, callback) {
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(21);
