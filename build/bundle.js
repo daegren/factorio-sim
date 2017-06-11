@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/build/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 51);
+/******/ 	return __webpack_require__(__webpack_require__.s = 52);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,7 +82,7 @@
 
 
 var base64 = __webpack_require__(23)
-var ieee754 = __webpack_require__(29)
+var ieee754 = __webpack_require__(30)
 var isArray = __webpack_require__(12)
 
 exports.Buffer = Buffer
@@ -2988,7 +2988,7 @@ util.inherits = __webpack_require__(3);
 
 /*<replacement>*/
 var internalUtil = {
-  deprecate: __webpack_require__(46)
+  deprecate: __webpack_require__(47)
 };
 /*</replacement>*/
 
@@ -3475,7 +3475,7 @@ function CorkedRequest(state) {
     }
   };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(45).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(46).setImmediate))
 
 /***/ }),
 /* 11 */
@@ -3508,11 +3508,11 @@ var EE = __webpack_require__(6).EventEmitter;
 var inherits = __webpack_require__(3);
 
 inherits(Stream, EE);
-Stream.Readable = __webpack_require__(39);
-Stream.Writable = __webpack_require__(40);
-Stream.Duplex = __webpack_require__(37);
+Stream.Readable = __webpack_require__(40);
+Stream.Writable = __webpack_require__(41);
+Stream.Duplex = __webpack_require__(38);
 Stream.Transform = __webpack_require__(18);
-Stream.PassThrough = __webpack_require__(38);
+Stream.PassThrough = __webpack_require__(39);
 
 // Backwards-compat with node 0.4.x
 Stream.Stream = Stream;
@@ -3810,7 +3810,7 @@ util.inherits = __webpack_require__(3);
 /*</replacement>*/
 
 /*<replacement>*/
-var debugUtil = __webpack_require__(50);
+var debugUtil = __webpack_require__(51);
 var debug = undefined;
 if (debugUtil && debugUtil.debuglog) {
   debug = debugUtil.debuglog('stream');
@@ -5410,7 +5410,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(48);
+exports.isBuffer = __webpack_require__(49);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -5454,7 +5454,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(47);
+exports.inherits = __webpack_require__(48);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -5482,10 +5482,10 @@ function hasOwnProperty(obj, prop) {
 
 
 // require stylesheet
-__webpack_require__(44);
+__webpack_require__(45);
 
 // import helper libs
-const blueprint = __webpack_require__(49)
+const blueprint = __webpack_require__(50)
 
 // load app
 var Elm = __webpack_require__(28);
@@ -5498,7 +5498,7 @@ var app = Elm.Main.embed(mountNode);
 app.ports.getOffsetOfGrid.subscribe(() => {
   const grid = document.getElementById('Grid')
   const rect = grid.getBoundingClientRect()
-  app.ports.receiveOffset.send([rect.top, rect.left])
+  app.ports.receiveOffset.send([rect.left, rect.top])
 })
 
 app.ports.parseBlueprint.subscribe((blueprintString) => {
@@ -5509,7 +5509,7 @@ app.ports.parseBlueprint.subscribe((blueprintString) => {
 
 app.ports.exportBlueprint.subscribe((json) => {
   blueprint.exportBlueprint(json, (str) => {
-    prompt("Export String", str)
+    app.ports.receiveExportedBlueprint.send(str)
   })
 })
 
@@ -6138,10 +6138,10 @@ function fromByteArray (uint8) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, Buffer) {var msg = __webpack_require__(15);
-var zstream = __webpack_require__(36);
-var zlib_deflate = __webpack_require__(31);
-var zlib_inflate = __webpack_require__(33);
-var constants = __webpack_require__(30);
+var zstream = __webpack_require__(37);
+var zlib_deflate = __webpack_require__(32);
+var zlib_inflate = __webpack_require__(34);
+var constants = __webpack_require__(31);
 
 for (var key in constants) {
   exports[key] = constants[key];
@@ -7002,7 +7002,7 @@ exports = module.exports = __webpack_require__(27)(undefined);
 
 
 // module
-exports.push([module.i, "#Main {\n    display: flex;\n}\n\n#Grid {\n    flex: 0 0;\n}\n\n#Info {\n    flex: 1 0;\n    flex-basis: auto;\n    margin-left: 24px;\n}\n\n.gridRow {\n    display: flex;\n}\n\n.gridCell {\n    width: 32px;\n    height: 32px;\n}\n\n.gridCell:hover::before {\n    content: '';\n    position: absolute;\n    background-color: #FFDC00;\n    opacity: 0.25;\n    width: 32px;\n    height: 32px;\n}\n\n#Container {\n    border: 1px solid;\n    margin: 8px 0;\n    padding: 8px;\n    width: 200px;\n}\n\n#Toolbox {\n    display: flex;\n    flex-wrap: wrap;\n    justify-content: space-around;\n    text-align: center;\n}\n\n.toolboxTool {\n    display: flex;\n    flex-direction: column;\n    margin: 8px;\n    flex: 0 0;\n}\n\n.toolboxTool > img {\n    text-align: center;\n    align-self: center;\n    width: 32px;\n    height: 32px;\n}\n\n.toolboxCurrentTool {\n    margin: 8px;\n}\n\n.toolboxCurrentTool > img {\n    width: 32px;\n    height: 32px;\n}\n\n.toolboxToolList {\n    display: flex;\n}", ""]);
+exports.push([module.i, "#Copyright {\n    margin: 20px 0;\n}\n\n#GridContainer {\n    display: flex;\n    padding: 8px;\n}\n\n#Grid {\n    flex: 0 0;\n    padding-right: 8px;\n}\n\n#Toolbox {\n    flex: 1 0;\n    flex-basis: auto;\n    margin-left: 24px;\n}\n\n#BlueprintInput {\n    margin: 8px 0;\n}\n\n#BlueprintInput > .gridInput {\n    width: 100%;\n    height: 150px;\n}\n\n.gridRow {\n    display: flex;\n}\n\n.gridCell {\n    width: 32px;\n    height: 32px;\n}\n\n.gridCell:hover::before {\n    content: '';\n    position: absolute;\n    background-color: #FFDC00;\n    opacity: 0.25;\n    width: 32px;\n    height: 32px;\n}\n\n#Container {\n    border: 1px solid;\n    padding: 8px;\n    width: 200px;\n}\n\n#ToolboxItems {\n    display: flex;\n    flex-wrap: wrap;\n    text-align: center;\n    margin: 8px 0;\n}\n\n.toolboxTool {\n    flex: 0 0;\n}\n\n.toolboxButton {\n    text-align: center;\n    align-self: center;\n    background-image: url(" + __webpack_require__(29) + ");\n    background-position: 204px 148px;\n    width: 36px;\n    height: 36px;\n}\n\n.toolboxButton > img {\n    width: 32px;\n    height: 32px;\n    padding: 2px 0;\n}\n\n.toolboxSelectedButton {\n    background-position: 204px 0;\n}\n\n.toolboxCurrentTool {\n    margin: 8px;\n}\n\n.toolboxCurrentTool > img {\n    width: 32px;\n    height: 32px;\n}\n\n.toolboxToolList {\n    display: flex;\n}", ""]);
 
 // exports
 
@@ -24626,27 +24626,20 @@ var _rtfeldman$elm_css_helpers$Html_CssHelpers$Namespace = F4(
 		return {$class: a, classList: b, id: c, name: d};
 	});
 
-var _user$project$Entity$nameToString = function (entityName) {
+var _user$project$Entity$readableName = function (entityName) {
 	var _p0 = entityName;
-	if (_p0.ctor === 'TransportBelt') {
-		return 'transport-belt';
-	} else {
-		return _p0._0;
-	}
-};
-var _user$project$Entity$directionToInt = function (direction) {
-	var _p1 = direction;
-	switch (_p1.ctor) {
-		case 'Down':
-			return _elm_lang$core$Maybe$Just(4);
-		case 'Right':
-			return _elm_lang$core$Maybe$Just(2);
-		case 'Left':
-			return _elm_lang$core$Maybe$Just(6);
+	switch (_p0.ctor) {
+		case 'TransportBelt':
+			return 'Transport Belt';
+		case 'FastTransportBelt':
+			return 'Fast Transport Belt';
+		case 'ExpressTransportBelt':
+			return 'Express Transport Belt';
 		default:
-			return _elm_lang$core$Maybe$Nothing;
+			return _p0._0;
 	}
 };
+var _user$project$Entity$zeroPosition = {x: 0.0, y: 0.0};
 var _user$project$Entity$Position = F2(
 	function (a, b) {
 		return {x: a, y: b};
@@ -24658,24 +24651,35 @@ var _user$project$Entity$Entity = F3(
 var _user$project$Entity$Other = function (a) {
 	return {ctor: 'Other', _0: a};
 };
+var _user$project$Entity$ExpressTransportBelt = {ctor: 'ExpressTransportBelt'};
+var _user$project$Entity$FastTransportBelt = {ctor: 'FastTransportBelt'};
 var _user$project$Entity$TransportBelt = {ctor: 'TransportBelt'};
-var _user$project$Entity$entityName = function (name) {
-	var _p2 = name;
-	if (_p2 === 'transport-belt') {
-		return _user$project$Entity$TransportBelt;
-	} else {
-		return _user$project$Entity$Other(name);
-	}
-};
 var _user$project$Entity$Left = {ctor: 'Left'};
 var _user$project$Entity$Down = {ctor: 'Down'};
 var _user$project$Entity$Right = {ctor: 'Right'};
 var _user$project$Entity$Up = {ctor: 'Up'};
-var _user$project$Entity$direction = function ($int) {
-	var _p3 = $int;
-	if (_p3.ctor === 'Just') {
-		var _p4 = _p3._0;
-		switch (_p4) {
+var _user$project$Entity$toolboxEntity = function (name) {
+	return A3(_user$project$Entity$Entity, name, _user$project$Entity$zeroPosition, _user$project$Entity$Up);
+};
+
+var _user$project$Entity_Decoder$entityName = function (name) {
+	var _p0 = name;
+	switch (_p0) {
+		case 'transport-belt':
+			return _user$project$Entity$TransportBelt;
+		case 'fast-transport-belt':
+			return _user$project$Entity$FastTransportBelt;
+		case 'express-transport-belt':
+			return _user$project$Entity$ExpressTransportBelt;
+		default:
+			return _user$project$Entity$Other(name);
+	}
+};
+var _user$project$Entity_Decoder$direction = function ($int) {
+	var _p1 = $int;
+	if (_p1.ctor === 'Just') {
+		var _p2 = _p1._0;
+		switch (_p2) {
 			case 4:
 				return _user$project$Entity$Down;
 			case 2:
@@ -24684,18 +24688,17 @@ var _user$project$Entity$direction = function ($int) {
 				return _user$project$Entity$Left;
 			default:
 				return _elm_lang$core$Native_Utils.crashCase(
-					'Entity',
+					'Entity.Decoder',
 					{
-						start: {line: 33, column: 13},
-						end: {line: 44, column: 57}
+						start: {line: 29, column: 13},
+						end: {line: 40, column: 57}
 					},
-					_p4)('Found wrong direction.');
+					_p2)('Found wrong direction.');
 		}
 	} else {
 		return _user$project$Entity$Up;
 	}
 };
-
 var _user$project$Entity_Decoder$decodePosition = A3(
 	_elm_lang$core$Json_Decode$map2,
 	_user$project$Entity$Position,
@@ -24706,15 +24709,41 @@ var _user$project$Entity_Decoder$decodeEntity = A4(
 	_user$project$Entity$Entity,
 	A2(
 		_elm_lang$core$Json_Decode$map,
-		_user$project$Entity$entityName,
+		_user$project$Entity_Decoder$entityName,
 		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
 	A2(_elm_lang$core$Json_Decode$field, 'position', _user$project$Entity_Decoder$decodePosition),
 	A2(
 		_elm_lang$core$Json_Decode$map,
-		_user$project$Entity$direction,
+		_user$project$Entity_Decoder$direction,
 		_elm_lang$core$Json_Decode$maybe(
 			A2(_elm_lang$core$Json_Decode$field, 'direction', _elm_lang$core$Json_Decode$int))));
 
+var _user$project$Entity_Encoder$directionToInt = function (direction) {
+	var _p0 = direction;
+	switch (_p0.ctor) {
+		case 'Down':
+			return _elm_lang$core$Maybe$Just(4);
+		case 'Right':
+			return _elm_lang$core$Maybe$Just(2);
+		case 'Left':
+			return _elm_lang$core$Maybe$Just(6);
+		default:
+			return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Entity_Encoder$nameToString = function (entityName) {
+	var _p1 = entityName;
+	switch (_p1.ctor) {
+		case 'TransportBelt':
+			return 'transport-belt';
+		case 'FastTransportBelt':
+			return 'fast-transport-belt';
+		case 'ExpressTransportBelt':
+			return 'express-transport-belt';
+		default:
+			return _p1._0;
+	}
+};
 var _user$project$Entity_Encoder$encodePosition = function (position) {
 	return _elm_lang$core$Json_Encode$object(
 		{
@@ -24743,7 +24772,7 @@ var _user$project$Entity_Encoder$encodeEntity = F2(
 				ctor: '_Tuple2',
 				_0: 'name',
 				_1: _elm_lang$core$Json_Encode$string(
-					_user$project$Entity$nameToString(entity.name))
+					_user$project$Entity_Encoder$nameToString(entity.name))
 			},
 			_1: {
 				ctor: '::',
@@ -24765,14 +24794,14 @@ var _user$project$Entity_Encoder$encodeEntity = F2(
 		};
 		return _elm_lang$core$Json_Encode$object(
 			function () {
-				var _p0 = _user$project$Entity$directionToInt(entity.direction);
-				if (_p0.ctor === 'Just') {
+				var _p2 = _user$project$Entity_Encoder$directionToInt(entity.direction);
+				if (_p2.ctor === 'Just') {
 					return {
 						ctor: '::',
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'direction',
-							_1: _elm_lang$core$Json_Encode$int(_p0._0)
+							_1: _elm_lang$core$Json_Encode$int(_p2._0)
 						},
 						_1: props
 					};
@@ -24782,37 +24811,65 @@ var _user$project$Entity_Encoder$encodeEntity = F2(
 			}());
 	});
 
-var _user$project$Entity_Image$basePath = 'assets/images/';
-var _user$project$Entity_Image$image = function (entity) {
-	var _p0 = entity.name;
-	if (_p0.ctor === 'TransportBelt') {
-		var path = A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$basePath, '/belt/');
-		var _p1 = entity.direction;
-		switch (_p1.ctor) {
+var _user$project$Entity_Image$entityImage = F2(
+	function (direction, path) {
+		var _p0 = direction;
+		switch (_p0.ctor) {
 			case 'Up':
-				return A2(_elm_lang$core$Basics_ops['++'], path, 'belt-up.png');
+				return A2(_elm_lang$core$Basics_ops['++'], path, 'up.png');
 			case 'Right':
-				return A2(_elm_lang$core$Basics_ops['++'], path, 'belt-right.png');
+				return A2(_elm_lang$core$Basics_ops['++'], path, 'right.png');
 			case 'Down':
-				return A2(_elm_lang$core$Basics_ops['++'], path, 'belt-down.png');
+				return A2(_elm_lang$core$Basics_ops['++'], path, 'down.png');
 			default:
-				return A2(_elm_lang$core$Basics_ops['++'], path, 'belt-left.png');
+				return A2(_elm_lang$core$Basics_ops['++'], path, 'left.png');
 		}
-	} else {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_user$project$Entity_Image$basePath,
-			A2(
+	});
+var _user$project$Entity_Image$basePath = 'assets/images/';
+var _user$project$Entity_Image$iconPath = A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$basePath, 'icons/');
+var _user$project$Entity_Image$icon = function (entity) {
+	var _p1 = entity.name;
+	switch (_p1.ctor) {
+		case 'TransportBelt':
+			return A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$iconPath, 'transport-belt.png');
+		case 'FastTransportBelt':
+			return A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$iconPath, 'fast-transport-belt.png');
+		case 'ExpressTransportBelt':
+			return A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$iconPath, 'express-transport-belt.png');
+		default:
+			return A2(
 				_elm_lang$core$Basics_ops['++'],
-				'/',
-				A2(_elm_lang$core$Basics_ops['++'], _p0._0, '.png')));
+				_user$project$Entity_Image$iconPath,
+				A2(_elm_lang$core$Basics_ops['++'], _p1._0, '.png'));
+	}
+};
+var _user$project$Entity_Image$image = function (entity) {
+	var _p2 = entity.name;
+	switch (_p2.ctor) {
+		case 'TransportBelt':
+			var path = A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$basePath, 'belt/');
+			return A2(_user$project$Entity_Image$entityImage, entity.direction, path);
+		case 'FastTransportBelt':
+			var path = A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$basePath, 'fast-belt/');
+			return A2(_user$project$Entity_Image$entityImage, entity.direction, path);
+		case 'ExpressTransportBelt':
+			var path = A2(_elm_lang$core$Basics_ops['++'], _user$project$Entity_Image$basePath, 'express-belt/');
+			return A2(_user$project$Entity_Image$entityImage, entity.direction, path);
+		default:
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				_user$project$Entity_Image$basePath,
+				A2(_elm_lang$core$Basics_ops['++'], _p2._0, '.png'));
 	}
 };
 
+var _user$project$GridStyles$Input = {ctor: 'Input'};
 var _user$project$GridStyles$Cell = {ctor: 'Cell'};
 var _user$project$GridStyles$Row = {ctor: 'Row'};
-var _user$project$GridStyles$Info = {ctor: 'Info'};
+var _user$project$GridStyles$BlueprintInput = {ctor: 'BlueprintInput'};
+var _user$project$GridStyles$Toolbox = {ctor: 'Toolbox'};
 var _user$project$GridStyles$Grid = {ctor: 'Grid'};
+var _user$project$GridStyles$GridContainer = {ctor: 'GridContainer'};
 var _user$project$GridStyles$css = function (_p0) {
 	return _rtfeldman$elm_css$Css$stylesheet(
 		A2(_rtfeldman$elm_css$Css_Namespace$namespace, 'grid', _p0));
@@ -24821,101 +24878,158 @@ var _user$project$GridStyles$css = function (_p0) {
 		ctor: '::',
 		_0: A2(
 			_rtfeldman$elm_css$Css$id,
-			_user$project$GridStyles$Grid,
+			_user$project$GridStyles$GridContainer,
 			{
 				ctor: '::',
-				_0: A2(
-					_rtfeldman$elm_css$Css$flex2,
-					_rtfeldman$elm_css$Css$int(0),
-					_rtfeldman$elm_css$Css$int(0)),
-				_1: {ctor: '[]'}
+				_0: _rtfeldman$elm_css$Css$displayFlex,
+				_1: {
+					ctor: '::',
+					_0: _rtfeldman$elm_css$Css$padding(
+						_rtfeldman$elm_css$Css$px(8)),
+					_1: {ctor: '[]'}
+				}
 			}),
 		_1: {
 			ctor: '::',
 			_0: A2(
 				_rtfeldman$elm_css$Css$id,
-				_user$project$GridStyles$Info,
+				_user$project$GridStyles$Grid,
 				{
 					ctor: '::',
 					_0: A2(
 						_rtfeldman$elm_css$Css$flex2,
-						_rtfeldman$elm_css$Css$int(1),
+						_rtfeldman$elm_css$Css$int(0),
 						_rtfeldman$elm_css$Css$int(0)),
 					_1: {
 						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$flexBasis(_rtfeldman$elm_css$Css$auto),
-						_1: {
-							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$marginLeft(
-								_rtfeldman$elm_css$Css$px(24)),
-							_1: {ctor: '[]'}
-						}
+						_0: _rtfeldman$elm_css$Css$paddingRight(
+							_rtfeldman$elm_css$Css$px(8)),
+						_1: {ctor: '[]'}
 					}
 				}),
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_rtfeldman$elm_css$Css$class,
-					_user$project$GridStyles$Row,
+					_rtfeldman$elm_css$Css$id,
+					_user$project$GridStyles$Toolbox,
 					{
 						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$displayFlex,
-						_1: {ctor: '[]'}
+						_0: A2(
+							_rtfeldman$elm_css$Css$flex2,
+							_rtfeldman$elm_css$Css$int(1),
+							_rtfeldman$elm_css$Css$int(0)),
+						_1: {
+							ctor: '::',
+							_0: _rtfeldman$elm_css$Css$flexBasis(_rtfeldman$elm_css$Css$auto),
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$marginLeft(
+									_rtfeldman$elm_css$Css$px(24)),
+								_1: {ctor: '[]'}
+							}
+						}
 					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
-						_rtfeldman$elm_css$Css$class,
-						_user$project$GridStyles$Cell,
+						_rtfeldman$elm_css$Css$id,
+						_user$project$GridStyles$BlueprintInput,
 						{
 							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$width(
-								_rtfeldman$elm_css$Css$px(32)),
+							_0: A2(
+								_rtfeldman$elm_css$Css$margin2,
+								_rtfeldman$elm_css$Css$px(8),
+								_rtfeldman$elm_css$Css$zero),
 							_1: {
 								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$height(
-									_rtfeldman$elm_css$Css$px(32)),
-								_1: {
+								_0: _rtfeldman$elm_css$Css$children(
+									{
+										ctor: '::',
+										_0: A2(
+											_rtfeldman$elm_css$Css$class,
+											_user$project$GridStyles$Input,
+											{
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Css$width(
+													_rtfeldman$elm_css$Css$pct(100)),
+												_1: {
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Css$height(
+														_rtfeldman$elm_css$Css$px(150)),
+													_1: {ctor: '[]'}
+												}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_rtfeldman$elm_css$Css$class,
+							_user$project$GridStyles$Row,
+							{
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$displayFlex,
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_rtfeldman$elm_css$Css$class,
+								_user$project$GridStyles$Cell,
+								{
 									ctor: '::',
-									_0: _rtfeldman$elm_css$Css$hover(
-										{
+									_0: _rtfeldman$elm_css$Css$width(
+										_rtfeldman$elm_css$Css$px(32)),
+									_1: {
+										ctor: '::',
+										_0: _rtfeldman$elm_css$Css$height(
+											_rtfeldman$elm_css$Css$px(32)),
+										_1: {
 											ctor: '::',
-											_0: _rtfeldman$elm_css$Css$before(
+											_0: _rtfeldman$elm_css$Css$hover(
 												{
 													ctor: '::',
-													_0: A2(_rtfeldman$elm_css$Css$property, 'content', '\'\''),
-													_1: {
-														ctor: '::',
-														_0: _rtfeldman$elm_css$Css$position(_rtfeldman$elm_css$Css$absolute),
-														_1: {
+													_0: _rtfeldman$elm_css$Css$before(
+														{
 															ctor: '::',
-															_0: _rtfeldman$elm_css$Css$backgroundColor(_rtfeldman$elm_css$Css_Colors$yellow),
+															_0: A2(_rtfeldman$elm_css$Css$property, 'content', '\'\''),
 															_1: {
 																ctor: '::',
-																_0: _rtfeldman$elm_css$Css$opacity(
-																	_rtfeldman$elm_css$Css$num(0.25)),
+																_0: _rtfeldman$elm_css$Css$position(_rtfeldman$elm_css$Css$absolute),
 																_1: {
 																	ctor: '::',
-																	_0: _rtfeldman$elm_css$Css$width(
-																		_rtfeldman$elm_css$Css$px(32)),
+																	_0: _rtfeldman$elm_css$Css$backgroundColor(_rtfeldman$elm_css$Css_Colors$yellow),
 																	_1: {
 																		ctor: '::',
-																		_0: _rtfeldman$elm_css$Css$height(
-																			_rtfeldman$elm_css$Css$px(32)),
-																		_1: {ctor: '[]'}
+																		_0: _rtfeldman$elm_css$Css$opacity(
+																			_rtfeldman$elm_css$Css$num(0.25)),
+																		_1: {
+																			ctor: '::',
+																			_0: _rtfeldman$elm_css$Css$width(
+																				_rtfeldman$elm_css$Css$px(32)),
+																			_1: {
+																				ctor: '::',
+																				_0: _rtfeldman$elm_css$Css$height(
+																					_rtfeldman$elm_css$Css$px(32)),
+																				_1: {ctor: '[]'}
+																			}
+																		}
 																	}
 																}
 															}
-														}
-													}
+														}),
+													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						}),
-					_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		}
@@ -24951,10 +25065,12 @@ var _user$project$Point$Point = F2(
 		return {x: a, y: b};
 	});
 
+var _user$project$ToolboxStyles$SelectedButton = {ctor: 'SelectedButton'};
+var _user$project$ToolboxStyles$Button = {ctor: 'Button'};
 var _user$project$ToolboxStyles$ToolList = {ctor: 'ToolList'};
 var _user$project$ToolboxStyles$CurrentTool = {ctor: 'CurrentTool'};
 var _user$project$ToolboxStyles$Tool = {ctor: 'Tool'};
-var _user$project$ToolboxStyles$Toolbox = {ctor: 'Toolbox'};
+var _user$project$ToolboxStyles$ToolboxItems = {ctor: 'ToolboxItems'};
 var _user$project$ToolboxStyles$Container = {ctor: 'Container'};
 var _user$project$ToolboxStyles$css = function (_p0) {
 	return _rtfeldman$elm_css$Css$stylesheet(
@@ -24973,20 +25089,13 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 					_rtfeldman$elm_css$Css$solid),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_rtfeldman$elm_css$Css$margin2,
-						_rtfeldman$elm_css$Css$px(8),
-						_rtfeldman$elm_css$Css$zero),
+					_0: _rtfeldman$elm_css$Css$padding(
+						_rtfeldman$elm_css$Css$px(8)),
 					_1: {
 						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$padding(
-							_rtfeldman$elm_css$Css$px(8)),
-						_1: {
-							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$width(
-								_rtfeldman$elm_css$Css$px(200)),
-							_1: {ctor: '[]'}
-						}
+						_0: _rtfeldman$elm_css$Css$width(
+							_rtfeldman$elm_css$Css$px(200)),
+						_1: {ctor: '[]'}
 					}
 				}
 			}),
@@ -24994,7 +25103,7 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 			ctor: '::',
 			_0: A2(
 				_rtfeldman$elm_css$Css$id,
-				_user$project$ToolboxStyles$Toolbox,
+				_user$project$ToolboxStyles$ToolboxItems,
 				{
 					ctor: '::',
 					_0: _rtfeldman$elm_css$Css$displayFlex,
@@ -25003,10 +25112,13 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 						_0: _rtfeldman$elm_css$Css$flexWrap(_rtfeldman$elm_css$Css$wrap),
 						_1: {
 							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$justifyContent(_rtfeldman$elm_css$Css$spaceAround),
+							_0: _rtfeldman$elm_css$Css$textAlign(_rtfeldman$elm_css$Css$center),
 							_1: {
 								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$textAlign(_rtfeldman$elm_css$Css$center),
+								_0: A2(
+									_rtfeldman$elm_css$Css$margin2,
+									_rtfeldman$elm_css$Css$px(8),
+									_rtfeldman$elm_css$Css$zero),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -25019,17 +25131,94 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 					_user$project$ToolboxStyles$Tool,
 					{
 						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$displayFlex,
-						_1: {
+						_0: A2(_rtfeldman$elm_css$Css$flex2, _rtfeldman$elm_css$Css$zero, _rtfeldman$elm_css$Css$zero),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_rtfeldman$elm_css$Css$class,
+						_user$project$ToolboxStyles$Button,
+						{
 							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$flexDirection(_rtfeldman$elm_css$Css$column),
+							_0: _rtfeldman$elm_css$Css$textAlign(_rtfeldman$elm_css$Css$center),
 							_1: {
 								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$margin(
-									_rtfeldman$elm_css$Css$px(8)),
+								_0: _rtfeldman$elm_css$Css$alignSelf(_rtfeldman$elm_css$Css$center),
 								_1: {
 									ctor: '::',
-									_0: A2(_rtfeldman$elm_css$Css$flex2, _rtfeldman$elm_css$Css$zero, _rtfeldman$elm_css$Css$zero),
+									_0: _rtfeldman$elm_css$Css$backgroundImage(
+										_rtfeldman$elm_css$Css$url('~assets/images/gui.png')),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_rtfeldman$elm_css$Css$backgroundPosition2,
+											_rtfeldman$elm_css$Css$px(204),
+											_rtfeldman$elm_css$Css$px(148)),
+										_1: {
+											ctor: '::',
+											_0: _rtfeldman$elm_css$Css$width(
+												_rtfeldman$elm_css$Css$px(36)),
+											_1: {
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Css$height(
+													_rtfeldman$elm_css$Css$px(36)),
+												_1: {
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Css$children(
+														{
+															ctor: '::',
+															_0: _rtfeldman$elm_css$Css_Elements$img(
+																{
+																	ctor: '::',
+																	_0: _rtfeldman$elm_css$Css$width(
+																		_rtfeldman$elm_css$Css$px(32)),
+																	_1: {
+																		ctor: '::',
+																		_0: _rtfeldman$elm_css$Css$height(
+																			_rtfeldman$elm_css$Css$px(32)),
+																		_1: {
+																			ctor: '::',
+																			_0: A2(
+																				_rtfeldman$elm_css$Css$padding2,
+																				_rtfeldman$elm_css$Css$px(2),
+																				_rtfeldman$elm_css$Css$zero),
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																}),
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_rtfeldman$elm_css$Css$class,
+							_user$project$ToolboxStyles$SelectedButton,
+							{
+								ctor: '::',
+								_0: A2(
+									_rtfeldman$elm_css$Css$backgroundPosition2,
+									_rtfeldman$elm_css$Css$px(204),
+									_rtfeldman$elm_css$Css$zero),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_rtfeldman$elm_css$Css$class,
+								_user$project$ToolboxStyles$CurrentTool,
+								{
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Css$margin(
+										_rtfeldman$elm_css$Css$px(8)),
 									_1: {
 										ctor: '::',
 										_0: _rtfeldman$elm_css$Css$children(
@@ -25038,73 +25227,33 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 												_0: _rtfeldman$elm_css$Css_Elements$img(
 													{
 														ctor: '::',
-														_0: _rtfeldman$elm_css$Css$textAlign(_rtfeldman$elm_css$Css$center),
+														_0: _rtfeldman$elm_css$Css$width(
+															_rtfeldman$elm_css$Css$px(32)),
 														_1: {
 															ctor: '::',
-															_0: _rtfeldman$elm_css$Css$alignSelf(_rtfeldman$elm_css$Css$center),
-															_1: {
-																ctor: '::',
-																_0: _rtfeldman$elm_css$Css$width(
-																	_rtfeldman$elm_css$Css$px(32)),
-																_1: {
-																	ctor: '::',
-																	_0: _rtfeldman$elm_css$Css$height(
-																		_rtfeldman$elm_css$Css$px(32)),
-																	_1: {ctor: '[]'}
-																}
-															}
+															_0: _rtfeldman$elm_css$Css$height(
+																_rtfeldman$elm_css$Css$px(32)),
+															_1: {ctor: '[]'}
 														}
 													}),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
 									}
-								}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_rtfeldman$elm_css$Css$class,
-						_user$project$ToolboxStyles$CurrentTool,
-						{
-							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$margin(
-								_rtfeldman$elm_css$Css$px(8)),
+								}),
 							_1: {
 								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$children(
+								_0: A2(
+									_rtfeldman$elm_css$Css$class,
+									_user$project$ToolboxStyles$ToolList,
 									{
 										ctor: '::',
-										_0: _rtfeldman$elm_css$Css_Elements$img(
-											{
-												ctor: '::',
-												_0: _rtfeldman$elm_css$Css$width(
-													_rtfeldman$elm_css$Css$px(32)),
-												_1: {
-													ctor: '::',
-													_0: _rtfeldman$elm_css$Css$height(
-														_rtfeldman$elm_css$Css$px(32)),
-													_1: {ctor: '[]'}
-												}
-											}),
+										_0: _rtfeldman$elm_css$Css$displayFlex,
 										_1: {ctor: '[]'}
 									}),
 								_1: {ctor: '[]'}
 							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_rtfeldman$elm_css$Css$class,
-							_user$project$ToolboxStyles$ToolList,
-							{
-								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$displayFlex,
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -25125,9 +25274,83 @@ var _user$project$Toolbox$_p0 = _rtfeldman$elm_css_helpers$Html_CssHelpers$withN
 var _user$project$Toolbox$id = _user$project$Toolbox$_p0.id;
 var _user$project$Toolbox$class = _user$project$Toolbox$_p0.$class;
 var _user$project$Toolbox$classList = _user$project$Toolbox$_p0.classList;
+var _user$project$Toolbox$toolView = F2(
+	function (model, tool) {
+		var _p1 = tool;
+		if (_p1.ctor === 'Clear') {
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _user$project$Toolbox$class(
+						{
+							ctor: '::',
+							_0: _user$project$ToolboxStyles$Button,
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src('assets/images/cancel.png'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$alt('Clear'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				});
+		} else {
+			var _p2 = _p1._0;
+			var classes = _elm_lang$core$Native_Utils.eq(tool, model.currentTool) ? {
+				ctor: '::',
+				_0: _user$project$ToolboxStyles$Button,
+				_1: {
+					ctor: '::',
+					_0: _user$project$ToolboxStyles$SelectedButton,
+					_1: {ctor: '[]'}
+				}
+			} : {
+				ctor: '::',
+				_0: _user$project$ToolboxStyles$Button,
+				_1: {ctor: '[]'}
+			};
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _user$project$Toolbox$class(classes),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src(
+								_user$project$Entity_Image$icon(_p2)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$alt(
+									_user$project$Entity$readableName(_p2.name)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				});
+		}
+	});
 var _user$project$Toolbox$rotateDirection = function (orientation) {
-	var _p1 = orientation;
-	switch (_p1.ctor) {
+	var _p3 = orientation;
+	switch (_p3.ctor) {
 		case 'Up':
 			return _user$project$Entity$Right;
 		case 'Right':
@@ -25140,19 +25363,19 @@ var _user$project$Toolbox$rotateDirection = function (orientation) {
 };
 var _user$project$Toolbox$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		if (_p2.ctor === 'SelectTool') {
+		var _p4 = msg;
+		if (_p4.ctor === 'SelectTool') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
 					model,
-					{currentTool: _p2._0}),
+					{currentTool: _p4._0}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
-			var _p3 = _user$project$Input$mapKeyboardToInput(_p2._0);
-			if (_p3.ctor === 'Just') {
-				var _p4 = _p3._0;
+			var _p5 = _user$project$Input$mapKeyboardToInput(_p4._0);
+			if (_p5.ctor === 'Just') {
+				var _p6 = _p5._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -25167,68 +25390,34 @@ var _user$project$Toolbox$update = F2(
 			}
 		}
 	});
-var _user$project$Toolbox$imageForTool = F2(
-	function (direction, tool) {
-		var _p5 = tool.toolType;
-		if (_p5.ctor === 'Clear') {
-			return 'assets/images/cancel.png';
-		} else {
-			var _p6 = direction;
-			switch (_p6.ctor) {
-				case 'Up':
-					return 'assets/images/belt/belt-up.png';
-				case 'Right':
-					return 'assets/images/belt/belt-right.png';
-				case 'Down':
-					return 'assets/images/belt/belt-down.png';
-				default:
-					return 'assets/images/belt/belt-left.png';
-			}
-		}
-	});
-var _user$project$Toolbox$toolView = F2(
-	function (model, tool) {
-		return A2(
-			_elm_lang$html$Html$img,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$src(
-					A2(_user$project$Toolbox$imageForTool, model.currentDirection, tool)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$alt(tool.name),
-					_1: {ctor: '[]'}
-				}
-			},
-			{ctor: '[]'});
-	});
-var _user$project$Toolbox$currentToolView = F2(
-	function (model, tool) {
-		return A2(_user$project$Toolbox$toolView, model, tool);
-	});
 var _user$project$Toolbox$currentToolToEntity = F2(
 	function (_p7, position) {
 		var _p8 = _p7;
-		var _p9 = _p8.currentTool.toolType;
+		var _p9 = _p8.currentTool;
 		if (_p9.ctor === 'Clear') {
 			return _elm_lang$core$Maybe$Nothing;
 		} else {
 			return _elm_lang$core$Maybe$Just(
-				A3(_user$project$Entity$Entity, _user$project$Entity$TransportBelt, position, _p8.currentDirection));
+				_elm_lang$core$Native_Utils.update(
+					_p9._0,
+					{position: position, direction: _p8.currentDirection}));
 		}
 	});
 var _user$project$Toolbox$Model = F3(
 	function (a, b, c) {
 		return {tools: a, currentTool: b, currentDirection: c};
 	});
-var _user$project$Toolbox$Tool = F2(
-	function (a, b) {
-		return {name: a, toolType: b};
-	});
-var _user$project$Toolbox$TransportBelt = {ctor: 'TransportBelt'};
-var _user$project$Toolbox$transportBeltTool = A2(_user$project$Toolbox$Tool, 'Transport Belt', _user$project$Toolbox$TransportBelt);
 var _user$project$Toolbox$Clear = {ctor: 'Clear'};
-var _user$project$Toolbox$clearTool = A2(_user$project$Toolbox$Tool, 'Clear Tool', _user$project$Toolbox$Clear);
+var _user$project$Toolbox$clearTool = _user$project$Toolbox$Clear;
+var _user$project$Toolbox$Placeable = function (a) {
+	return {ctor: 'Placeable', _0: a};
+};
+var _user$project$Toolbox$transportBeltTool = _user$project$Toolbox$Placeable(
+	_user$project$Entity$toolboxEntity(_user$project$Entity$TransportBelt));
+var _user$project$Toolbox$fastTransportBeltTool = _user$project$Toolbox$Placeable(
+	_user$project$Entity$toolboxEntity(_user$project$Entity$FastTransportBelt));
+var _user$project$Toolbox$expressTransportBeltTool = _user$project$Toolbox$Placeable(
+	_user$project$Entity$toolboxEntity(_user$project$Entity$ExpressTransportBelt));
 var _user$project$Toolbox$initialModel = {
 	tools: {
 		ctor: '::',
@@ -25236,7 +25425,15 @@ var _user$project$Toolbox$initialModel = {
 		_1: {
 			ctor: '::',
 			_0: _user$project$Toolbox$transportBeltTool,
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: _user$project$Toolbox$fastTransportBeltTool,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Toolbox$expressTransportBeltTool,
+					_1: {ctor: '[]'}
+				}
+			}
 		}
 	},
 	currentTool: _user$project$Toolbox$clearTool,
@@ -25272,12 +25469,8 @@ var _user$project$Toolbox$selectableToolView = F2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(tool.name),
-				_1: {
-					ctor: '::',
-					_0: A2(_user$project$Toolbox$toolView, model, tool),
-					_1: {ctor: '[]'}
-				}
+				_0: A2(_user$project$Toolbox$toolView, model, tool),
+				_1: {ctor: '[]'}
 			});
 	});
 var _user$project$Toolbox$view = function (model) {
@@ -25300,63 +25493,21 @@ var _user$project$Toolbox$view = function (model) {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Current Tool:'),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _user$project$Toolbox$class(
-										{
-											ctor: '::',
-											_0: _user$project$ToolboxStyles$CurrentTool,
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(_user$project$Toolbox$currentToolView, model, model.currentTool),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Available Tools:'),
-							_1: {
+						_0: _user$project$Toolbox$id(
+							{
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _user$project$Toolbox$id(
-											{
-												ctor: '::',
-												_0: _user$project$ToolboxStyles$Toolbox,
-												_1: {ctor: '[]'}
-											}),
-										_1: {ctor: '[]'}
-									},
-									A2(
-										_elm_lang$core$List$map,
-										_user$project$Toolbox$selectableToolView(model),
-										model.tools)),
+								_0: _user$project$ToolboxStyles$ToolboxItems,
 								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}
+							}),
+						_1: {ctor: '[]'}
+					},
+					A2(
+						_elm_lang$core$List$map,
+						_user$project$Toolbox$selectableToolView(model),
+						model.tools)),
+				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -25428,13 +25579,32 @@ var _user$project$Grid$hoverBlock = F2(
 	function (maybePoint, model) {
 		var _p5 = maybePoint;
 		if (_p5.ctor === 'Just') {
+			var item = function () {
+				var _p6 = model.toolbox.currentTool;
+				if (_p6.ctor === 'Clear') {
+					return A2(
+						_evancz$elm_graphics$Collage$filled,
+						A4(_elm_lang$core$Color$rgba, 255, 255, 0, 0.25),
+						A2(_evancz$elm_graphics$Collage$rect, 32, 32));
+				} else {
+					var dummyEntity = _elm_lang$core$Native_Utils.update(
+						_p6._0,
+						{direction: model.toolbox.currentDirection});
+					return _evancz$elm_graphics$Collage$toForm(
+						A2(
+							_evancz$elm_graphics$Element$opacity,
+							0.66,
+							A3(
+								_evancz$elm_graphics$Element$image,
+								32,
+								32,
+								_user$project$Entity_Image$image(dummyEntity))));
+				}
+			}();
 			return A2(
 				_evancz$elm_graphics$Collage$move,
 				A2(_user$project$Grid$pointToCollageOffset, model, _p5._0),
-				A2(
-					_evancz$elm_graphics$Collage$filled,
-					A4(_elm_lang$core$Color$rgba, 255, 255, 0, 0.25),
-					A2(_evancz$elm_graphics$Collage$rect, 32, 32)));
+				item);
 		} else {
 			return A2(
 				_evancz$elm_graphics$Collage$filled,
@@ -25489,11 +25659,11 @@ var _user$project$Grid$removeEntity = F3(
 	});
 var _user$project$Grid$addEntity = F3(
 	function (point, entityMaybe, entityList) {
-		var _p6 = entityMaybe;
-		if (_p6.ctor === 'Just') {
+		var _p7 = entityMaybe;
+		if (_p7.ctor === 'Just') {
 			return {
 				ctor: '::',
-				_0: _p6._0,
+				_0: _p7._0,
 				_1: A3(
 					_elm_lang$core$List$foldl,
 					_user$project$Grid$removeEntity(point),
@@ -25519,20 +25689,55 @@ var _user$project$Grid$exportBlueprint = _elm_lang$core$Native_Platform.outgoing
 	function (v) {
 		return v;
 	});
-var _user$project$Grid$update = F3(
-	function (msg, toolbox, model) {
-		var _p7 = msg;
-		switch (_p7.ctor) {
+var _user$project$Grid$receiveOffset = _elm_lang$core$Native_Platform.incomingPort(
+	'receiveOffset',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (x0) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (x1) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{ctor: '_Tuple2', _0: x0, _1: x1});
+				},
+				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$float));
+		},
+		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$float)));
+var _user$project$Grid$loadBlueprint = _elm_lang$core$Native_Platform.incomingPort('loadBlueprint', _elm_lang$core$Json_Decode$value);
+var _user$project$Grid$receiveExportedBlueprint = _elm_lang$core$Native_Platform.incomingPort('receiveExportedBlueprint', _elm_lang$core$Json_Decode$string);
+var _user$project$Grid$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {cells: a, entities: b, cellSize: c, size: d, offset: e, blueprintString: f, toolbox: g};
+	});
+var _user$project$Grid$emptyGrid = A7(
+	_user$project$Grid$Model,
+	{ctor: '[]'},
+	{ctor: '[]'},
+	32,
+	15,
+	_user$project$Point$zeroPoint,
+	'',
+	_user$project$Toolbox$initialModel);
+var _user$project$Grid$ToolboxMsg = function (a) {
+	return {ctor: 'ToolboxMsg', _0: a};
+};
+var _user$project$Grid$update = F2(
+	function (msg, model) {
+		var _p8 = msg;
+		switch (_p8.ctor) {
 			case 'RandomGrid':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{cells: _p7._0}),
+						{cells: _p8._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'GridOffset':
-				var point = A2(_user$project$Point$Point, _p7._0._0, _p7._0._1);
+				var point = A2(
+					_user$project$Point$Point,
+					_elm_lang$core$Basics$floor(_p8._0._0),
+					_elm_lang$core$Basics$floor(_p8._0._1));
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -25541,24 +25746,24 @@ var _user$project$Grid$update = F3(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'MouseClicked':
-				var _p8 = A2(_user$project$Grid$positionToGridPoint, model, _p7._0);
-				if (_p8.ctor === 'Just') {
-					var _p10 = _p8._0;
-					var entity = A2(
-						_user$project$Toolbox$currentToolToEntity,
-						toolbox,
-						{
-							x: _elm_lang$core$Basics$toFloat(_p10.x),
-							y: _elm_lang$core$Basics$toFloat(_p10.y)
-						});
+				var _p9 = A2(_user$project$Grid$positionToGridPoint, model, _p8._0);
+				if (_p9.ctor === 'Just') {
+					var _p11 = _p9._0;
 					var cells = function () {
-						var _p9 = toolbox.currentTool.toolType;
-						if (_p9.ctor === 'TransportBelt') {
-							return A3(_user$project$Grid$addEntity, _p10, entity, model.entities);
+						var _p10 = model.toolbox.currentTool;
+						if (_p10.ctor === 'Placeable') {
+							var newEntity = A2(
+								_user$project$Toolbox$currentToolToEntity,
+								model.toolbox,
+								{
+									x: _elm_lang$core$Basics$toFloat(_p11.x),
+									y: _elm_lang$core$Basics$toFloat(_p11.y)
+								});
+							return A3(_user$project$Grid$addEntity, _p11, newEntity, model.entities);
 						} else {
 							return A3(
 								_elm_lang$core$List$foldl,
-								_user$project$Grid$removeEntity(_p10),
+								_user$project$Grid$removeEntity(_p11),
 								{ctor: '[]'},
 								model.entities);
 						}
@@ -25568,7 +25773,9 @@ var _user$project$Grid$update = F3(
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{entities: cells}),
-						_1: _elm_lang$core$Platform_Cmd$none
+						_1: _user$project$Grid$exportBlueprint(
+							_elm_lang$core$Json_Encode$list(
+								A2(_elm_lang$core$List$indexedMap, _user$project$Entity_Encoder$encodeEntity, cells)))
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -25584,21 +25791,21 @@ var _user$project$Grid$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{blueprintString: _p7._0}),
+						{blueprintString: _p8._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SentBlueprint':
-				var _p11 = _p7._0;
-				if (_p11.ctor === 'Ok') {
+				var _p12 = _p8._0;
+				if (_p12.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{entities: _p11._0}),
+							{entities: _p12._0}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				} else {
-					var a = A2(_elm_lang$core$Debug$log, 'SentBlueprint error', _p11._0);
+					var a = A2(_elm_lang$core$Debug$log, 'SentBlueprint error', _p12._0);
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'ExportBlueprint':
@@ -25609,45 +25816,41 @@ var _user$project$Grid$update = F3(
 						_elm_lang$core$Json_Encode$list(
 							A2(_elm_lang$core$List$indexedMap, _user$project$Entity_Encoder$encodeEntity, model.entities)))
 				};
-			default:
+			case 'ClearEntities':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							entities: {ctor: '[]'}
+							entities: {ctor: '[]'},
+							blueprintString: ''
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'ReceiveExportedBlueprint':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{blueprintString: _p8._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var _p13 = A2(_user$project$Toolbox$update, _p8._0, model.toolbox);
+				var toolboxModel = _p13._0;
+				var toolboxCmd = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{toolbox: toolboxModel}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Grid$ToolboxMsg, toolboxCmd)
+				};
 		}
 	});
-var _user$project$Grid$receiveOffset = _elm_lang$core$Native_Platform.incomingPort(
-	'receiveOffset',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (x0) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (x1) {
-					return _elm_lang$core$Json_Decode$succeed(
-						{ctor: '_Tuple2', _0: x0, _1: x1});
-				},
-				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int));
-		},
-		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int)));
-var _user$project$Grid$loadBlueprint = _elm_lang$core$Native_Platform.incomingPort('loadBlueprint', _elm_lang$core$Json_Decode$value);
-var _user$project$Grid$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {cells: a, entities: b, cellSize: c, size: d, offset: e, blueprintString: f};
-	});
-var _user$project$Grid$emptyGrid = A6(
-	_user$project$Grid$Model,
-	{ctor: '[]'},
-	{ctor: '[]'},
-	32,
-	15,
-	_user$project$Point$zeroPoint,
-	'');
+var _user$project$Grid$ReceiveExportedBlueprint = function (a) {
+	return {ctor: 'ReceiveExportedBlueprint', _0: a};
+};
 var _user$project$Grid$ClearEntities = {ctor: 'ClearEntities'};
 var _user$project$Grid$ExportBlueprint = {ctor: 'ExportBlueprint'};
 var _user$project$Grid$SentBlueprint = function (a) {
@@ -25657,6 +25860,102 @@ var _user$project$Grid$BlueprintChanged = function (a) {
 	return {ctor: 'BlueprintChanged', _0: a};
 };
 var _user$project$Grid$LoadBlueprint = {ctor: 'LoadBlueprint'};
+var _user$project$Grid$blueprintInput = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _user$project$Grid$id(
+				{
+					ctor: '::',
+					_0: _user$project$GridStyles$BlueprintInput,
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$textarea,
+				{
+					ctor: '::',
+					_0: _user$project$Grid$class(
+						{
+							ctor: '::',
+							_0: _user$project$GridStyles$Input,
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Grid$BlueprintChanged),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value(model.blueprintString),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$input,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$type_('button'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value('Load Blueprint'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$LoadBlueprint),
+								_1: {ctor: '[]'}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$input,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$type_('button'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value('Export Blueprint'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ExportBlueprint),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('button'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value('Clear Entities'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ClearEntities),
+										_1: {ctor: '[]'}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
 var _user$project$Grid$view = F2(
 	function (currentGridPosition, model) {
 		var gridSize = model.cellSize * model.size;
@@ -25667,32 +25966,48 @@ var _user$project$Grid$view = F2(
 				_0: _user$project$Grid$id(
 					{
 						ctor: '::',
-						_0: _user$project$GridStyles$Grid,
+						_0: _user$project$GridStyles$GridContainer,
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
-				_0: _evancz$elm_graphics$Element$toHtml(
-					A3(
-						_evancz$elm_graphics$Collage$collage,
-						gridSize,
-						gridSize,
-						{
-							ctor: '::',
-							_0: _evancz$elm_graphics$Collage$toForm(
-								_user$project$Grid$backgroundGrid(model)),
-							_1: {
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _user$project$Grid$id(
+							{
 								ctor: '::',
-								_0: A2(_user$project$Grid$entities, model, model.entities),
-								_1: {
+								_0: _user$project$GridStyles$Grid,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _evancz$elm_graphics$Element$toHtml(
+							A3(
+								_evancz$elm_graphics$Collage$collage,
+								gridSize,
+								gridSize,
+								{
 									ctor: '::',
-									_0: A2(_user$project$Grid$hoverBlock, currentGridPosition, model),
-									_1: {ctor: '[]'}
-								}
-							}
-						})),
+									_0: _evancz$elm_graphics$Collage$toForm(
+										_user$project$Grid$backgroundGrid(model)),
+									_1: {
+										ctor: '::',
+										_0: A2(_user$project$Grid$entities, model, model.entities),
+										_1: {
+											ctor: '::',
+											_0: A2(_user$project$Grid$hoverBlock, currentGridPosition, model),
+											_1: {ctor: '[]'}
+										}
+									}
+								})),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -25701,74 +26016,13 @@ var _user$project$Grid$view = F2(
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$textarea,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onInput(_user$project$Grid$BlueprintChanged),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$value(model.blueprintString),
-										_1: {ctor: '[]'}
-									}
-								},
-								{ctor: '[]'}),
+								_elm_lang$html$Html$map,
+								_user$project$Grid$ToolboxMsg,
+								_user$project$Toolbox$view(model.toolbox)),
 							_1: {
 								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$input,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$type_('button'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value('Load Blueprint'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$LoadBlueprint),
-												_1: {ctor: '[]'}
-											}
-										}
-									},
-									{ctor: '[]'}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$input,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$type_('button'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value('Export Blueprint'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ExportBlueprint),
-													_1: {ctor: '[]'}
-												}
-											}
-										},
-										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$input,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$type_('button'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$value('Clear Entities'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ClearEntities),
-														_1: {ctor: '[]'}
-													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}
-								}
+								_0: _user$project$Grid$blueprintInput(model),
+								_1: {ctor: '[]'}
 							}
 						}),
 					_1: {ctor: '[]'}
@@ -25792,14 +26046,25 @@ var _user$project$Grid$subscriptions = function (model) {
 				_1: {
 					ctor: '::',
 					_0: _user$project$Grid$loadBlueprint(
-						function (_p12) {
+						function (_p14) {
 							return _user$project$Grid$SentBlueprint(
 								A2(
 									_elm_lang$core$Json_Decode$decodeValue,
 									_elm_lang$core$Json_Decode$list(_user$project$Entity_Decoder$decodeEntity),
-									_p12));
+									_p14));
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$core$Platform_Sub$map,
+							_user$project$Grid$ToolboxMsg,
+							_user$project$Toolbox$subscriptions(model.toolbox)),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Grid$receiveExportedBlueprint(_user$project$Grid$ReceiveExportedBlueprint),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			}
 		});
@@ -25829,6 +26094,7 @@ var _user$project$Grid$init = function () {
 	};
 }();
 
+var _user$project$SharedStyles$Copyright = {ctor: 'Copyright'};
 var _user$project$SharedStyles$Main = {ctor: 'Main'};
 var _user$project$SharedStyles$css = function (_p0) {
 	return _rtfeldman$elm_css$Css$stylesheet(
@@ -25839,12 +26105,22 @@ var _user$project$SharedStyles$css = function (_p0) {
 		_0: A2(
 			_rtfeldman$elm_css$Css$id,
 			_user$project$SharedStyles$Main,
-			{
-				ctor: '::',
-				_0: _rtfeldman$elm_css$Css$displayFlex,
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
+			{ctor: '[]'}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_rtfeldman$elm_css$Css$id,
+				_user$project$SharedStyles$Copyright,
+				{
+					ctor: '::',
+					_0: A2(
+						_rtfeldman$elm_css$Css$margin2,
+						_rtfeldman$elm_css$Css$px(20),
+						_rtfeldman$elm_css$Css$zero),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
 	});
 
 var _user$project$Main$helpText = A2(
@@ -25906,6 +26182,16 @@ var _user$project$Main$helpText = A2(
 			}
 		}
 	});
+var _user$project$Main$infoView = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _user$project$Main$helpText,
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$styles = function (_p0) {
 	return _elm_lang$html$Html_Attributes$style(
 		_rtfeldman$elm_css$Css$asPairs(_p0));
@@ -25914,9 +26200,9 @@ var _user$project$Main$_p1 = _rtfeldman$elm_css_helpers$Html_CssHelpers$withName
 var _user$project$Main$id = _user$project$Main$_p1.id;
 var _user$project$Main$class = _user$project$Main$_p1.$class;
 var _user$project$Main$classList = _user$project$Main$_p1.classList;
-var _user$project$Main$Model = F4(
-	function (a, b, c, d) {
-		return {grid: a, mouseGridPosition: b, currentMousePosition: c, toolbox: d};
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {grid: a, mouseGridPosition: b, currentMousePosition: c};
 	});
 var _user$project$Main$GridMsg = function (a) {
 	return {ctor: 'GridMsg', _0: a};
@@ -25925,69 +26211,45 @@ var _user$project$Main$init = function () {
 	var _p2 = _user$project$Grid$init;
 	var gridModel = _p2._0;
 	var gridCmd = _p2._1;
-	var model = A4(_user$project$Main$Model, gridModel, _elm_lang$core$Maybe$Nothing, _user$project$Point$zeroPoint, _user$project$Toolbox$initialModel);
+	var model = A3(_user$project$Main$Model, gridModel, _elm_lang$core$Maybe$Nothing, _user$project$Point$zeroPoint);
 	return {
 		ctor: '_Tuple2',
 		_0: model,
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
 	};
 }();
-var _user$project$Main$ToolboxMsg = function (a) {
-	return {ctor: 'ToolboxMsg', _0: a};
-};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p3 = msg;
-		switch (_p3.ctor) {
-			case 'MouseMoved':
-				var _p4 = _p3._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							currentMousePosition: A2(_user$project$Point$Point, _p4.x, _p4.y),
-							mouseGridPosition: A2(_user$project$Grid$positionToGridPoint, model.grid, _p4)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ToolboxMsg':
-				var _p5 = A2(_user$project$Toolbox$update, _p3._0, model.toolbox);
-				var toolboxModel = _p5._0;
-				var toolboxCmd = _p5._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{toolbox: toolboxModel}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$ToolboxMsg, toolboxCmd)
-				};
-			default:
-				var _p6 = A3(_user$project$Grid$update, _p3._0, model.toolbox, model.grid);
-				var gridModel = _p6._0;
-				var gridCmd = _p6._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{grid: gridModel}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
-				};
+		if (_p3.ctor === 'MouseMoved') {
+			var _p4 = _p3._0;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						currentMousePosition: A2(_user$project$Point$Point, _p4.x, _p4.y),
+						mouseGridPosition: A2(_user$project$Grid$positionToGridPoint, model.grid, _p4)
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			var _p5 = A2(_user$project$Grid$update, _p3._0, model.grid);
+			var gridModel = _p5._0;
+			var gridCmd = _p5._1;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{grid: gridModel}),
+				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
+			};
 		}
 	});
-var _user$project$Main$infoView = function (model) {
+var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _user$project$Main$id(
-				{
-					ctor: '::',
-					_0: _user$project$GridStyles$Info,
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
+		{ctor: '[]'},
 		{
 			ctor: '::',
 			_0: A2(
@@ -26002,13 +26264,25 @@ var _user$project$Main$infoView = function (model) {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
-					{ctor: '[]'},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Current Mouse Position: '),
+						_0: _user$project$Main$id(
+							{
+								ctor: '::',
+								_0: _user$project$SharedStyles$Main,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$map,
+							_user$project$Main$GridMsg,
+							A2(_user$project$Grid$view, model.mouseGridPosition, model.grid)),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Point$view(model.currentMousePosition),
+							_0: _user$project$Main$infoView(model),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -26016,76 +26290,23 @@ var _user$project$Main$infoView = function (model) {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$div,
-						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Current Grid Position: '),
-							_1: {
-								ctor: '::',
-								_0: function () {
-									var _p7 = model.mouseGridPosition;
-									if (_p7.ctor === 'Just') {
-										return _user$project$Point$view(_p7._0);
-									} else {
-										return A2(
-											_elm_lang$html$Html$div,
-											{ctor: '[]'},
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html$text('Off grid'),
-												_1: {ctor: '[]'}
-											});
-									}
-								}(),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _user$project$Main$helpText,
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{ctor: '[]'},
+							_0: _user$project$Main$id(
 								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$map,
-										_user$project$Main$ToolboxMsg,
-										_user$project$Toolbox$view(model.toolbox)),
+									_0: _user$project$SharedStyles$Copyright,
 									_1: {ctor: '[]'}
 								}),
 							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		});
-};
-var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _user$project$Main$id(
-				{
-					ctor: '::',
-					_0: _user$project$SharedStyles$Main,
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Images ©Wube Software Inc.'),
+							_1: {ctor: '[]'}
+						}),
 					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$map,
-				_user$project$Main$GridMsg,
-				A2(_user$project$Grid$view, model.mouseGridPosition, model.grid)),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Main$infoView(model),
-				_1: {ctor: '[]'}
+				}
 			}
 		});
 };
@@ -26102,15 +26323,8 @@ var _user$project$Main$subscriptions = function (model) {
 				_user$project$Grid$subscriptions(model.grid)),
 			_1: {
 				ctor: '::',
-				_0: A2(
-					_elm_lang$core$Platform_Sub$map,
-					_user$project$Main$ToolboxMsg,
-					_user$project$Toolbox$subscriptions(model.toolbox)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$MouseMoved),
-					_1: {ctor: '[]'}
-				}
+				_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$MouseMoved),
+				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -26158,6 +26372,12 @@ for (var publicModule in Elm)
 
 /***/ }),
 /* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "gui.png";
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -26247,7 +26467,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26304,14 +26524,14 @@ module.exports = {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils   = __webpack_require__(7);
-var trees   = __webpack_require__(35);
+var trees   = __webpack_require__(36);
 var adler32 = __webpack_require__(13);
 var crc32   = __webpack_require__(14);
 var msg     = __webpack_require__(15);
@@ -28166,7 +28386,7 @@ exports.deflateTune = deflateTune;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28499,7 +28719,7 @@ module.exports = function inflate_fast(strm, start) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28509,8 +28729,8 @@ module.exports = function inflate_fast(strm, start) {
 var utils         = __webpack_require__(7);
 var adler32       = __webpack_require__(13);
 var crc32         = __webpack_require__(14);
-var inflate_fast  = __webpack_require__(32);
-var inflate_table = __webpack_require__(34);
+var inflate_fast  = __webpack_require__(33);
+var inflate_table = __webpack_require__(35);
 
 var CODES = 0;
 var LENS = 1;
@@ -30044,7 +30264,7 @@ exports.inflateUndermine = inflateUndermine;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -30378,7 +30598,7 @@ module.exports = function inflate_table(type, lens, lens_index, codes, table, ta
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31587,7 +31807,7 @@ exports._tr_align = _tr_align;
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31623,21 +31843,21 @@ module.exports = ZStream;
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(2)
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(16)
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Stream = (function (){
@@ -31655,14 +31875,14 @@ exports.PassThrough = __webpack_require__(16);
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(10)
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -31855,7 +32075,7 @@ module.exports = __webpack_require__(10)
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(1)))
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -31892,7 +32112,7 @@ var stylesInDom = {},
 	singletonElement = null,
 	singletonCounter = 0,
 	styleElementsInsertedAtTop = [],
-	fixUrls = __webpack_require__(43);
+	fixUrls = __webpack_require__(44);
 
 module.exports = function(list, options) {
 	if(typeof DEBUG !== "undefined" && DEBUG) {
@@ -32168,7 +32388,7 @@ function updateLink(linkElement, options, obj) {
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports) {
 
 
@@ -32263,7 +32483,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -32277,7 +32497,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(42)(content, options);
+var update = __webpack_require__(43)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -32294,7 +32514,7 @@ if(false) {
 }
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -32347,13 +32567,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(41);
+__webpack_require__(42);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -32427,7 +32647,7 @@ function config (name) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -32456,7 +32676,7 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -32467,7 +32687,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -32522,13 +32742,13 @@ function exportBlueprint(entities, callback) {
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(21);

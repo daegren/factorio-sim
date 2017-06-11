@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, img)
 import Html.Attributes exposing (src, alt)
 import Html.CssHelpers
 import ToolboxStyles exposing (Classes(..), Ids(..))
+import Entity.Image
 import Html.Events exposing (onClick)
 import Keyboard
 import Input exposing (mapKeyboardToInput, Input(..))
@@ -20,21 +21,15 @@ type alias Model =
     }
 
 
-type alias Tool =
-    { name : String
-    , toolType : ToolType
-    }
-
-
-type ToolType
-    = Clear
-    | TransportBelt
+type Tool
+    = Placeable Entity
+    | Clear
 
 
 initialModel : Model
 initialModel =
     { tools =
-        [ clearTool, transportBeltTool ]
+        [ clearTool, transportBeltTool, fastTransportBeltTool, expressTransportBeltTool ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -42,43 +37,32 @@ initialModel =
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
 currentToolToEntity { currentTool, currentDirection } position =
-    case currentTool.toolType of
+    case currentTool of
         Clear ->
             Nothing
 
-        TransportBelt ->
-            Just (Entity Entity.TransportBelt position currentDirection)
+        Placeable entity ->
+            Just { entity | position = position, direction = currentDirection }
 
 
 clearTool : Tool
 clearTool =
-    Tool "Clear Tool" Clear
+    Clear
 
 
 transportBeltTool : Tool
 transportBeltTool =
-    Tool "Transport Belt" TransportBelt
+    Placeable (Entity.toolboxEntity TransportBelt)
 
 
-imageForTool : Direction -> Tool -> String
-imageForTool direction tool =
-    case tool.toolType of
-        Clear ->
-            "assets/images/cancel.png"
+fastTransportBeltTool : Tool
+fastTransportBeltTool =
+    Placeable (Entity.toolboxEntity FastTransportBelt)
 
-        TransportBelt ->
-            case direction of
-                Up ->
-                    "assets/images/belt/belt-up.png"
 
-                Right ->
-                    "assets/images/belt/belt-right.png"
-
-                Down ->
-                    "assets/images/belt/belt-down.png"
-
-                Left ->
-                    "assets/images/belt/belt-left.png"
+expressTransportBeltTool : Tool
+expressTransportBeltTool =
+    Placeable (Entity.toolboxEntity ExpressTransportBelt)
 
 
 
@@ -148,30 +132,32 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ text "ToolBox"
-        , div []
-            [ text "Current Tool:"
-            , div [ class [ CurrentTool ] ] [ currentToolView model model.currentTool ]
-            ]
-        , div []
-            [ text "Available Tools:"
-            , div [ id [ ToolboxStyles.Toolbox ] ] (List.map (selectableToolView model) model.tools)
-            ]
+        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
         ]
-
-
-currentToolView : Model -> Tool -> Html msg
-currentToolView model tool =
-    toolView model tool
 
 
 selectableToolView : Model -> Tool -> Html Msg
 selectableToolView model tool =
     div [ class [ ToolboxStyles.Tool ], onClick (SelectTool tool) ]
-        [ text tool.name
-        , toolView model tool
-        ]
+        [ toolView model tool ]
 
 
 toolView : Model -> Tool -> Html msg
 toolView model tool =
-    img [ src (imageForTool model.currentDirection tool), alt tool.name ] []
+    case tool of
+        Clear ->
+            div [ class [ Button ] ]
+                [ img [ src "assets/images/cancel.png", alt "Clear" ] []
+                ]
+
+        Placeable entity ->
+            let
+                classes =
+                    if tool == model.currentTool then
+                        [ Button, SelectedButton ]
+                    else
+                        [ Button ]
+            in
+                div [ class classes ]
+                    [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
+                    ]

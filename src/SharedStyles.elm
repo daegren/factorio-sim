@@ -6,11 +6,14 @@ import Css.Namespace exposing (namespace)
 
 type Classes
     = Main
+    | Copyright
 
 
 css : Stylesheet
 css =
     (stylesheet << namespace "main")
         [ id Main
-            [ displayFlex ]
+            []
+        , id Copyright
+            [ margin2 (px 20) zero ]
         ]
