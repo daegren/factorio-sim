@@ -37,7 +37,7 @@ css =
         , class Button
             [ textAlign center
             , alignSelf center
-            , backgroundImage (url "/assets/images/gui.png")
+            , backgroundImage (url "~assets/images/gui.png")
             , backgroundPosition2 (px 204) (px 148)
             , width (px 36)
             , height (px 36)

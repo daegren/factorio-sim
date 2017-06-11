@@ -12,6 +12,11 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/build/'
   },
+  resolve: {
+    alias: {
+      'assets': path.resolve(__dirname, 'assets')
+    }
+  },
   module: {
     rules: [{
       test: /\.elm$/,
@@ -19,7 +24,7 @@ module.exports = {
       use: 'elm-webpack-loader?debug=true'
     },
     {
-      test:    /\.html$/,
+      test:    /\.(html|png)$/,
       exclude: /node_modules/,
       use:  'file-loader?name=[name].[ext]',
     },
