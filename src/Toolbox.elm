@@ -29,7 +29,7 @@ type Tool
 initialModel : Model
 initialModel =
     { tools =
-        [ clearTool, transportBeltTool, fastTransportBeltTool, expressTransportBeltTool ]
+        clearTool :: tools
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -50,19 +50,18 @@ clearTool =
     Clear
 
 
-transportBeltTool : Tool
-transportBeltTool =
-    Placeable (Entity.toolboxEntity TransportBelt)
+toolForEntity : EntityName -> Tool
+toolForEntity entityName =
+    Placeable (Entity.toolboxEntity entityName)
 
 
-fastTransportBeltTool : Tool
-fastTransportBeltTool =
-    Placeable (Entity.toolboxEntity FastTransportBelt)
-
-
-expressTransportBeltTool : Tool
-expressTransportBeltTool =
-    Placeable (Entity.toolboxEntity ExpressTransportBelt)
+tools : List Tool
+tools =
+    let
+        list =
+            [ TransportBelt, FastTransportBelt, ExpressTransportBelt ]
+    in
+        List.map (\a -> toolForEntity a) list
 
 
 
