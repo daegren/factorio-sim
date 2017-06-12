@@ -25,53 +25,36 @@ entityImage : Direction -> String -> String
 entityImage direction path =
     case direction of
         Up ->
-            path ++ "up.png"
+            path ++ "/up.png"
 
         Right ->
-            path ++ "right.png"
+            path ++ "/right.png"
 
         Down ->
-            path ++ "down.png"
+            path ++ "/down.png"
 
         Left ->
-            path ++ "left.png"
+            path ++ "/left.png"
 
 
 image : Entity -> String
 image entity =
-    case entity.name of
-        TransportBelt ->
-            let
-                path =
-                    entityPath ++ "belt/"
-            in
+    let
+        path =
+            entityPath ++ Entity.entityID entity
+    in
+        case entity.name of
+            TransportBelt ->
                 entityImage entity.direction path
 
-        FastTransportBelt ->
-            let
-                path =
-                    entityPath ++ "fast-belt/"
-            in
+            FastTransportBelt ->
                 entityImage entity.direction path
 
-        ExpressTransportBelt ->
-            let
-                path =
-                    entityPath ++ "express-belt/"
-            in
+            ExpressTransportBelt ->
                 entityImage entity.direction path
 
-        WoodenChest ->
-            entityPath ++ "wooden-chest.png"
-
-        IronChest ->
-            entityPath ++ "iron-chest.png"
-
-        SteelChest ->
-            entityPath ++ "steel-chest.png"
-
-        Other name ->
-            entityPath ++ name ++ ".png"
+            _ ->
+                path ++ ".png"
 
 
 icon : Entity -> String
