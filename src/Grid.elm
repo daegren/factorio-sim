@@ -283,6 +283,15 @@ pointToCollageOffset { cellSize, size } point =
     ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
 
 
+addEntityOffset : Entity -> ( Float, Float ) -> ( Float, Float )
+addEntityOffset entity ( x, y ) =
+    let
+        ( sizeX, sizeY ) =
+            Entity.Image.sizeFor entity
+    in
+        ( x + (toFloat sizeX - 32) / 2, y + (toFloat sizeY - 32) / 2 )
+
+
 
 -- CSS
 
@@ -336,39 +345,49 @@ blueprintInput model =
 
 entities : Model -> List Entity -> Collage.Form
 entities model entityList =
+    List.map (buildEntity model) entityList
+        |> Collage.group
+
+
+buildEntity : Model -> Entity.Entity -> Collage.Form
+buildEntity model entity =
     let
-        buildEntity : Entity.Entity -> Collage.Form
-        buildEntity entity =
-            Element.image 32 32 (Entity.Image.image entity)
-                |> Collage.toForm
-                |> Collage.move (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y })
+        ( x, y ) =
+            Entity.Image.sizeFor entity
     in
-        List.map buildEntity entityList
-            |> Collage.group
+        Element.image x y (Entity.Image.image entity)
+            |> Collage.toForm
+            |> Collage.move
+                (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
+                    |> addEntityOffset entity
+                )
 
 
 hoverBlock : Maybe Point -> Model -> Collage.Form
 hoverBlock maybePoint model =
     case maybePoint of
         Just point ->
-            let
-                item =
-                    case model.toolbox.currentTool of
-                        Clear ->
-                            Collage.rect 32 32
-                                |> Collage.filled (Color.rgba 255 255 0 0.25)
+            case model.toolbox.currentTool of
+                Clear ->
+                    Collage.rect 32 32
+                        |> Collage.filled (Color.rgba 255 255 0 0.25)
+                        |> Collage.move (pointToCollageOffset model point)
 
-                        Placeable entity ->
-                            let
-                                dummyEntity =
-                                    { entity | direction = model.toolbox.currentDirection }
-                            in
-                                Element.image 32 32 (Entity.Image.image dummyEntity)
-                                    |> Element.opacity 0.66
-                                    |> Collage.toForm
-            in
-                item
-                    |> Collage.move (pointToCollageOffset model point)
+                Placeable entity ->
+                    let
+                        dummyEntity =
+                            { entity | direction = model.toolbox.currentDirection }
+
+                        ( sizeX, sizeY ) =
+                            Entity.Image.sizeFor dummyEntity
+                    in
+                        Element.image sizeX sizeY (Entity.Image.image dummyEntity)
+                            |> Element.opacity 0.66
+                            |> Collage.toForm
+                            |> Collage.move
+                                (pointToCollageOffset model point
+                                    |> addEntityOffset dummyEntity
+                                )
 
         Nothing ->
             Collage.rect 0 0

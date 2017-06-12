@@ -1,4 +1,4 @@
-module Entity.Image exposing (image, icon)
+module Entity.Image exposing (image, icon, sizeFor)
 
 {-| Mapping for entities to their respective images
 -}
@@ -80,3 +80,13 @@ icon entity =
 
         Other str ->
             iconPath ++ str ++ ".png"
+
+
+sizeFor : Entity -> ( Int, Int )
+sizeFor entity =
+    case entity.name of
+        WoodenChest ->
+            ( 46, 33 )
+
+        _ ->
+            ( 32, 32 )
