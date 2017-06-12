@@ -15,7 +15,7 @@ import Entity exposing (Entity, EntityName(..), Direction(..))
 
 
 type alias Model =
-    { tools : List Tool
+    { tools : List ToolRow
     , currentTool : Tool
     , currentDirection : Direction
     }
@@ -26,10 +26,14 @@ type Tool
     | Clear
 
 
+type alias ToolRow =
+    List Tool
+
+
 initialModel : Model
 initialModel =
     { tools =
-        clearTool :: tools
+        [ [ clearTool ], tools ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -55,7 +59,7 @@ toolForEntity entityName =
     Placeable (Entity.toolboxEntity entityName)
 
 
-tools : List Tool
+tools : ToolRow
 tools =
     let
         list =
@@ -131,8 +135,13 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ text "ToolBox"
-        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
+        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (toolRow model) model.tools)
         ]
+
+
+toolRow : Model -> ToolRow -> Html Msg
+toolRow model toolRow =
+    div [ class [ ToolboxStyles.ToolRow ] ] (List.map (selectableToolView model) toolRow)
 
 
 selectableToolView : Model -> Tool -> Html Msg
