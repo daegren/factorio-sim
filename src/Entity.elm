@@ -64,3 +64,28 @@ readableName entityName =
 
         Other str ->
             str
+
+
+entityID : Entity -> String
+entityID entity =
+    case entity.name of
+        TransportBelt ->
+            "transport-belt"
+
+        FastTransportBelt ->
+            "fast-transport-belt"
+
+        ExpressTransportBelt ->
+            "express-transport-belt"
+
+        WoodenChest ->
+            "wooden-chest"
+
+        IronChest ->
+            "iron-chest"
+
+        SteelChest ->
+            "steel-chest"
+
+        Other str ->
+            str

@@ -76,27 +76,11 @@ image entity =
 
 icon : Entity -> String
 icon entity =
-    case entity.name of
-        TransportBelt ->
-            iconPath ++ "transport-belt.png"
-
-        FastTransportBelt ->
-            iconPath ++ "fast-transport-belt.png"
-
-        ExpressTransportBelt ->
-            iconPath ++ "express-transport-belt.png"
-
-        WoodenChest ->
-            iconPath ++ "wooden-chest.png"
-
-        IronChest ->
-            iconPath ++ "iron-chest.png"
-
-        SteelChest ->
-            iconPath ++ "steel-chest.png"
-
-        Other str ->
-            iconPath ++ str ++ ".png"
+    let
+        id =
+            Entity.entityID entity
+    in
+        iconPath ++ id ++ ".png"
 
 
 sizeFor : Entity -> ( Int, Int )

@@ -1,14 +1,14 @@
 module Entity.Encoder exposing (..)
 
 import Json.Encode exposing (..)
-import Entity exposing (Entity, EntityName(..), Position, Direction(..))
+import Entity exposing (Entity, EntityName(..), Position, Direction(..), entityID)
 
 
 encodeEntity : Int -> Entity -> Value
 encodeEntity idx entity =
     let
         props =
-            [ ( "name", string (nameToString entity.name) )
+            [ ( "name", string (entityID entity) )
             , ( "position", encodePosition entity.position )
             , ( "entity_number", int idx )
             ]
@@ -28,31 +28,6 @@ encodePosition position =
         [ ( "x", float position.x )
         , ( "y", float position.y )
         ]
-
-
-nameToString : EntityName -> String
-nameToString entityName =
-    case entityName of
-        TransportBelt ->
-            "transport-belt"
-
-        FastTransportBelt ->
-            "fast-transport-belt"
-
-        ExpressTransportBelt ->
-            "express-transport-belt"
-
-        WoodenChest ->
-            "wooden-chest"
-
-        IronChest ->
-            "iron-chest"
-
-        SteelChest ->
-            "steel-chest"
-
-        Other str ->
-            str
 
 
 directionToInt : Direction -> Maybe Int
