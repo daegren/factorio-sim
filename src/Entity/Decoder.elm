@@ -58,5 +58,8 @@ entityName name =
         "wooden-chest" ->
             WoodenChest
 
+        "iron-chest" ->
+            IronChest
+
         _ ->
             Other name

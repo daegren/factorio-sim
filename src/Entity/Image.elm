@@ -64,6 +64,9 @@ image entity =
         WoodenChest ->
             entityPath ++ "wooden-chest.png"
 
+        IronChest ->
+            entityPath ++ "iron-chest.png"
+
         Other name ->
             entityPath ++ name ++ ".png"
 
@@ -83,6 +86,9 @@ icon entity =
         WoodenChest ->
             iconPath ++ "wooden-chest.png"
 
+        IronChest ->
+            iconPath ++ "iron-chest.png"
+
         Other str ->
             iconPath ++ str ++ ".png"
 
@@ -91,6 +97,9 @@ sizeFor : Entity -> ( Int, Int )
 sizeFor entity =
     case entity.name of
         WoodenChest ->
+            ( 46, 33 )
+
+        IronChest ->
             ( 46, 33 )
 
         _ ->

@@ -45,6 +45,9 @@ nameToString entityName =
         WoodenChest ->
             "wooden-chest"
 
+        IronChest ->
+            "iron-chest"
+
         Other str ->
             str
 
