@@ -11,6 +11,7 @@ type Classes
     | ToolList
     | Button
     | SelectedButton
+    | ToolRow
 
 
 type Ids
@@ -31,6 +32,7 @@ css =
             , flexWrap wrap
             , textAlign center
             , margin2 (px 8) zero
+            , flexDirection column
             ]
         , class Tool
             [ flex2 zero zero ]
@@ -64,4 +66,6 @@ css =
         , class ToolList
             [ displayFlex
             ]
+        , class ToolRow
+            [ displayFlex ]
         ]

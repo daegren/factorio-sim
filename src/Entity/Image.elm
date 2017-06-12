@@ -1,4 +1,4 @@
-module Entity.Image exposing (image, icon)
+module Entity.Image exposing (image, icon, sizeFor)
 
 {-| Mapping for entities to their respective images
 -}
@@ -14,6 +14,11 @@ basePath =
 iconPath : String
 iconPath =
     basePath ++ "icons/"
+
+
+entityPath : String
+entityPath =
+    basePath ++ "entity/"
 
 
 entityImage : Direction -> String -> String
@@ -38,26 +43,35 @@ image entity =
         TransportBelt ->
             let
                 path =
-                    basePath ++ "belt/"
+                    entityPath ++ "belt/"
             in
                 entityImage entity.direction path
 
         FastTransportBelt ->
             let
                 path =
-                    basePath ++ "fast-belt/"
+                    entityPath ++ "fast-belt/"
             in
                 entityImage entity.direction path
 
         ExpressTransportBelt ->
             let
                 path =
-                    basePath ++ "express-belt/"
+                    entityPath ++ "express-belt/"
             in
                 entityImage entity.direction path
 
+        WoodenChest ->
+            entityPath ++ "wooden-chest.png"
+
+        IronChest ->
+            entityPath ++ "iron-chest.png"
+
+        SteelChest ->
+            entityPath ++ "steel-chest.png"
+
         Other name ->
-            basePath ++ name ++ ".png"
+            entityPath ++ name ++ ".png"
 
 
 icon : Entity -> String
@@ -72,5 +86,30 @@ icon entity =
         ExpressTransportBelt ->
             iconPath ++ "express-transport-belt.png"
 
+        WoodenChest ->
+            iconPath ++ "wooden-chest.png"
+
+        IronChest ->
+            iconPath ++ "iron-chest.png"
+
+        SteelChest ->
+            iconPath ++ "steel-chest.png"
+
         Other str ->
             iconPath ++ str ++ ".png"
+
+
+sizeFor : Entity -> ( Int, Int )
+sizeFor entity =
+    case entity.name of
+        WoodenChest ->
+            ( 46, 33 )
+
+        IronChest ->
+            ( 46, 33 )
+
+        SteelChest ->
+            ( 46, 33 )
+
+        _ ->
+            ( 32, 32 )
