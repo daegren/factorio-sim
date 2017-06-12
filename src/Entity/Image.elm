@@ -56,6 +56,9 @@ image entity =
             in
                 entityImage entity.direction path
 
+        WoodenChest ->
+            basePath ++ "wooden-chest.png"
+
         Other name ->
             basePath ++ name ++ ".png"
 
@@ -71,6 +74,9 @@ icon entity =
 
         ExpressTransportBelt ->
             iconPath ++ "express-transport-belt.png"
+
+        WoodenChest ->
+            iconPath ++ "wooden-chest.png"
 
         Other str ->
             iconPath ++ str ++ ".png"

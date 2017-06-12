@@ -28,6 +28,7 @@ type EntityName
     = TransportBelt
     | FastTransportBelt
     | ExpressTransportBelt
+    | WoodenChest
     | Other String
 
 
@@ -49,6 +50,9 @@ readableName entityName =
 
         ExpressTransportBelt ->
             "Express Transport Belt"
+
+        WoodenChest ->
+            "Wooden Chest"
 
         Other str ->
             str

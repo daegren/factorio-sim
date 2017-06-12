@@ -33,7 +33,7 @@ type alias ToolRow =
 initialModel : Model
 initialModel =
     { tools =
-        [ [ clearTool ], tools ]
+        [ [ clearTool ], chestTools, transportBeltTools ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -59,13 +59,19 @@ toolForEntity entityName =
     Placeable (Entity.toolboxEntity entityName)
 
 
-tools : ToolRow
-tools =
-    let
-        list =
-            [ TransportBelt, FastTransportBelt, ExpressTransportBelt ]
-    in
-        List.map (\a -> toolForEntity a) list
+chestTools : ToolRow
+chestTools =
+    buildToolRow [ WoodenChest ]
+
+
+transportBeltTools : ToolRow
+transportBeltTools =
+    buildToolRow [ TransportBelt, FastTransportBelt, ExpressTransportBelt ]
+
+
+buildToolRow : List EntityName -> ToolRow
+buildToolRow entityNameList =
+    List.map (\a -> toolForEntity a) entityNameList
 
 
 

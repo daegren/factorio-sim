@@ -55,5 +55,8 @@ entityName name =
         "express-transport-belt" ->
             ExpressTransportBelt
 
+        "wooden-chest" ->
+            WoodenChest
+
         _ ->
             Other name

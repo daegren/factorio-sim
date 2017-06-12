@@ -42,6 +42,9 @@ nameToString entityName =
         ExpressTransportBelt ->
             "express-transport-belt"
 
+        WoodenChest ->
+            "wooden-chest"
+
         Other str ->
             str
 
