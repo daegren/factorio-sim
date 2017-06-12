@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.3
+
+### New Features
+
+ * Added 3 new entities `wooden-chest`, `iron-chest` and `steel-chest`
+
+### Changes
+
+ * Updated toolbox UI to show tools in rows, more like the in-game UI.
+
 ## 0.2
 
 ### New Features
