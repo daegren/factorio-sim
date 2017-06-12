@@ -1,6 +1,6 @@
 port module Grid exposing (..)
 
-import Html exposing (Html, div, input, textarea)
+import Html exposing (Html, div, input, textarea, text)
 import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
@@ -165,6 +165,7 @@ type Msg
     | ExportBlueprint
     | ClearEntities
     | ReceiveExportedBlueprint String
+    | ChangeGridSize Int
     | ToolboxMsg Toolbox.Msg
 
 
@@ -228,6 +229,13 @@ update msg model =
 
         ReceiveExportedBlueprint blueprintString ->
             ( { model | blueprintString = blueprintString }, Cmd.none )
+
+        ChangeGridSize amount ->
+            let
+                newSize =
+                    model.size + amount
+            in
+                ( { model | size = newSize }, Random.generate RandomGrid (generateGrid newSize) )
 
         ToolboxMsg msg ->
             let
@@ -329,8 +337,20 @@ view currentGridPosition model =
             , div []
                 [ Html.map ToolboxMsg (Toolbox.view model.toolbox)
                 , blueprintInput model
+                , gridSizeView
                 ]
             ]
+
+
+gridSizeView : Html Msg
+gridSizeView =
+    div []
+        [ text "Change grid size"
+        , div []
+            [ input [ type_ "button", value "-", onClick (ChangeGridSize -2) ] []
+            , input [ type_ "button", value "+", onClick (ChangeGridSize 2) ] []
+            ]
+        ]
 
 
 blueprintInput : Model -> Html Msg

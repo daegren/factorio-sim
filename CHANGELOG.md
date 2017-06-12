@@ -5,6 +5,7 @@
 ### New Features
 
  * Added 3 new entities `wooden-chest`, `iron-chest` and `steel-chest`
+ * Allow user to change the grid size to accommodate larger blueprints
 
 ### Changes
 
