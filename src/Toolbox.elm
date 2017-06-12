@@ -61,7 +61,7 @@ toolForEntity entityName =
 
 chestTools : ToolRow
 chestTools =
-    buildToolRow [ WoodenChest, IronChest ]
+    buildToolRow [ WoodenChest, IronChest, SteelChest ]
 
 
 transportBeltTools : ToolRow

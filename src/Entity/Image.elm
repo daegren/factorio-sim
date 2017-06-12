@@ -67,6 +67,9 @@ image entity =
         IronChest ->
             entityPath ++ "iron-chest.png"
 
+        SteelChest ->
+            entityPath ++ "steel-chest.png"
+
         Other name ->
             entityPath ++ name ++ ".png"
 
@@ -89,6 +92,9 @@ icon entity =
         IronChest ->
             iconPath ++ "iron-chest.png"
 
+        SteelChest ->
+            iconPath ++ "steel-chest.png"
+
         Other str ->
             iconPath ++ str ++ ".png"
 
@@ -100,6 +106,9 @@ sizeFor entity =
             ( 46, 33 )
 
         IronChest ->
+            ( 46, 33 )
+
+        SteelChest ->
             ( 46, 33 )
 
         _ ->
