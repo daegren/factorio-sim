@@ -33,7 +33,7 @@ type alias ToolRow =
 initialModel : Model
 initialModel =
     { tools =
-        [ [ clearTool ], chestTools, transportBeltTools ]
+        [ chestTools, transportBeltTools ]
     , currentTool = clearTool
     , currentDirection = Up
     }
@@ -141,6 +141,7 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ text "ToolBox"
+        , selectableToolView model clearTool
         , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (toolRow model) model.tools)
         ]
 
