@@ -64,7 +64,7 @@ logisticsToolGroup =
 
 productionToolGroup : ToolGroup
 productionToolGroup =
-    ToolGroup [] Production
+    ToolGroup [ assemblingMachineTools ] Production
 
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
@@ -95,6 +95,11 @@ chestTools =
 transportBeltTools : ToolRow
 transportBeltTools =
     buildToolRow [ TransportBelt, FastTransportBelt, ExpressTransportBelt ]
+
+
+assemblingMachineTools : ToolRow
+assemblingMachineTools =
+    buildToolRow [ AssemblingMachine1 ]
 
 
 buildToolRow : List EntityName -> ToolRow

@@ -31,6 +31,7 @@ type EntityName
     | WoodenChest
     | IronChest
     | SteelChest
+    | AssemblingMachine1
     | Other String
 
 
@@ -62,6 +63,9 @@ readableName entityName =
         SteelChest ->
             "Steel Chest"
 
+        AssemblingMachine1 ->
+            "Assembling Machine 1"
+
         Other str ->
             str
 
@@ -86,6 +90,9 @@ entityID entity =
 
         SteelChest ->
             "steel-chest"
+
+        AssemblingMachine1 ->
+            "assembling-machine-1"
 
         Other str ->
             str
