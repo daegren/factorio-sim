@@ -74,6 +74,23 @@ removeEntity point entity acc =
         acc
 
 
+isEntityAtPoint : Point -> Entity -> Bool
+isEntityAtPoint point entity =
+    case Entity.sizeFor entity of
+        Square size ->
+            let
+                ( min, max ) =
+                    ( floor (toFloat size / 2) * -1, floor (toFloat size / 2) )
+
+                ( minX, maxX ) =
+                    ( point.x + min, point.x + max )
+
+                ( minY, maxY ) =
+                    ( point.y + min, point.y + max )
+            in
+                (minX <= floor entity.position.x && floor entity.position.x <= maxX && minY <= floor entity.position.y && floor entity.position.y <= maxY)
+
+
 
 -- GENERATORS
 
