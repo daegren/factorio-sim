@@ -16,7 +16,7 @@ import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (Tool(..))
-import Entity exposing (Entity)
+import Entity exposing (Entity, Size(..))
 import Collage
 import Element
 
@@ -267,12 +267,8 @@ positionToGridPoint grid position =
         y =
             floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
-        gridSize =
-            grid.size - 1
-
         gridMax =
-            (toFloat width / 2 / toFloat grid.cellSize)
-                |> floor
+            floor (toFloat grid.size / 2)
 
         gridMin =
             gridMax * -1
@@ -283,7 +279,7 @@ positionToGridPoint grid position =
             Just (Point x y)
 
 
-{-| Converts a grid point into an {x, y} coordinate in the collage.
+{-| Converts a grid point into an (x, y) coordinate in the collage. This represents the center of the cell.
 
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
@@ -291,13 +287,17 @@ pointToCollageOffset { cellSize, size } point =
     ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
 
 
+{-| Applies an offset to the image based on the entity size.
+-}
 addEntityOffset : Entity -> ( Float, Float ) -> ( Float, Float )
 addEntityOffset entity ( x, y ) =
     let
-        ( sizeX, sizeY ) =
+        ( imageSizeX, imageSizeY ) =
             Entity.Image.sizeFor entity
     in
-        ( x + (toFloat sizeX - 32) / 2, y + (toFloat sizeY - 32) / 2 )
+        case Entity.sizeFor entity of
+            Square size ->
+                ( x + (toFloat imageSizeX - 32 * toFloat size) / 2, y + (toFloat imageSizeY - 32 * toFloat size) / 2 )
 
 
 

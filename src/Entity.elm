@@ -12,6 +12,10 @@ zeroPosition =
     { x = 0.0, y = 0.0 }
 
 
+type Size
+    = Square Int
+
+
 type alias Entity =
     { name : EntityName
     , position : Position
@@ -40,6 +44,16 @@ type Direction
     | Right
     | Down
     | Left
+
+
+sizeFor : Entity -> Size
+sizeFor { name } =
+    case name of
+        AssemblingMachine1 ->
+            Square 3
+
+        _ ->
+            Square 1
 
 
 readableName : EntityName -> String
