@@ -15,10 +15,22 @@ import Entity exposing (Entity, EntityName(..), Direction(..))
 
 
 type alias Model =
-    { tools : List ToolRow
+    { tools : List ToolGroup
     , currentTool : Tool
     , currentDirection : Direction
+    , currentToolGroup : ToolGroupType
     }
+
+
+type alias ToolGroup =
+    { tools : List ToolRow
+    , type_ : ToolGroupType
+    }
+
+
+type ToolGroupType
+    = Logistics
+    | Production
 
 
 type Tool
@@ -33,10 +45,26 @@ type alias ToolRow =
 initialModel : Model
 initialModel =
     { tools =
-        [ chestTools, transportBeltTools ]
+        [ logisticsToolGroup, productionToolGroup ]
     , currentTool = clearTool
     , currentDirection = Up
+    , currentToolGroup = Logistics
     }
+
+
+emptyToolGroup : ToolGroup
+emptyToolGroup =
+    ToolGroup [] Logistics
+
+
+logisticsToolGroup : ToolGroup
+logisticsToolGroup =
+    ToolGroup [ chestTools, transportBeltTools ] Logistics
+
+
+productionToolGroup : ToolGroup
+productionToolGroup =
+    ToolGroup [] Production
 
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
@@ -90,6 +118,7 @@ subscriptions model =
 type Msg
     = SelectTool Tool
     | KeyPressed Keyboard.KeyCode
+    | SelectTab ToolGroupType
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -107,6 +136,9 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        SelectTab type_ ->
+            ( { model | currentToolGroup = type_ }, Cmd.none )
 
 
 rotateDirection : Direction -> Direction
@@ -139,11 +171,51 @@ rotateDirection orientation =
 
 view : Model -> Html Msg
 view model =
-    div [ id [ Container ] ]
-        [ text "ToolBox"
-        , selectableToolView model clearTool
-        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (toolRow model) model.tools)
-        ]
+    let
+        toolGroup =
+            List.filter (\toolGroup -> toolGroup.type_ == model.currentToolGroup) model.tools
+                |> List.head
+    in
+        div [ id [ Container ] ]
+            [ text "ToolBox"
+            , selectableToolView model clearTool
+            , div [ id [ ToolGroupContainer ] ]
+                [ div [ id [ ToolboxStyles.ToolGroup ] ] (List.map (toolGroupTabs model) model.tools)
+                , toolGroupView model toolGroup
+                ]
+            ]
+
+
+imageForToolGroup : ToolGroup -> String
+imageForToolGroup toolGroup =
+    case toolGroup.type_ of
+        Logistics ->
+            "assets/images/item-group/logistics.png"
+
+        Production ->
+            "assets/images/item-group/production.png"
+
+
+toolGroupTabs : Model -> ToolGroup -> Html Msg
+toolGroupTabs model toolGroup =
+    let
+        classes =
+            if toolGroup.type_ == model.currentToolGroup then
+                class [ ToolGroupItem, SelectedToolGroupItem ]
+            else
+                class [ ToolGroupItem ]
+    in
+        div [ classes, onClick (SelectTab toolGroup.type_) ] [ img [ src (imageForToolGroup toolGroup) ] [] ]
+
+
+toolGroupView : Model -> Maybe ToolGroup -> Html Msg
+toolGroupView model toolGroupMaybe =
+    case toolGroupMaybe of
+        Just toolGroup ->
+            div [ id [ ToolboxItems ] ] (List.map (toolRow model) toolGroup.tools)
+
+        Nothing ->
+            text "Please select a tool group."
 
 
 toolRow : Model -> ToolRow -> Html Msg

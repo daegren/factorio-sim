@@ -12,11 +12,15 @@ type Classes
     | Button
     | SelectedButton
     | ToolRow
+    | ToolGroupItem
+    | SelectedToolGroupItem
 
 
 type Ids
     = Container
     | ToolboxItems
+    | ToolGroup
+    | ToolGroupContainer
 
 
 css : Stylesheet
@@ -34,8 +38,13 @@ css =
             , margin2 (px 8) zero
             , flexDirection column
             ]
-        , class Tool
-            [ flex2 zero zero ]
+        , id ToolGroup [ displayFlex ]
+        , id ToolGroupContainer
+            [ backgroundColor (hex "#888")
+            , padding (px 4)
+            , margin2 (px 4) zero
+            ]
+        , class Tool [ flex2 zero zero ]
         , class Button
             [ textAlign center
             , alignSelf center
@@ -51,21 +60,18 @@ css =
                     ]
                 ]
             ]
-        , class SelectedButton
-            [ backgroundPosition2 (px 204) zero
-            ]
-        , class CurrentTool
-            [ margin (px 8)
+        , class SelectedButton [ backgroundPosition2 (px 204) zero ]
+        , class CurrentTool [ margin (px 8) ]
+        , class ToolList [ displayFlex ]
+        , class ToolRow [ displayFlex ]
+        , class ToolGroupItem
+            [ backgroundImage (url "~assets/images/button-72.png")
+            , backgroundPosition2 (px 0) (px -2)
+            , margin2 zero (px 2)
+            , width (px 72)
+            , height (px 72)
             , children
-                [ img
-                    [ width (px 32)
-                    , height (px 32)
-                    ]
-                ]
+                [ img [ width (px 68), height (px 68), padding (px 2) ] ]
             ]
-        , class ToolList
-            [ displayFlex
-            ]
-        , class ToolRow
-            [ displayFlex ]
+        , class SelectedToolGroupItem [ backgroundPosition2 (px 74) (px -2) ]
         ]
