@@ -67,5 +67,8 @@ entityName name =
         "assembling-machine-1" ->
             AssemblingMachine1
 
+        "assembling-machine-2" ->
+            AssemblingMachine2
+
         _ ->
             Other name

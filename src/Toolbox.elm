@@ -99,7 +99,7 @@ transportBeltTools =
 
 assemblingMachineTools : ToolRow
 assemblingMachineTools =
-    buildToolRow [ AssemblingMachine1 ]
+    buildToolRow [ AssemblingMachine1, AssemblingMachine2 ]
 
 
 buildToolRow : List EntityName -> ToolRow

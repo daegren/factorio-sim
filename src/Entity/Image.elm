@@ -81,5 +81,8 @@ sizeFor entity =
         AssemblingMachine1 ->
             ( 97, 97 )
 
+        AssemblingMachine2 ->
+            ( 98, 100 )
+
         _ ->
             ( 32, 32 )
