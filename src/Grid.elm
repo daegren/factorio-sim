@@ -75,6 +75,20 @@ isEntityAtPoint point entity =
         Square size ->
             let
                 ( min, max ) =
+                    getBoundingRectForEntity entity
+            in
+                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
+
+
+getBoundingRectForEntity : Entity -> ( Point, Point )
+getBoundingRectForEntity entity =
+    case Entity.sizeFor entity of
+        Square size ->
+            let
+                point =
+                    Entity.pointFromPosition entity.position
+
+                ( min, max ) =
                     ( floor (toFloat size / 2) * -1, floor (toFloat size / 2) )
 
                 ( minX, maxX ) =
@@ -83,7 +97,7 @@ isEntityAtPoint point entity =
                 ( minY, maxY ) =
                     ( point.y + min, point.y + max )
             in
-                (minX <= floor entity.position.x && floor entity.position.x <= maxX && minY <= floor entity.position.y && floor entity.position.y <= maxY)
+                ( Point minX minY, Point maxX maxY )
 
 
 
