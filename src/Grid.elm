@@ -315,15 +315,15 @@ pointToCollageOffset { cellSize, size } point =
 
 {-| Applies an offset to the image based on the entity size.
 -}
-addEntityOffset : Entity -> ( Float, Float ) -> ( Float, Float )
-addEntityOffset entity ( x, y ) =
+addEntityOffset : Model -> Entity -> ( Float, Float ) -> ( Float, Float )
+addEntityOffset { cellSize } entity ( x, y ) =
     let
         ( imageSizeX, imageSizeY ) =
             Entity.Image.sizeFor entity
     in
         case Entity.sizeFor entity of
             Square size ->
-                ( x + (toFloat imageSizeX - 32 * toFloat size) / 2, y + (toFloat imageSizeY - 32 * toFloat size) / 2 )
+                ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
 
 
 
@@ -405,7 +405,7 @@ buildEntity model entity =
             |> Collage.toForm
             |> Collage.move
                 (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
-                    |> addEntityOffset entity
+                    |> addEntityOffset model entity
                 )
 
 
@@ -432,7 +432,7 @@ hoverBlock maybePoint model =
                             |> Collage.toForm
                             |> Collage.move
                                 (pointToCollageOffset model point
-                                    |> addEntityOffset dummyEntity
+                                    |> addEntityOffset model dummyEntity
                                 )
 
         Nothing ->
