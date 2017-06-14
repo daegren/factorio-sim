@@ -15,10 +15,22 @@ import Entity exposing (Entity, EntityName(..), Direction(..))
 
 
 type alias Model =
-    { tools : List Tool
+    { tools : List ToolGroup
     , currentTool : Tool
     , currentDirection : Direction
+    , currentToolGroup : ToolGroupType
     }
+
+
+type alias ToolGroup =
+    { tools : List ToolRow
+    , type_ : ToolGroupType
+    }
+
+
+type ToolGroupType
+    = Logistics
+    | Production
 
 
 type Tool
@@ -26,13 +38,33 @@ type Tool
     | Clear
 
 
+type alias ToolRow =
+    List Tool
+
+
 initialModel : Model
 initialModel =
     { tools =
-        [ clearTool, transportBeltTool, fastTransportBeltTool, expressTransportBeltTool ]
+        [ logisticsToolGroup, productionToolGroup ]
     , currentTool = clearTool
     , currentDirection = Up
+    , currentToolGroup = Logistics
     }
+
+
+emptyToolGroup : ToolGroup
+emptyToolGroup =
+    ToolGroup [] Logistics
+
+
+logisticsToolGroup : ToolGroup
+logisticsToolGroup =
+    ToolGroup [ chestTools, transportBeltTools ] Logistics
+
+
+productionToolGroup : ToolGroup
+productionToolGroup =
+    ToolGroup [ assemblingMachineTools ] Production
 
 
 currentToolToEntity : Model -> Entity.Position -> Maybe Entity
@@ -50,19 +82,29 @@ clearTool =
     Clear
 
 
-transportBeltTool : Tool
-transportBeltTool =
-    Placeable (Entity.toolboxEntity TransportBelt)
+toolForEntity : EntityName -> Tool
+toolForEntity entityName =
+    Placeable (Entity.toolboxEntity entityName)
 
 
-fastTransportBeltTool : Tool
-fastTransportBeltTool =
-    Placeable (Entity.toolboxEntity FastTransportBelt)
+chestTools : ToolRow
+chestTools =
+    buildToolRow [ WoodenChest, IronChest, SteelChest ]
 
 
-expressTransportBeltTool : Tool
-expressTransportBeltTool =
-    Placeable (Entity.toolboxEntity ExpressTransportBelt)
+transportBeltTools : ToolRow
+transportBeltTools =
+    buildToolRow [ TransportBelt, FastTransportBelt, ExpressTransportBelt ]
+
+
+assemblingMachineTools : ToolRow
+assemblingMachineTools =
+    buildToolRow [ AssemblingMachine1, AssemblingMachine2, AssemblingMachine3 ]
+
+
+buildToolRow : List EntityName -> ToolRow
+buildToolRow entityNameList =
+    List.map (\a -> toolForEntity a) entityNameList
 
 
 
@@ -81,6 +123,7 @@ subscriptions model =
 type Msg
     = SelectTool Tool
     | KeyPressed Keyboard.KeyCode
+    | SelectTab ToolGroupType
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -98,6 +141,9 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        SelectTab type_ ->
+            ( { model | currentToolGroup = type_ }, Cmd.none )
 
 
 rotateDirection : Direction -> Direction
@@ -130,10 +176,56 @@ rotateDirection orientation =
 
 view : Model -> Html Msg
 view model =
-    div [ id [ Container ] ]
-        [ text "ToolBox"
-        , div [ id [ ToolboxStyles.ToolboxItems ] ] (List.map (selectableToolView model) model.tools)
-        ]
+    let
+        toolGroup =
+            List.filter (\toolGroup -> toolGroup.type_ == model.currentToolGroup) model.tools
+                |> List.head
+    in
+        div [ id [ Container ] ]
+            [ text "ToolBox"
+            , selectableToolView model clearTool
+            , div [ id [ ToolGroupContainer ] ]
+                [ div [ id [ ToolboxStyles.ToolGroup ] ] (List.map (toolGroupTabs model) model.tools)
+                , toolGroupView model toolGroup
+                ]
+            ]
+
+
+imageForToolGroup : ToolGroup -> String
+imageForToolGroup toolGroup =
+    case toolGroup.type_ of
+        Logistics ->
+            "assets/images/item-group/logistics.png"
+
+        Production ->
+            "assets/images/item-group/production.png"
+
+
+toolGroupTabs : Model -> ToolGroup -> Html Msg
+toolGroupTabs model toolGroup =
+    let
+        classes =
+            if toolGroup.type_ == model.currentToolGroup then
+                class [ ToolGroupItem, SelectedToolGroupItem ]
+            else
+                class [ ToolGroupItem ]
+    in
+        div [ classes, onClick (SelectTab toolGroup.type_) ] [ img [ src (imageForToolGroup toolGroup) ] [] ]
+
+
+toolGroupView : Model -> Maybe ToolGroup -> Html Msg
+toolGroupView model toolGroupMaybe =
+    case toolGroupMaybe of
+        Just toolGroup ->
+            div [ id [ ToolboxItems ] ] (List.map (toolRow model) toolGroup.tools)
+
+        Nothing ->
+            text "Please select a tool group."
+
+
+toolRow : Model -> ToolRow -> Html Msg
+toolRow model toolRow =
+    div [ class [ ToolboxStyles.ToolRow ] ] (List.map (selectableToolView model) toolRow)
 
 
 selectableToolView : Model -> Tool -> Html Msg

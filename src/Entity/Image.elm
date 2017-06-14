@@ -1,4 +1,4 @@
-module Entity.Image exposing (image, icon)
+module Entity.Image exposing (image, icon, sizeFor)
 
 {-| Mapping for entities to their respective images
 -}
@@ -16,61 +16,76 @@ iconPath =
     basePath ++ "icons/"
 
 
+entityPath : String
+entityPath =
+    basePath ++ "entity/"
+
+
 entityImage : Direction -> String -> String
 entityImage direction path =
     case direction of
         Up ->
-            path ++ "up.png"
+            path ++ "/up.png"
 
         Right ->
-            path ++ "right.png"
+            path ++ "/right.png"
 
         Down ->
-            path ++ "down.png"
+            path ++ "/down.png"
 
         Left ->
-            path ++ "left.png"
+            path ++ "/left.png"
 
 
 image : Entity -> String
 image entity =
-    case entity.name of
-        TransportBelt ->
-            let
-                path =
-                    basePath ++ "belt/"
-            in
+    let
+        path =
+            entityPath ++ Entity.entityID entity
+    in
+        case entity.name of
+            TransportBelt ->
                 entityImage entity.direction path
 
-        FastTransportBelt ->
-            let
-                path =
-                    basePath ++ "fast-belt/"
-            in
+            FastTransportBelt ->
                 entityImage entity.direction path
 
-        ExpressTransportBelt ->
-            let
-                path =
-                    basePath ++ "express-belt/"
-            in
+            ExpressTransportBelt ->
                 entityImage entity.direction path
 
-        Other name ->
-            basePath ++ name ++ ".png"
+            _ ->
+                path ++ ".png"
 
 
 icon : Entity -> String
 icon entity =
+    let
+        id =
+            Entity.entityID entity
+    in
+        iconPath ++ id ++ ".png"
+
+
+sizeFor : Entity -> ( Int, Int )
+sizeFor entity =
     case entity.name of
-        TransportBelt ->
-            iconPath ++ "transport-belt.png"
+        WoodenChest ->
+            ( 46, 33 )
 
-        FastTransportBelt ->
-            iconPath ++ "fast-transport-belt.png"
+        IronChest ->
+            ( 46, 33 )
 
-        ExpressTransportBelt ->
-            iconPath ++ "express-transport-belt.png"
+        SteelChest ->
+            ( 46, 33 )
 
-        Other str ->
-            iconPath ++ str ++ ".png"
+        AssemblingMachine1 ->
+            ( 96, 96 )
+
+        AssemblingMachine2 ->
+            ( 96, 96 )
+
+        AssemblingMachine3 ->
+            ( 96, 106 )
+
+        _ ->
+            ( 32, 32 )

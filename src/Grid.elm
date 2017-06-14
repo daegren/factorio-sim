@@ -1,6 +1,6 @@
 port module Grid exposing (..)
 
-import Html exposing (Html, div, input, textarea)
+import Html exposing (Html, div, input, textarea, text)
 import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
@@ -16,7 +16,7 @@ import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (Tool(..))
-import Entity exposing (Entity)
+import Entity exposing (Entity, Size(..))
 import Collage
 import Element
 
@@ -50,28 +50,54 @@ type alias BackgroundCell =
 
 {-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
 
-    addEntity { x = 0, y = 1} entity entities
+    addEntity entity entities
 -}
-addEntity : Point -> Maybe Entity -> List Entity -> List Entity
-addEntity point entityMaybe entityList =
-    case entityMaybe of
-        Just entity ->
-            entity :: List.foldl (removeEntity point) [] entityList
+addEntity : Entity -> List Entity -> List Entity
+addEntity entity entityList =
+    entity :: replaceEntityInsideEntity entity entityList
 
-        Nothing ->
+
+replaceEntityInsideEntity : Entity -> List Entity -> List Entity
+replaceEntityInsideEntity entity entityList =
+    let
+        ( min, max ) =
+            Entity.getBoundingRect entity
+    in
+        List.filter
+            (\e ->
+                let
+                    ( entityMin, entityMax ) =
+                        Entity.getBoundingRect e
+                in
+                    not
+                        ((min.x <= entityMax.x && max.x >= entityMin.x)
+                            && (min.y <= entityMax.y && max.y >= entityMin.y)
+                        )
+            )
             entityList
 
 
-{-| Remove an entity from a list of entities. Intended to be used with `List.foldl`
+{-| Remove an entity at a given point
 
-    List.foldl (removeEntity point) entities
 -}
-removeEntity : Point -> Entity -> List Entity -> List Entity
-removeEntity point entity acc =
-    if floor entity.position.x /= point.x || floor entity.position.y /= point.y then
-        entity :: acc
-    else
-        acc
+removeEntityAtPoint : Point -> List Entity -> List Entity
+removeEntityAtPoint point entityList =
+    let
+        isEntityNotAtPoint point entity =
+            not (isEntityAtPoint point entity)
+    in
+        List.filter (isEntityNotAtPoint point) entityList
+
+
+isEntityAtPoint : Point -> Entity -> Bool
+isEntityAtPoint point entity =
+    case Entity.sizeFor entity of
+        Square size ->
+            let
+                ( min, max ) =
+                    Entity.getBoundingRect entity
+            in
+                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
 
 
 
@@ -165,6 +191,7 @@ type Msg
     | ExportBlueprint
     | ClearEntities
     | ReceiveExportedBlueprint String
+    | ChangeGridSize Int
     | ToolboxMsg Toolbox.Msg
 
 
@@ -190,12 +217,12 @@ update msg model =
                                 Placeable entity ->
                                     let
                                         newEntity =
-                                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
+                                            { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
                                     in
-                                        addEntity point newEntity model.entities
+                                        addEntity newEntity model.entities
 
                                 Clear ->
-                                    List.foldl (removeEntity point) [] model.entities
+                                    removeEntityAtPoint point model.entities
                     in
                         ( { model | entities = cells }, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity cells)) )
 
@@ -229,6 +256,13 @@ update msg model =
         ReceiveExportedBlueprint blueprintString ->
             ( { model | blueprintString = blueprintString }, Cmd.none )
 
+        ChangeGridSize amount ->
+            let
+                newSize =
+                    model.size + amount
+            in
+                ( { model | size = newSize }, Random.generate RandomGrid (generateGrid newSize) )
+
         ToolboxMsg msg ->
             let
                 ( toolboxModel, toolboxCmd ) =
@@ -259,12 +293,8 @@ positionToGridPoint grid position =
         y =
             floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
-        gridSize =
-            grid.size - 1
-
         gridMax =
-            (toFloat width / 2 / toFloat grid.cellSize)
-                |> floor
+            floor (toFloat grid.size / 2)
 
         gridMin =
             gridMax * -1
@@ -275,12 +305,25 @@ positionToGridPoint grid position =
             Just (Point x y)
 
 
-{-| Converts a grid point into an {x, y} coordinate in the collage.
+{-| Converts a grid point into an (x, y) coordinate in the collage. This represents the center of the cell.
 
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
 pointToCollageOffset { cellSize, size } point =
     ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
+
+
+{-| Applies an offset to the image based on the entity size.
+-}
+addEntityOffset : Model -> Entity -> ( Float, Float ) -> ( Float, Float )
+addEntityOffset { cellSize } entity ( x, y ) =
+    let
+        ( imageSizeX, imageSizeY ) =
+            Entity.Image.sizeFor entity
+    in
+        case Entity.sizeFor entity of
+            Square size ->
+                ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
 
 
 
@@ -320,8 +363,20 @@ view currentGridPosition model =
             , div []
                 [ Html.map ToolboxMsg (Toolbox.view model.toolbox)
                 , blueprintInput model
+                , gridSizeView
                 ]
             ]
+
+
+gridSizeView : Html Msg
+gridSizeView =
+    div []
+        [ text "Change grid size"
+        , div []
+            [ input [ type_ "button", value "-", onClick (ChangeGridSize -2) ] []
+            , input [ type_ "button", value "+", onClick (ChangeGridSize 2) ] []
+            ]
+        ]
 
 
 blueprintInput : Model -> Html Msg
@@ -336,39 +391,49 @@ blueprintInput model =
 
 entities : Model -> List Entity -> Collage.Form
 entities model entityList =
+    List.map (buildEntity model) entityList
+        |> Collage.group
+
+
+buildEntity : Model -> Entity.Entity -> Collage.Form
+buildEntity model entity =
     let
-        buildEntity : Entity.Entity -> Collage.Form
-        buildEntity entity =
-            Element.image 32 32 (Entity.Image.image entity)
-                |> Collage.toForm
-                |> Collage.move (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y })
+        ( x, y ) =
+            Entity.Image.sizeFor entity
     in
-        List.map buildEntity entityList
-            |> Collage.group
+        Element.image x y (Entity.Image.image entity)
+            |> Collage.toForm
+            |> Collage.move
+                (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
+                    |> addEntityOffset model entity
+                )
 
 
 hoverBlock : Maybe Point -> Model -> Collage.Form
 hoverBlock maybePoint model =
     case maybePoint of
         Just point ->
-            let
-                item =
-                    case model.toolbox.currentTool of
-                        Clear ->
-                            Collage.rect 32 32
-                                |> Collage.filled (Color.rgba 255 255 0 0.25)
+            case model.toolbox.currentTool of
+                Clear ->
+                    Collage.rect 32 32
+                        |> Collage.filled (Color.rgba 255 255 0 0.25)
+                        |> Collage.move (pointToCollageOffset model point)
 
-                        Placeable entity ->
-                            let
-                                dummyEntity =
-                                    { entity | direction = model.toolbox.currentDirection }
-                            in
-                                Element.image 32 32 (Entity.Image.image dummyEntity)
-                                    |> Element.opacity 0.66
-                                    |> Collage.toForm
-            in
-                item
-                    |> Collage.move (pointToCollageOffset model point)
+                Placeable entity ->
+                    let
+                        dummyEntity =
+                            { entity | direction = model.toolbox.currentDirection }
+
+                        ( sizeX, sizeY ) =
+                            Entity.Image.sizeFor dummyEntity
+                    in
+                        Element.image sizeX sizeY (Entity.Image.image dummyEntity)
+                            |> Element.opacity 0.66
+                            |> Collage.toForm
+                            |> Collage.move
+                                (pointToCollageOffset model point
+                                    |> addEntityOffset model dummyEntity
+                                )
 
         Nothing ->
             Collage.rect 0 0

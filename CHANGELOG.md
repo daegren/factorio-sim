@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 0.3
+
+### New Features
+
+ * Added new entities `wooden-chest`, `iron-chest`, `steel-chest`, `assembling-machine-1`, `assembling-machine-2`, `assembling-machine-3`.
+ * Allow user to change the grid size to accommodate larger blueprints.
+
+### Changes
+
+ * Updated toolbox UI to show tools in rows, more like the in-game UI.
+ * Updated the toolbox UI to show tools in tabs like the in-game UI.
+
 ## 0.2
 
 ### New Features
