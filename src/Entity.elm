@@ -1,5 +1,7 @@
 module Entity exposing (..)
 
+import Point exposing (Point)
+
 
 type alias Position =
     { x : Float
@@ -44,6 +46,13 @@ type Direction
     | Right
     | Down
     | Left
+
+
+{-| Converts a `Point` to an `Entity.Position`
+-}
+positionFromPoint : Point -> Position
+positionFromPoint point =
+    { x = toFloat point.x, y = toFloat point.y }
 
 
 sizeFor : Entity -> Size

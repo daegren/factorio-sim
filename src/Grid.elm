@@ -52,14 +52,9 @@ type alias BackgroundCell =
 
     addEntity { x = 0, y = 1} entity entities
 -}
-addEntity : Point -> Maybe Entity -> List Entity -> List Entity
-addEntity point entityMaybe entityList =
-    case entityMaybe of
-        Just entity ->
-            entity :: List.foldl (removeEntity point) [] entityList
-
-        Nothing ->
-            entityList
+addEntity : Point -> Entity -> List Entity -> List Entity
+addEntity point entity entityList =
+    entity :: List.foldl (removeEntity point) [] entityList
 
 
 {-| Remove an entity from a list of entities. Intended to be used with `List.foldl`
@@ -68,10 +63,19 @@ addEntity point entityMaybe entityList =
 -}
 removeEntity : Point -> Entity -> List Entity -> List Entity
 removeEntity point entity acc =
-    if floor entity.position.x /= point.x || floor entity.position.y /= point.y then
+    if not (isEntityAtPoint point entity) then
         entity :: acc
     else
         acc
+
+
+removeEntityAtPoint : Point -> List Entity -> List Entity
+removeEntityAtPoint point entityList =
+    let
+        isEntityNotAtPoint point entity =
+            not (isEntityAtPoint point entity)
+    in
+        List.filter (isEntityNotAtPoint point) entityList
 
 
 isEntityAtPoint : Point -> Entity -> Bool
@@ -208,12 +212,12 @@ update msg model =
                                 Placeable entity ->
                                     let
                                         newEntity =
-                                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
+                                            { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
                                     in
                                         addEntity point newEntity model.entities
 
                                 Clear ->
-                                    List.foldl (removeEntity point) [] model.entities
+                                    removeEntityAtPoint point model.entities
                     in
                         ( { model | entities = cells }, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity cells)) )
 
