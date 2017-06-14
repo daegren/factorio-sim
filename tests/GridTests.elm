@@ -31,24 +31,24 @@ all =
             , describe "addEntity"
                 [ test "adds an entity to an empty list" <|
                     \() ->
-                        Expect.equal [ transportBeltEntity ] (Grid.addEntity (Point 0 0) transportBeltEntity [])
+                        Expect.equal [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [])
                 , test "replaces an entity that already exists" <|
                     \() ->
-                        Expect.equal [ transportBeltEntity ] (Grid.addEntity (Point 0 0) transportBeltEntity [ transportBeltEntity ])
+                        Expect.equal [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [ transportBeltEntity ])
                 , test "adds an entity if at a different point" <|
                     \() ->
                         let
                             newEntity =
                                 { transportBeltEntity | position = { x = 1, y = 1 } }
                         in
-                            Expect.equal [ newEntity, transportBeltEntity ] (Grid.addEntity (Point 1 1) newEntity [ transportBeltEntity ])
+                            Expect.equal [ newEntity, transportBeltEntity ] (Grid.addEntity newEntity [ transportBeltEntity ])
                 , test "replaces a larger entity if new entity added inside of larger entity" <|
                     \() ->
                         let
                             newEntity =
                                 { transportBeltEntity | position = { x = 1, y = 1 } }
                         in
-                            Expect.equal [ newEntity ] (Grid.addEntity (Point 1 1) newEntity [ assemblingMachineEntity ])
+                            Expect.equal [ newEntity ] (Grid.addEntity newEntity [ assemblingMachineEntity ])
                 ]
             , describe "removeEntityAtPoint"
                 [ test "removes an entity at a given point" <|

@@ -55,6 +55,11 @@ positionFromPoint point =
     { x = toFloat point.x, y = toFloat point.y }
 
 
+pointFromPosition : Position -> Point
+pointFromPosition position =
+    { x = floor position.x, y = floor position.y }
+
+
 sizeFor : Entity -> Size
 sizeFor { name } =
     case name of

@@ -50,25 +50,16 @@ type alias BackgroundCell =
 
 {-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
 
-    addEntity { x = 0, y = 1} entity entities
+    addEntity entity entities
 -}
-addEntity : Point -> Entity -> List Entity -> List Entity
-addEntity point entity entityList =
-    entity :: List.foldl (removeEntity point) [] entityList
+addEntity : Entity -> List Entity -> List Entity
+addEntity entity entityList =
+    entity :: removeEntityAtPoint (Entity.pointFromPosition entity.position) entityList
 
 
-{-| Remove an entity from a list of entities. Intended to be used with `List.foldl`
+{-| Remove an entity at a given point
 
-    List.foldl (removeEntity point) entities
 -}
-removeEntity : Point -> Entity -> List Entity -> List Entity
-removeEntity point entity acc =
-    if not (isEntityAtPoint point entity) then
-        entity :: acc
-    else
-        acc
-
-
 removeEntityAtPoint : Point -> List Entity -> List Entity
 removeEntityAtPoint point entityList =
     let
@@ -214,7 +205,7 @@ update msg model =
                                         newEntity =
                                             { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
                                     in
-                                        addEntity point newEntity model.entities
+                                        addEntity newEntity model.entities
 
                                 Clear ->
                                     removeEntityAtPoint point model.entities
