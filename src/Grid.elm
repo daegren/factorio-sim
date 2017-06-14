@@ -61,13 +61,13 @@ replaceEntityInsideEntity : Entity -> List Entity -> List Entity
 replaceEntityInsideEntity entity entityList =
     let
         ( min, max ) =
-            getBoundingRectForEntity entity
+            Entity.getBoundingRect entity
     in
         List.filter
             (\e ->
                 let
                     ( entityMin, entityMax ) =
-                        getBoundingRectForEntity e
+                        Entity.getBoundingRect e
                 in
                     not
                         ((min.x <= entityMax.x && max.x >= entityMin.x)
@@ -95,29 +95,9 @@ isEntityAtPoint point entity =
         Square size ->
             let
                 ( min, max ) =
-                    getBoundingRectForEntity entity
+                    Entity.getBoundingRect entity
             in
                 (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
-
-
-getBoundingRectForEntity : Entity -> ( Point, Point )
-getBoundingRectForEntity entity =
-    case Entity.sizeFor entity of
-        Square size ->
-            let
-                point =
-                    Entity.pointFromPosition entity.position
-
-                ( min, max ) =
-                    ( floor (toFloat size / 2) * -1, floor (toFloat size / 2) )
-
-                ( minX, maxX ) =
-                    ( point.x + min, point.x + max )
-
-                ( minY, maxY ) =
-                    ( point.y + min, point.y + max )
-            in
-                ( Point minX minY, Point maxX maxY )
 
 
 

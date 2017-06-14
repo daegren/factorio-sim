@@ -60,6 +60,28 @@ pointFromPosition position =
     { x = floor position.x, y = floor position.y }
 
 
+{-| Calculate the bounding box for a given entity. Uses the entities position to determine the bounding box.
+-}
+getBoundingRect : Entity -> ( Point, Point )
+getBoundingRect entity =
+    case sizeFor entity of
+        Square size ->
+            let
+                point =
+                    pointFromPosition entity.position
+
+                ( min, max ) =
+                    ( floor (toFloat size / 2) * -1, floor (toFloat size / 2) )
+
+                ( minX, maxX ) =
+                    ( point.x + min, point.x + max )
+
+                ( minY, maxY ) =
+                    ( point.y + min, point.y + max )
+            in
+                ( Point minX minY, Point maxX maxY )
+
+
 sizeFor : Entity -> Size
 sizeFor { name } =
     case name of
