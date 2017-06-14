@@ -39,6 +39,7 @@ type EntityName
     | SteelChest
     | AssemblingMachine1
     | AssemblingMachine2
+    | AssemblingMachine3
     | Other String
 
 
@@ -92,6 +93,9 @@ sizeFor { name } =
         AssemblingMachine2 ->
             Square 3
 
+        AssemblingMachine3 ->
+            Square 3
+
         _ ->
             Square 1
 
@@ -123,6 +127,9 @@ readableName entityName =
         AssemblingMachine2 ->
             "Assembling Machine 2"
 
+        AssemblingMachine3 ->
+            "Assembling Machine 3"
+
         Other str ->
             str
 
@@ -153,6 +160,9 @@ entityID entity =
 
         AssemblingMachine2 ->
             "assembling-machine-2"
+
+        AssemblingMachine3 ->
+            "assembling-machine-3"
 
         Other str ->
             str
