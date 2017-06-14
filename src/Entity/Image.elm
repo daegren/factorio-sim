@@ -78,5 +78,14 @@ sizeFor entity =
         SteelChest ->
             ( 46, 33 )
 
+        AssemblingMachine1 ->
+            ( 96, 96 )
+
+        AssemblingMachine2 ->
+            ( 96, 96 )
+
+        AssemblingMachine3 ->
+            ( 96, 106 )
+
         _ ->
             ( 32, 32 )

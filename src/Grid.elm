@@ -16,7 +16,7 @@ import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (Tool(..))
-import Entity exposing (Entity)
+import Entity exposing (Entity, Size(..))
 import Collage
 import Element
 
@@ -50,28 +50,54 @@ type alias BackgroundCell =
 
 {-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
 
-    addEntity { x = 0, y = 1} entity entities
+    addEntity entity entities
 -}
-addEntity : Point -> Maybe Entity -> List Entity -> List Entity
-addEntity point entityMaybe entityList =
-    case entityMaybe of
-        Just entity ->
-            entity :: List.foldl (removeEntity point) [] entityList
+addEntity : Entity -> List Entity -> List Entity
+addEntity entity entityList =
+    entity :: replaceEntityInsideEntity entity entityList
 
-        Nothing ->
+
+replaceEntityInsideEntity : Entity -> List Entity -> List Entity
+replaceEntityInsideEntity entity entityList =
+    let
+        ( min, max ) =
+            Entity.getBoundingRect entity
+    in
+        List.filter
+            (\e ->
+                let
+                    ( entityMin, entityMax ) =
+                        Entity.getBoundingRect e
+                in
+                    not
+                        ((min.x <= entityMax.x && max.x >= entityMin.x)
+                            && (min.y <= entityMax.y && max.y >= entityMin.y)
+                        )
+            )
             entityList
 
 
-{-| Remove an entity from a list of entities. Intended to be used with `List.foldl`
+{-| Remove an entity at a given point
 
-    List.foldl (removeEntity point) entities
 -}
-removeEntity : Point -> Entity -> List Entity -> List Entity
-removeEntity point entity acc =
-    if floor entity.position.x /= point.x || floor entity.position.y /= point.y then
-        entity :: acc
-    else
-        acc
+removeEntityAtPoint : Point -> List Entity -> List Entity
+removeEntityAtPoint point entityList =
+    let
+        isEntityNotAtPoint point entity =
+            not (isEntityAtPoint point entity)
+    in
+        List.filter (isEntityNotAtPoint point) entityList
+
+
+isEntityAtPoint : Point -> Entity -> Bool
+isEntityAtPoint point entity =
+    case Entity.sizeFor entity of
+        Square size ->
+            let
+                ( min, max ) =
+                    Entity.getBoundingRect entity
+            in
+                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
 
 
 
@@ -191,12 +217,12 @@ update msg model =
                                 Placeable entity ->
                                     let
                                         newEntity =
-                                            Toolbox.currentToolToEntity model.toolbox { x = toFloat point.x, y = toFloat point.y }
+                                            { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
                                     in
-                                        addEntity point newEntity model.entities
+                                        addEntity newEntity model.entities
 
                                 Clear ->
-                                    List.foldl (removeEntity point) [] model.entities
+                                    removeEntityAtPoint point model.entities
                     in
                         ( { model | entities = cells }, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity cells)) )
 
@@ -267,12 +293,8 @@ positionToGridPoint grid position =
         y =
             floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
 
-        gridSize =
-            grid.size - 1
-
         gridMax =
-            (toFloat width / 2 / toFloat grid.cellSize)
-                |> floor
+            floor (toFloat grid.size / 2)
 
         gridMin =
             gridMax * -1
@@ -283,7 +305,7 @@ positionToGridPoint grid position =
             Just (Point x y)
 
 
-{-| Converts a grid point into an {x, y} coordinate in the collage.
+{-| Converts a grid point into an (x, y) coordinate in the collage. This represents the center of the cell.
 
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
@@ -291,13 +313,17 @@ pointToCollageOffset { cellSize, size } point =
     ( toFloat point.x * toFloat cellSize, toFloat point.y * toFloat cellSize * -1 )
 
 
-addEntityOffset : Entity -> ( Float, Float ) -> ( Float, Float )
-addEntityOffset entity ( x, y ) =
+{-| Applies an offset to the image based on the entity size.
+-}
+addEntityOffset : Model -> Entity -> ( Float, Float ) -> ( Float, Float )
+addEntityOffset { cellSize } entity ( x, y ) =
     let
-        ( sizeX, sizeY ) =
+        ( imageSizeX, imageSizeY ) =
             Entity.Image.sizeFor entity
     in
-        ( x + (toFloat sizeX - 32) / 2, y + (toFloat sizeY - 32) / 2 )
+        case Entity.sizeFor entity of
+            Square size ->
+                ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
 
 
 
@@ -379,7 +405,7 @@ buildEntity model entity =
             |> Collage.toForm
             |> Collage.move
                 (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
-                    |> addEntityOffset entity
+                    |> addEntityOffset model entity
                 )
 
 
@@ -406,7 +432,7 @@ hoverBlock maybePoint model =
                             |> Collage.toForm
                             |> Collage.move
                                 (pointToCollageOffset model point
-                                    |> addEntityOffset dummyEntity
+                                    |> addEntityOffset model dummyEntity
                                 )
 
         Nothing ->
