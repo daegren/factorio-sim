@@ -22,7 +22,6 @@ app.ports.getOffsetOfGrid.subscribe(() => {
 
 app.ports.parseBlueprint.subscribe((blueprintString) => {
   blueprint.parse(blueprintString, (json) => {
-    console.log(json);
     app.ports.loadBlueprint.send(json.blueprint.entities)
   })
 })
