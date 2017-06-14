@@ -54,7 +54,27 @@ type alias BackgroundCell =
 -}
 addEntity : Entity -> List Entity -> List Entity
 addEntity entity entityList =
-    entity :: removeEntityAtPoint (Entity.pointFromPosition entity.position) entityList
+    entity :: replaceEntityInsideEntity entity entityList
+
+
+replaceEntityInsideEntity : Entity -> List Entity -> List Entity
+replaceEntityInsideEntity entity entityList =
+    let
+        ( min, max ) =
+            getBoundingRectForEntity entity
+    in
+        List.filter
+            (\e ->
+                let
+                    ( entityMin, entityMax ) =
+                        getBoundingRectForEntity e
+                in
+                    not
+                        ((min.x <= entityMax.x && max.x >= entityMin.x)
+                            && (min.y <= entityMax.y && max.y >= entityMin.y)
+                        )
+            )
+            entityList
 
 
 {-| Remove an entity at a given point

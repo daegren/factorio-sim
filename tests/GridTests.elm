@@ -31,35 +31,42 @@ all =
             , describe "addEntity"
                 [ test "adds an entity to an empty list" <|
                     \() ->
-                        Expect.equal [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [])
+                        Expect.equalLists [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [])
                 , test "replaces an entity that already exists" <|
                     \() ->
-                        Expect.equal [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [ transportBeltEntity ])
+                        Expect.equalLists [ transportBeltEntity ] (Grid.addEntity transportBeltEntity [ transportBeltEntity ])
                 , test "adds an entity if at a different point" <|
                     \() ->
                         let
                             newEntity =
                                 { transportBeltEntity | position = { x = 1, y = 1 } }
                         in
-                            Expect.equal [ newEntity, transportBeltEntity ] (Grid.addEntity newEntity [ transportBeltEntity ])
+                            Expect.equalLists [ newEntity, transportBeltEntity ] (Grid.addEntity newEntity [ transportBeltEntity ])
                 , test "replaces a larger entity if new entity added inside of larger entity" <|
                     \() ->
                         let
                             newEntity =
                                 { transportBeltEntity | position = { x = 1, y = 1 } }
                         in
-                            Expect.equal [ newEntity ] (Grid.addEntity newEntity [ assemblingMachineEntity ])
+                            Expect.equalLists [ newEntity ] (Grid.addEntity newEntity [ assemblingMachineEntity ])
+                , test "replaces entities that already exist inside of larger entity" <|
+                    \() ->
+                        let
+                            exisitingEntity =
+                                { transportBeltEntity | position = { x = 1, y = 1 } }
+                        in
+                            Expect.equalLists [ assemblingMachineEntity ] (Grid.addEntity assemblingMachineEntity [ exisitingEntity ])
                 ]
             , describe "removeEntityAtPoint"
                 [ test "removes an entity at a given point" <|
                     \() ->
-                        Expect.equal [] (Grid.removeEntityAtPoint (Point 0 0) [ transportBeltEntity ])
+                        Expect.equalLists [] (Grid.removeEntityAtPoint (Point 0 0) [ transportBeltEntity ])
                 , test "does not remove an entity if not at point" <|
                     \() ->
-                        Expect.equal [ transportBeltEntity ] (Grid.removeEntityAtPoint (Point 1 1) [ transportBeltEntity ])
+                        Expect.equalLists [ transportBeltEntity ] (Grid.removeEntityAtPoint (Point 1 1) [ transportBeltEntity ])
                 , test "removes a larger entity if point is inside of the entity" <|
                     \() ->
-                        Expect.equal [] (Grid.removeEntityAtPoint (Point -1 -1) [ assemblingMachineEntity ])
+                        Expect.equalLists [] (Grid.removeEntityAtPoint (Point -1 -1) [ assemblingMachineEntity ])
                 ]
             , describe "getBoundingRectForEntity"
                 [ test "min and max should be equal for a 1x1 entity" <|
@@ -85,6 +92,22 @@ all =
                         in
                             -- 2 here because 0 based
                             Expect.equal 2 (max.y - min.y)
+                ]
+            , describe "replaceEntityInsideEntity"
+                [ test "larger entity replaces smaller entities that exist inside of its box" <|
+                    \() ->
+                        let
+                            entity =
+                                { assemblingMachineEntity | position = { x = 1, y = 1 } }
+                        in
+                            Expect.equalLists [] (Grid.replaceEntityInsideEntity entity [ transportBeltEntity ])
+                , test "smaller entity replaces larger entity if its placed inisde of the larger entity" <|
+                    \() ->
+                        let
+                            entity =
+                                { transportBeltEntity | position = { x = 1, y = 1 } }
+                        in
+                            Expect.equalLists [] (Grid.replaceEntityInsideEntity entity [ assemblingMachineEntity ])
                 ]
             ]
         ]
