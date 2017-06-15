@@ -4,6 +4,11 @@ import Json.Encode exposing (..)
 import Entity exposing (Entity, EntityName(..), Position, Direction(..), entityID)
 
 
+encodeEntities : List Entity -> Value
+encodeEntities entities =
+    list (List.indexedMap encodeEntity entities)
+
+
 encodeEntity : Int -> Entity -> Value
 encodeEntity idx entity =
     let

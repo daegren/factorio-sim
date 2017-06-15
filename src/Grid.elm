@@ -224,7 +224,7 @@ update msg model =
                                 Clear ->
                                     removeEntityAtPoint point model.entities
                     in
-                        ( { model | entities = cells }, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity cells)) )
+                        ( { model | entities = cells }, exportBlueprint (Entity.Encoder.encodeEntities cells) )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -248,7 +248,7 @@ update msg model =
                         ( model, Cmd.none )
 
         ExportBlueprint ->
-            ( model, exportBlueprint (Json.Encode.list (List.indexedMap Entity.Encoder.encodeEntity model.entities)) )
+            ( model, exportBlueprint (Entity.Encoder.encodeEntities model.entities) )
 
         ClearEntities ->
             ( { model | entities = [], blueprintString = "" }, Cmd.none )
