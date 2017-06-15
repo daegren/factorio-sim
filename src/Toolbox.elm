@@ -139,6 +139,9 @@ update msg model =
                         Rotate ->
                             ( { model | currentDirection = rotateDirection model.currentDirection }, Cmd.none )
 
+                        ClearSelection ->
+                            ( { model | currentTool = clearTool }, Cmd.none )
+
                 Nothing ->
                     ( model, Cmd.none )
 
