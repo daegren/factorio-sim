@@ -4,11 +4,15 @@ import Json.Encode exposing (..)
 import Entity exposing (Entity, EntityName(..), Position, Direction(..), entityID)
 
 
+{-| Encode a `List Entity` into a JSON `Value`
+-}
 encodeEntities : List Entity -> Value
 encodeEntities entities =
     list (List.indexedMap encodeEntity entities)
 
 
+{-| Encode a single `Entity`. Requires an Int as an ID for the `Entity` for proper output.
+-}
 encodeEntity : Int -> Entity -> Value
 encodeEntity idx entity =
     let
@@ -18,13 +22,20 @@ encodeEntity idx entity =
             , ( "entity_number", int idx )
             ]
     in
-        object <|
-            case directionToInt entity.direction of
-                Just dir ->
-                    ( "direction", int dir ) :: props
+        encodeDirection entity.direction props
+            |> object
 
-                Nothing ->
-                    props
+
+{-| Appends a direction field to an object, if required
+-}
+encodeDirection : Direction -> List ( String, Value ) -> List ( String, Value )
+encodeDirection direction props =
+    case directionToInt direction of
+        Just dir ->
+            ( "direction", int dir ) :: props
+
+        Nothing ->
+            props
 
 
 encodePosition : Position -> Value
