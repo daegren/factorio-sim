@@ -13,6 +13,12 @@ This is a simple app that helps view blueprints and also allows you to export bl
 
 ## To Implement
 
- * All Entities, currently only normal transport belts are supported, plans are to support all entities in the near future.
+ * All Entities, currently only transport belts, chests and assembling machines are supported, plans are to support all entities in the near future.
+ * Full blueprint support, icons are hardcoded.
+ * Drag and drop functionality for entities
+
+## Future considerations
+
+ * Calculate the throughput of belts, to allow maximization of factories.
 
 [factorio-homepage]: https://www.factorio.com/
