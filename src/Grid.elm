@@ -6,8 +6,6 @@ import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
-import Entity.Encoder
-import Json.Encode
 import Entity.Decoder
 import Json.Decode exposing (Value)
 import Color
@@ -19,6 +17,7 @@ import Toolbox exposing (Tool(..))
 import Entity exposing (Entity, Size(..))
 import Collage
 import Element
+import Blueprint exposing (encodeBlueprint)
 
 
 -- MODEL
@@ -224,7 +223,7 @@ update msg model =
                                 Clear ->
                                     removeEntityAtPoint point model.entities
                     in
-                        ( { model | entities = cells }, exportBlueprint (Entity.Encoder.encodeEntities cells) )
+                        ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -248,7 +247,7 @@ update msg model =
                         ( model, Cmd.none )
 
         ExportBlueprint ->
-            ( model, exportBlueprint (Entity.Encoder.encodeEntities model.entities) )
+            ( model, exportBlueprint (encodeBlueprint model.entities) )
 
         ClearEntities ->
             ( { model | entities = [], blueprintString = "" }, Cmd.none )

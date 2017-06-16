@@ -12,8 +12,14 @@ type alias Icon =
 encodeBlueprint : List Entity -> Value
 encodeBlueprint entities =
     object
-        [ ( "entities", encodeEntities entities )
-        , ( "icons", icons entities |> encodeIcons )
+        [ ( "blueprint"
+          , object
+                [ ( "entities", encodeEntities entities )
+                , ( "icons", icons entities |> encodeIcons )
+                , ( "item", string "blueprint" )
+                , ( "version", int 64425689088 )
+                ]
+          )
         ]
 
 
