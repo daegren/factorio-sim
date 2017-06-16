@@ -151,20 +151,22 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
-        , Mouse.clicks MouseClicked
         , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
         , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , receiveExportedBlueprint ReceiveExportedBlueprint
-        , shouldSubToMouseMoves model
-        , Mouse.downs MouseDown
-        , Mouse.ups MouseUp
+        , shouldSubToMouseSubscriptions model
         ]
 
 
-shouldSubToMouseMoves : Model -> Sub Msg
-shouldSubToMouseMoves model =
+shouldSubToMouseSubscriptions : Model -> Sub Msg
+shouldSubToMouseSubscriptions model =
     if model.mouseInsideGrid then
-        Mouse.moves MouseMoved
+        Sub.batch
+            [ Mouse.moves MouseMoved
+            , Mouse.downs MouseDown
+            , Mouse.ups MouseUp
+            , Mouse.clicks MouseClicked
+            ]
     else
         Sub.none
 
