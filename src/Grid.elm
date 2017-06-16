@@ -34,12 +34,13 @@ type alias Model =
     , shouldIgnoreNextMouseClick : Bool
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
+    , mouseStartPosition : Maybe Point
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing
 
 
 type alias Cells =
@@ -155,6 +156,8 @@ subscriptions model =
         , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , receiveExportedBlueprint ReceiveExportedBlueprint
         , shouldSubToMouseMoves model
+        , Mouse.downs MouseDown
+        , Mouse.ups MouseUp
         ]
 
 
@@ -199,6 +202,8 @@ type Msg
     | MouseMoved Mouse.Position
     | MouseEntered
     | MouseLeft
+    | MouseDown Mouse.Position
+    | MouseUp Mouse.Position
     | LoadBlueprint
     | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
@@ -254,6 +259,12 @@ update msg model =
 
         MouseLeft ->
             ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
+
+        MouseDown position ->
+            ( { model | mouseStartPosition = (positionToGridPoint model position) }, Cmd.none )
+
+        MouseUp position ->
+            ( { model | mouseStartPosition = Nothing }, Cmd.none )
 
         LoadBlueprint ->
             ( model, parseBlueprint model.blueprintString )
