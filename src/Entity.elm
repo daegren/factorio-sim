@@ -30,6 +30,11 @@ toolboxEntity name =
     Entity name zeroPosition Up
 
 
+setPosition : Position -> Entity -> Entity
+setPosition position entity =
+    { entity | position = position }
+
+
 type EntityName
     = TransportBelt
     | FastTransportBelt
@@ -136,7 +141,12 @@ readableName entityName =
 
 entityID : Entity -> String
 entityID entity =
-    case entity.name of
+    entityIDFromName entity.name
+
+
+entityIDFromName : EntityName -> String
+entityIDFromName name =
+    case name of
         TransportBelt ->
             "transport-belt"
 
