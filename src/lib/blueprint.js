@@ -13,25 +13,8 @@ export function parse(string, callback) {
   })
 }
 
-export function exportBlueprint(entities, callback) {
-  const json = {
-    blueprint: {
-      icons: [
-          {
-            signal: {
-              type: "item",
-              name: "transport-belt"
-            },
-            index:1
-          }
-        ],
-      entities: entities,
-      item: "blueprint",
-      version: 64425689088
-    }
-  }
-
-  const buff = Buffer.from(JSON.stringify(json), 'utf8')
+export function exportBlueprint(blueprint, callback) {
+  const buff = Buffer.from(JSON.stringify(blueprint), 'utf8')
   zlib.deflate(buff, (err, buf) => {
     if (!err) {
       const result = `0${buf.toString('base64')}`

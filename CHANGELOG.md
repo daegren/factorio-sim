@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.4
+
+### Changes
+
+ * Blueprints export with the proper icons now, based upon total number of entities. Most used entities are used for the icons
+
 ## 0.3
 
 ### New Features
