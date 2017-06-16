@@ -2,7 +2,7 @@ port module Grid exposing (..)
 
 import Html exposing (Html, div, input, textarea, text)
 import Html.Attributes exposing (type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
@@ -32,12 +32,14 @@ type alias Model =
     , blueprintString : String
     , toolbox : Toolbox.Model
     , shouldIgnoreNextMouseClick : Bool
+    , mouseInsideGrid : Bool
+    , currentMouseGridPosition : Maybe Point
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing
 
 
 type alias Cells =
@@ -152,7 +154,16 @@ subscriptions model =
         , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
         , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , receiveExportedBlueprint ReceiveExportedBlueprint
+        , shouldSubToMouseMoves model
         ]
+
+
+shouldSubToMouseMoves : Model -> Sub Msg
+shouldSubToMouseMoves model =
+    if model.mouseInsideGrid then
+        Mouse.moves MouseMoved
+    else
+        Sub.none
 
 
 
@@ -185,6 +196,9 @@ type Msg
     = RandomGrid Cells
     | GridOffset ( Float, Float )
     | MouseClicked Mouse.Position
+    | MouseMoved Mouse.Position
+    | MouseEntered
+    | MouseLeft
     | LoadBlueprint
     | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
@@ -231,6 +245,15 @@ update msg model =
 
                     Nothing ->
                         ( model, Cmd.none )
+
+        MouseMoved position ->
+            ( { model | currentMouseGridPosition = positionToGridPoint model position }, Cmd.none )
+
+        MouseEntered ->
+            ( { model | mouseInsideGrid = True }, Cmd.none )
+
+        MouseLeft ->
+            ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
 
         LoadBlueprint ->
             ( model, parseBlueprint model.blueprintString )
@@ -346,20 +369,20 @@ styles =
 -- VIEW
 
 
-view : Maybe Point -> Model -> Html Msg
-view currentGridPosition model =
+view : Model -> Html Msg
+view model =
     let
         gridSize =
             model.cellSize * model.size
     in
         div [ id [ GridStyles.GridContainer ] ]
-            [ div [ id [ GridStyles.Grid ] ]
+            [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft ]
                 [ Collage.collage gridSize
                     gridSize
                     [ backgroundGrid model
                         |> Collage.toForm
                     , entities model model.entities
-                    , hoverBlock currentGridPosition model
+                    , hoverBlock model.currentMouseGridPosition model
                     ]
                     |> Element.toHtml
                 ]

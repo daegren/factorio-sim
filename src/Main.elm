@@ -4,7 +4,6 @@ import Html exposing (Html, h1, h2, div, text, img)
 import Html.Attributes exposing (src)
 import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
-import Mouse
 import Css
 import Point exposing (Point, zeroPoint)
 import Grid
@@ -16,7 +15,6 @@ import Grid
 type alias Model =
     { grid : Grid.Model
     , mouseGridPosition : Maybe Point
-    , currentMousePosition : Point
     }
 
 
@@ -31,7 +29,7 @@ init =
             Grid.init
 
         model =
-            Model gridModel Nothing zeroPoint
+            Model gridModel Nothing
     in
         ( model
         , Cmd.map GridMsg gridCmd
@@ -60,7 +58,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map GridMsg (Grid.subscriptions model.grid)
-        , Mouse.moves MouseMoved
         ]
 
 
@@ -69,21 +66,12 @@ subscriptions model =
 
 
 type Msg
-    = MouseMoved Mouse.Position
-    | GridMsg Grid.Msg
+    = GridMsg Grid.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        MouseMoved position ->
-            ( { model
-                | currentMousePosition = (Point position.x position.y)
-                , mouseGridPosition = Grid.positionToGridPoint model.grid position
-              }
-            , Cmd.none
-            )
-
         GridMsg msg ->
             let
                 ( gridModel, gridCmd ) =
@@ -114,7 +102,7 @@ view model =
     div []
         [ h1 [] [ text "Blueprint Maker" ]
         , div [ id [ Main ] ]
-            [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
+            [ Html.map GridMsg (Grid.view model.grid)
             , infoView model
             ]
         , div [ id [ Copyright ] ]
