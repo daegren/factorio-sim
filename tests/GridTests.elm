@@ -84,6 +84,14 @@ all =
                         in
                             Expect.equalLists [] (Grid.replaceEntityInsideEntity entity [ assemblingMachineEntity ])
                 ]
+            , describe "calculate two points that define a straight line between the given points, clamped to the longest axis"
+                [ test "x > y" <|
+                    \() ->
+                        Expect.equal ( Point -1 -1, Point 2 -1 ) (Grid.calculateLineBetweenPoints (Point -1 -1) (Point 2 1))
+                , test "y > x" <|
+                    \() ->
+                        Expect.equal ( Point -1 -1, Point -1 2 ) (Grid.calculateLineBetweenPoints (Point -1 -1) (Point -2 2))
+                ]
             ]
         ]
 

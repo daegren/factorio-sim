@@ -303,6 +303,21 @@ update msg model =
                 ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
 
 
+calculateLineBetweenPoints : Point -> Point -> ( Point, Point )
+calculateLineBetweenPoints startPoint endPoint =
+    let
+        deltaX =
+            abs (startPoint.x - endPoint.x)
+
+        deltaY =
+            abs (startPoint.y - endPoint.y)
+    in
+        if deltaX > deltaY then
+            ( startPoint, Point endPoint.x startPoint.y )
+        else
+            ( startPoint, Point startPoint.x endPoint.y )
+
+
 placeEntityAtPoint : Toolbox.Model -> Point -> List Entity -> List Entity
 placeEntityAtPoint toolbox point entities =
     case toolbox.currentTool of
