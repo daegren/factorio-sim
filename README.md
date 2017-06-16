@@ -22,3 +22,30 @@ This is a simple app that helps view blueprints and also allows you to export bl
  * Calculate the throughput of belts, to allow maximization of factories.
 
 [factorio-homepage]: https://www.factorio.com/
+
+
+## Running the App locally
+
+### Requirements
+
+ * Node 6
+ * NPM / Yarn
+ * Elm (http://elm-lang.org)
+
+To run the app locally follow these instructions:
+
+1. Clone the repo from github
+2. Navigate to the local project in your terminal
+3. Install the prerequisites for the project
+```bash
+$ npm/yarn install
+```
+4. Install the required elm packages
+```bash
+$ elm package install
+```
+5. Run the app in development mode
+```bash
+$ npm/yarn run dev
+```
+6. App should be running at http://localhost:8080/
