@@ -31,12 +31,13 @@ type alias Model =
     , offset : Point
     , blueprintString : String
     , toolbox : Toolbox.Model
+    , shouldIgnoreNextMouseClick : Bool
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False
 
 
 type alias Cells =
@@ -208,25 +209,28 @@ update msg model =
                 ( { model | offset = point }, Cmd.none )
 
         MouseClicked position ->
-            case positionToGridPoint model position of
-                Just point ->
-                    let
-                        cells =
-                            case model.toolbox.currentTool of
-                                Placeable entity ->
-                                    let
-                                        newEntity =
-                                            { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
-                                    in
-                                        addEntity newEntity model.entities
+            if model.shouldIgnoreNextMouseClick then
+                ( { model | shouldIgnoreNextMouseClick = False }, Cmd.none )
+            else
+                case positionToGridPoint model position of
+                    Just point ->
+                        let
+                            cells =
+                                case model.toolbox.currentTool of
+                                    Placeable entity ->
+                                        let
+                                            newEntity =
+                                                { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
+                                        in
+                                            addEntity newEntity model.entities
 
-                                Clear ->
-                                    removeEntityAtPoint point model.entities
-                    in
-                        ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
+                                    Clear ->
+                                        removeEntityAtPoint point model.entities
+                        in
+                            ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
 
-                Nothing ->
-                    ( model, Cmd.none )
+                    Nothing ->
+                        ( model, Cmd.none )
 
         LoadBlueprint ->
             ( model, parseBlueprint model.blueprintString )
@@ -260,7 +264,7 @@ update msg model =
                 newSize =
                     model.size + amount
             in
-                ( { model | size = newSize }, Random.generate RandomGrid (generateGrid newSize) )
+                ( { model | size = newSize, shouldIgnoreNextMouseClick = True }, Random.generate RandomGrid (generateGrid newSize) )
 
         ToolboxMsg msg ->
             let
