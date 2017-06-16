@@ -165,7 +165,6 @@ shouldSubToMouseSubscriptions model =
             [ Mouse.moves MouseMoved
             , Mouse.downs MouseDown
             , Mouse.ups MouseUp
-            , Mouse.clicks MouseClicked
             ]
     else
         Sub.none
@@ -200,7 +199,6 @@ port receiveExportedBlueprint : (String -> msg) -> Sub msg
 type Msg
     = RandomGrid Cells
     | GridOffset ( Float, Float )
-    | MouseClicked Mouse.Position
     | MouseMoved Mouse.Position
     | MouseEntered
     | MouseLeft
@@ -229,30 +227,6 @@ update msg model =
             in
                 ( { model | offset = point }, Cmd.none )
 
-        MouseClicked position ->
-            if model.shouldIgnoreNextMouseClick then
-                ( { model | shouldIgnoreNextMouseClick = False }, Cmd.none )
-            else
-                case positionToGridPoint model position of
-                    Just point ->
-                        let
-                            cells =
-                                case model.toolbox.currentTool of
-                                    Placeable entity ->
-                                        let
-                                            newEntity =
-                                                { entity | position = Entity.positionFromPoint point, direction = model.toolbox.currentDirection }
-                                        in
-                                            addEntity newEntity model.entities
-
-                                    Clear ->
-                                        removeEntityAtPoint point model.entities
-                        in
-                            ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
-
-                    Nothing ->
-                        ( model, Cmd.none )
-
         MouseMoved position ->
             ( { model | currentMouseGridPosition = positionToGridPoint model position }, Cmd.none )
 
@@ -266,7 +240,26 @@ update msg model =
             ( { model | mouseStartPosition = (positionToGridPoint model position) }, Cmd.none )
 
         MouseUp position ->
-            ( { model | mouseStartPosition = Nothing }, Cmd.none )
+            case positionToGridPoint model position of
+                Just upPoint ->
+                    case model.mouseStartPosition of
+                        Just downPoint ->
+                            if upPoint == downPoint then
+                                -- Handle single entity add
+                                let
+                                    cells =
+                                        placeEntityAtPoint model.toolbox upPoint model.entities
+                                in
+                                    ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
+                            else
+                                -- TODO: Handle drag case if upPoint and downPoint aren't the same
+                                ( { model | mouseStartPosition = Nothing }, Cmd.none )
+
+                        Nothing ->
+                            ( { model | mouseStartPosition = Nothing }, Cmd.none )
+
+                Nothing ->
+                    ( { model | mouseStartPosition = Nothing }, Cmd.none )
 
         LoadBlueprint ->
             ( model, parseBlueprint model.blueprintString )
@@ -308,6 +301,20 @@ update msg model =
                     Toolbox.update msg model.toolbox
             in
                 ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
+
+
+placeEntityAtPoint : Toolbox.Model -> Point -> List Entity -> List Entity
+placeEntityAtPoint toolbox point entities =
+    case toolbox.currentTool of
+        Placeable entity ->
+            let
+                newEntity =
+                    { entity | position = Entity.positionFromPoint point, direction = toolbox.currentDirection }
+            in
+                addEntity newEntity entities
+
+        Clear ->
+            removeEntityAtPoint point entities
 
 
 {-| Converts a mouse position to it's respective grid position.
