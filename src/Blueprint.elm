@@ -39,7 +39,7 @@ encodeIcon idx ( count, name ) =
                 , ( "name", string (Entity.entityIDFromName name) )
                 ]
           )
-        , ( "index", int idx )
+        , ( "index", int (idx + 1) )
         ]
 
 
