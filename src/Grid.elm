@@ -527,24 +527,18 @@ blueprintInput model =
 
 dragPreview : Model -> Collage.Form
 dragPreview model =
-    let
-        buildPreview size point =
-            Collage.rect size size
-                |> Collage.filled (Color.rgba 255 0 0 0.25)
-                |> Collage.move (pointToCollageOffset model point)
-    in
-        case model.drag of
-            Just drag ->
-                if drag.start == drag.current then
-                    buildPreview (toFloat model.cellSize) drag.start
-                else
-                    calculateLineBetweenPoints drag.start drag.current
-                        |> buildLineBetweenPoints
-                        |> List.map (buildPreview (toFloat model.cellSize))
-                        |> Collage.group
+    case model.drag of
+        Just drag ->
+            if drag.start == drag.current then
+                entityPreview model drag.start
+            else
+                calculateLineBetweenPoints drag.start drag.current
+                    |> buildLineBetweenPoints
+                    |> List.map (entityPreview model)
+                    |> Collage.group
 
-            Nothing ->
-                hoverBlock model
+        Nothing ->
+            hoverBlock model
 
 
 entities : Model -> Collage.Form
