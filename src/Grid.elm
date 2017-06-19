@@ -334,7 +334,20 @@ update msg model =
                     ( model, Cmd.none )
 
         DragEnd position ->
-            ( { model | drag = Nothing }, Cmd.none )
+            case model.drag of
+                Just drag ->
+                    let
+                        entities =
+                            if drag.start == drag.current then
+                                placeEntityAtPoint model.toolbox drag.start model.entities
+                            else
+                                -- TODO: Handle drag case
+                                model.entities
+                    in
+                        ( { model | drag = Nothing, entities = entities }, Cmd.none )
+
+                Nothing ->
+                    ( { model | drag = Nothing }, Cmd.none )
 
         ToolboxMsg msg ->
             let
