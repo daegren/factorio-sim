@@ -477,8 +477,8 @@ view model =
                     gridSize
                     [ backgroundGrid model
                         |> Collage.toForm
-                    , entities model model.entities
-                    , hoverBlock model.currentMouseGridPosition model
+                    , entities model
+                    , hoverBlock model
                     ]
                     |> Element.toHtml
                 ]
@@ -511,9 +511,9 @@ blueprintInput model =
         ]
 
 
-entities : Model -> List Entity -> Collage.Form
-entities model entityList =
-    List.map (buildEntity model) entityList
+entities : Model -> Collage.Form
+entities model =
+    List.map (buildEntity model) model.entities
         |> Collage.group
 
 
@@ -531,9 +531,9 @@ buildEntity model entity =
                 )
 
 
-hoverBlock : Maybe Point -> Model -> Collage.Form
-hoverBlock maybePoint model =
-    case maybePoint of
+hoverBlock : Model -> Collage.Form
+hoverBlock model =
+    case model.currentMouseGridPosition of
         Just point ->
             case model.toolbox.currentTool of
                 Clear ->
