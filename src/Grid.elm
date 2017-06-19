@@ -567,31 +567,36 @@ buildEntity model entity =
                 )
 
 
+entityPreview : Model -> Point -> Collage.Form
+entityPreview model point =
+    case model.toolbox.currentTool of
+        Clear ->
+            Collage.rect 32 32
+                |> Collage.filled (Color.rgba 255 255 0 0.25)
+                |> Collage.move (pointToCollageOffset model point)
+
+        Placeable entity ->
+            let
+                dummyEntity =
+                    { entity | direction = model.toolbox.currentDirection }
+
+                ( sizeX, sizeY ) =
+                    Entity.Image.sizeFor dummyEntity
+            in
+                Element.image sizeX sizeY (Entity.Image.image dummyEntity)
+                    |> Element.opacity 0.66
+                    |> Collage.toForm
+                    |> Collage.move
+                        (pointToCollageOffset model point
+                            |> addEntityOffset model dummyEntity
+                        )
+
+
 hoverBlock : Model -> Collage.Form
 hoverBlock model =
     case model.currentMouseGridPosition of
         Just point ->
-            case model.toolbox.currentTool of
-                Clear ->
-                    Collage.rect 32 32
-                        |> Collage.filled (Color.rgba 255 255 0 0.25)
-                        |> Collage.move (pointToCollageOffset model point)
-
-                Placeable entity ->
-                    let
-                        dummyEntity =
-                            { entity | direction = model.toolbox.currentDirection }
-
-                        ( sizeX, sizeY ) =
-                            Entity.Image.sizeFor dummyEntity
-                    in
-                        Element.image sizeX sizeY (Entity.Image.image dummyEntity)
-                            |> Element.opacity 0.66
-                            |> Collage.toForm
-                            |> Collage.move
-                                (pointToCollageOffset model point
-                                    |> addEntityOffset model dummyEntity
-                                )
+            entityPreview model point
 
         Nothing ->
             Collage.rect 0 0
