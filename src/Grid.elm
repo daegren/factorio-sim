@@ -169,12 +169,8 @@ subscriptions model =
 
 shouldSubToMouseSubscriptions : Model -> Sub Msg
 shouldSubToMouseSubscriptions model =
-    if model.mouseInsideGrid then
-        Sub.batch
-            [ Mouse.moves MouseMoved
-            , Mouse.downs MouseDown
-            , Mouse.ups MouseUp
-            ]
+    if model.mouseInsideGrid && model.drag == Nothing then
+        Mouse.moves MouseMoved
     else
         Sub.none
 
@@ -221,8 +217,6 @@ type Msg
     | MouseMoved Mouse.Position
     | MouseEntered
     | MouseLeft
-    | MouseDown Mouse.Position
-    | MouseUp Mouse.Position
     | LoadBlueprint
     | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
@@ -257,31 +251,6 @@ update msg model =
 
         MouseLeft ->
             ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
-
-        MouseDown position ->
-            ( { model | mouseStartPosition = (positionToGridPoint model position) }, Cmd.none )
-
-        MouseUp position ->
-            case positionToGridPoint model position of
-                Just upPoint ->
-                    case model.mouseStartPosition of
-                        Just downPoint ->
-                            if upPoint == downPoint then
-                                -- Handle single entity add
-                                let
-                                    cells =
-                                        placeEntityAtPoint model.toolbox upPoint model.entities
-                                in
-                                    ( { model | entities = cells }, exportBlueprint (encodeBlueprint cells) )
-                            else
-                                -- TODO: Handle drag case if upPoint and downPoint aren't the same
-                                ( { model | mouseStartPosition = Nothing }, Cmd.none )
-
-                        Nothing ->
-                            ( { model | mouseStartPosition = Nothing }, Cmd.none )
-
-                Nothing ->
-                    ( { model | mouseStartPosition = Nothing }, Cmd.none )
 
         LoadBlueprint ->
             ( model, parseBlueprint model.blueprintString )
