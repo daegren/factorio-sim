@@ -318,6 +318,16 @@ calculateLineBetweenPoints startPoint endPoint =
             ( startPoint, Point startPoint.x endPoint.y )
 
 
+buildLineBetweenPoints : ( Point, Point ) -> List Point
+buildLineBetweenPoints ( start, end ) =
+    if start.x == end.x then
+        List.range start.y end.y
+            |> List.map (\y -> Point start.x y)
+    else
+        List.range start.x end.x
+            |> List.map (\x -> Point x start.y)
+
+
 placeEntityAtPoint : Toolbox.Model -> Point -> List Entity -> List Entity
 placeEntityAtPoint toolbox point entities =
     case toolbox.currentTool of

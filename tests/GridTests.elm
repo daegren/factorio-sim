@@ -93,6 +93,14 @@ all =
                         Expect.equal ( Point -1 -1, Point -1 2 ) (Grid.calculateLineBetweenPoints (Point -1 -1) (Point -2 2))
                 ]
             ]
+        , describe "build a range between two points to define a line"
+            [ test "straight line on the x axis" <|
+                \() ->
+                    Expect.equalLists [ Point -1 0, Point 0 0, Point 1 0 ] (Grid.buildLineBetweenPoints ( Point -1 0, Point 1 0 ))
+            , test "straight line on the y axis" <|
+                \() ->
+                    Expect.equalLists [ Point 0 -1, Point 0 0, Point 0 1, Point 0 2 ] (Grid.buildLineBetweenPoints ( Point 0 -1, Point 0 2 ))
+            ]
         ]
 
 
