@@ -2,7 +2,7 @@ port module Grid exposing (..)
 
 import Html exposing (Html, div, input, textarea, text)
 import Html.Attributes exposing (type_, value)
-import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
+import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave, onWithOptions)
 import Html.CssHelpers
 import Css
 import GridStyles exposing (Classes(..))
@@ -18,6 +18,7 @@ import Entity exposing (Entity, Size(..))
 import Collage
 import Element
 import Blueprint exposing (encodeBlueprint)
+import Json.Decode as Json
 
 
 -- MODEL
@@ -35,12 +36,19 @@ type alias Model =
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
     , mouseStartPosition : Maybe Point
+    , drag : Maybe Drag
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing Nothing
+
+
+type alias Drag =
+    { start : Point
+    , current : Point
+    }
 
 
 type alias Cells =
@@ -155,6 +163,7 @@ subscriptions model =
         , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , receiveExportedBlueprint ReceiveExportedBlueprint
         , shouldSubToMouseSubscriptions model
+        , dragSubscriptions model
         ]
 
 
@@ -168,6 +177,16 @@ shouldSubToMouseSubscriptions model =
             ]
     else
         Sub.none
+
+
+dragSubscriptions : Model -> Sub Msg
+dragSubscriptions model =
+    case model.drag of
+        Just drag ->
+            Sub.batch [ Mouse.moves DragAt, Mouse.ups DragEnd ]
+
+        Nothing ->
+            Sub.none
 
 
 
@@ -211,6 +230,9 @@ type Msg
     | ClearEntities
     | ReceiveExportedBlueprint String
     | ChangeGridSize Int
+    | DragStart Mouse.Position
+    | DragAt Mouse.Position
+    | DragEnd Mouse.Position
     | ToolboxMsg Toolbox.Msg
 
 
@@ -294,6 +316,25 @@ update msg model =
                     model.size + amount
             in
                 ( { model | size = newSize, shouldIgnoreNextMouseClick = True }, Random.generate RandomGrid (generateGrid newSize) )
+
+        DragStart position ->
+            case positionToGridPoint model position of
+                Just point ->
+                    ( { model | drag = Just (Drag point point) }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        DragAt position ->
+            case positionToGridPoint model position of
+                Just point ->
+                    ( { model | drag = Maybe.map (\{ start } -> Drag start point) model.drag }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        DragEnd position ->
+            ( { model | drag = Nothing }, Cmd.none )
 
         ToolboxMsg msg ->
             let
@@ -410,6 +451,16 @@ styles =
     Css.asPairs >> Html.Attributes.style
 
 
+mouseOptions : Html.Events.Options
+mouseOptions =
+    { stopPropagation = True, preventDefault = True }
+
+
+onMouseDown : (Mouse.Position -> msg) -> Html.Attribute msg
+onMouseDown msg =
+    onWithOptions "mousedown" mouseOptions (Json.map msg Mouse.position)
+
+
 
 -- VIEW
 
@@ -421,7 +472,7 @@ view model =
             model.cellSize * model.size
     in
         div [ id [ GridStyles.GridContainer ] ]
-            [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft ]
+            [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
                 [ Collage.collage gridSize
                     gridSize
                     [ backgroundGrid model
