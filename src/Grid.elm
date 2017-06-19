@@ -341,10 +341,11 @@ update msg model =
                             if drag.start == drag.current then
                                 placeEntityAtPoint model.toolbox drag.start model.entities
                             else
-                                -- TODO: Handle drag case
-                                model.entities
+                                calculateLineBetweenPoints drag.start drag.current
+                                    |> buildLineBetweenPoints
+                                    |> List.foldl (\point entities -> placeEntityAtPoint model.toolbox point entities) model.entities
                     in
-                        ( { model | drag = Nothing, entities = entities }, Cmd.none )
+                        ( { model | drag = Nothing, entities = entities }, exportBlueprint (encodeBlueprint entities) )
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )
