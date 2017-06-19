@@ -96,16 +96,19 @@ all =
         , describe "build a range between two points to define a line"
             [ test "straight line on the x axis" <|
                 \() ->
-                    Expect.equalLists [ Point -1 0, Point 0 0, Point 1 0 ] (Grid.buildLineBetweenPoints ( Point -1 0, Point 1 0 ))
+                    Expect.equalLists [ Point -1 0, Point 0 0, Point 1 0 ] (Grid.buildLineBetweenPoints (Entity.Square 1) ( Point -1 0, Point 1 0 ))
             , test "reversed line on the x axis" <|
                 \() ->
-                    Expect.equalLists [ Point 1 0, Point 0 0, Point -1 0 ] (Grid.buildLineBetweenPoints ( Point 1 0, Point -1 0 ))
+                    Expect.equalLists [ Point 1 0, Point 0 0, Point -1 0 ] (Grid.buildLineBetweenPoints (Entity.Square 1) ( Point 1 0, Point -1 0 ))
             , test "straight line on the y axis" <|
                 \() ->
-                    Expect.equalLists [ Point 0 -1, Point 0 0, Point 0 1, Point 0 2 ] (Grid.buildLineBetweenPoints ( Point 0 -1, Point 0 2 ))
+                    Expect.equalLists [ Point 0 -1, Point 0 0, Point 0 1, Point 0 2 ] (Grid.buildLineBetweenPoints (Entity.Square 1) ( Point 0 -1, Point 0 2 ))
             , test "reversed line on the y axis" <|
                 \() ->
-                    Expect.equalLists [ Point 0 1, Point 0 0, Point 0 -1 ] (Grid.buildLineBetweenPoints ( Point 0 1, Point 0 -1 ))
+                    Expect.equalLists [ Point 0 1, Point 0 0, Point 0 -1 ] (Grid.buildLineBetweenPoints (Entity.Square 1) ( Point 0 1, Point 0 -1 ))
+            , test "accounts for entity size" <|
+                \() ->
+                    Expect.equalLists [ Point 0 -1, Point 0 2 ] (Grid.buildLineBetweenPoints (Entity.Square 3) ( Point 0 -1, Point 0 2 ))
             ]
         ]
 

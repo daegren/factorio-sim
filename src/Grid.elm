@@ -311,7 +311,7 @@ update msg model =
                                 placeEntityAtPoint model.toolbox drag.start model.entities
                             else
                                 calculateLineBetweenPoints drag.start drag.current
-                                    |> buildLineBetweenPoints
+                                    |> buildLineBetweenPoints (Toolbox.sizeFor model.toolbox.currentTool)
                                     |> List.foldl (\point entities -> placeEntityAtPoint model.toolbox point entities) model.entities
                     in
                         ( { model | drag = Nothing, entities = entities }, exportBlueprint (encodeBlueprint entities) )
@@ -342,28 +342,43 @@ calculateLineBetweenPoints startPoint endPoint =
             ( startPoint, Point startPoint.x endPoint.y )
 
 
-buildLineBetweenPoints : ( Point, Point ) -> List Point
-buildLineBetweenPoints ( start, end ) =
-    if start.x == end.x then
-        let
-            range =
-                if start.y < end.y then
-                    List.range start.y end.y
-                else
-                    List.range end.y start.y
-                        |> List.reverse
-        in
-            List.map (\y -> Point start.x y) range
-    else
-        let
-            range =
-                if start.x < end.x then
-                    List.range start.x end.x
-                else
-                    List.range end.x start.x
-                        |> List.reverse
-        in
-            List.map (\x -> Point x start.y) range
+buildLineBetweenPoints : Entity.Size -> ( Point, Point ) -> List Point
+buildLineBetweenPoints size ( start, end ) =
+    let
+        offset =
+            case size of
+                Square i ->
+                    i
+    in
+        if start.x == end.x then
+            let
+                range =
+                    if start.y < end.y then
+                        List.range start.y end.y
+                    else
+                        List.range end.y start.y
+                            |> List.reverse
+            in
+                every offset range
+                    |> List.map (\y -> Point start.x y)
+        else
+            let
+                range =
+                    if start.x < end.x then
+                        List.range start.x end.x
+                    else
+                        List.range end.x start.x
+                            |> List.reverse
+            in
+                every offset range
+                    |> List.map (\x -> Point x start.y)
+
+
+every : Int -> List a -> List a
+every amount list =
+    List.indexedMap (,) list
+        |> List.filter (\( i, val ) -> i % amount == 0)
+        |> List.map (\( i, val ) -> val)
 
 
 placeEntityAtPoint : Toolbox.Model -> Point -> List Entity -> List Entity
@@ -516,7 +531,7 @@ dragPreview model =
                 entityPreview model drag.start
             else
                 calculateLineBetweenPoints drag.start drag.current
-                    |> buildLineBetweenPoints
+                    |> buildLineBetweenPoints (Toolbox.sizeFor model.toolbox.currentTool)
                     |> List.map (entityPreview model)
                     |> Collage.group
 
