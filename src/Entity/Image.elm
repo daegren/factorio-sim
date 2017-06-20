@@ -93,5 +93,8 @@ sizeFor entity =
         FastTransportBelt ->
             ( 40, 40 )
 
-        _ ->
+        ExpressTransportBelt ->
+            ( 40, 40 )
+
+        Other _ ->
             ( 32, 32 )
