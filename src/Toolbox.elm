@@ -107,6 +107,16 @@ buildToolRow entityNameList =
     List.map (\a -> toolForEntity a) entityNameList
 
 
+sizeFor : Tool -> Entity.Size
+sizeFor tool =
+    case tool of
+        Placeable entity ->
+            Entity.sizeFor entity
+
+        Clear ->
+            Entity.Square 1
+
+
 
 -- SUBSCRIPTIONS
 
