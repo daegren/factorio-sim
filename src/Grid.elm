@@ -342,6 +342,13 @@ calculateLineBetweenPoints startPoint endPoint =
             ( startPoint, Point startPoint.x endPoint.y )
 
 
+{-| Builds a straight line between the given points, accounting for an entity size.
+
+Assumes the points are aligned on either the x or y axis.
+
+    buildLineBetweenPoints (Square 1) ( Point 0 -1, Point 0 1) == [ Point 0 -1, Point 0 0, Point 0 1 ]
+    buildLineBetweenPoints (Square 3) ( Point 0 -1 , Point 0 2) == [ Point 0 -1, Point 0 2 ]
+-}
 buildLineBetweenPoints : Entity.Size -> ( Point, Point ) -> List Point
 buildLineBetweenPoints size ( start, end ) =
     let
@@ -488,7 +495,6 @@ view model =
                 [ Collage.collage gridSize
                     gridSize
                     [ backgroundGrid model
-                        |> Collage.toForm
                     , entities model
                     , dragPreview model
                     ]
@@ -595,10 +601,11 @@ hoverBlock model =
                 |> Collage.filled Color.black
 
 
-backgroundGrid : Model -> Element.Element
+backgroundGrid : Model -> Collage.Form
 backgroundGrid model =
     List.map (\row -> elementRow model.cellSize row) model.cells
         |> Element.flow Element.down
+        |> Collage.toForm
 
 
 elementRow : Int -> List BackgroundCell -> Element.Element
