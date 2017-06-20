@@ -2,9 +2,17 @@
 
 ## 0.4
 
+### New Features
+
+ * Allow the drag and dropping of entities.
+
 ### Changes
 
  * Blueprints export with the proper icons now, based upon total number of entities. Most used entities are used for the icons
+
+### Bug Fixes
+
+ * Fixing and issue where an entity would get added to the edge of the screen when increasing the grid size (#13)
 
 ## 0.3
 
