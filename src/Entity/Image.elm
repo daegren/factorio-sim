@@ -79,13 +79,22 @@ sizeFor entity =
             ( 46, 33 )
 
         AssemblingMachine1 ->
-            ( 96, 96 )
+            ( 108, 114 )
 
         AssemblingMachine2 ->
-            ( 96, 96 )
+            ( 108, 110 )
 
         AssemblingMachine3 ->
-            ( 96, 106 )
+            ( 108, 119 )
 
-        _ ->
+        TransportBelt ->
+            ( 40, 40 )
+
+        FastTransportBelt ->
+            ( 40, 40 )
+
+        ExpressTransportBelt ->
+            ( 40, 40 )
+
+        Other _ ->
             ( 32, 32 )
