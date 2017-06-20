@@ -35,14 +35,13 @@ type alias Model =
     , shouldIgnoreNextMouseClick : Bool
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
-    , mouseStartPosition : Maybe Point
     , drag : Maybe Drag
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing Nothing
+    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing
 
 
 type alias Drag =

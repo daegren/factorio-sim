@@ -5,7 +5,6 @@ import Html.Attributes exposing (src)
 import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Css
-import Point exposing (Point, zeroPoint)
 import Grid
 
 
@@ -13,9 +12,7 @@ import Grid
 
 
 type alias Model =
-    { grid : Grid.Model
-    , mouseGridPosition : Maybe Point
-    }
+    { grid : Grid.Model }
 
 
 
@@ -27,11 +24,8 @@ init =
     let
         ( gridModel, gridCmd ) =
             Grid.init
-
-        model =
-            Model gridModel Nothing
     in
-        ( model
+        ( Model gridModel
         , Cmd.map GridMsg gridCmd
         )
 
