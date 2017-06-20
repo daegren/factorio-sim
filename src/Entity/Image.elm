@@ -87,5 +87,8 @@ sizeFor entity =
         AssemblingMachine3 ->
             ( 96, 106 )
 
+        TransportBelt ->
+            ( 40, 40 )
+
         _ ->
             ( 32, 32 )
