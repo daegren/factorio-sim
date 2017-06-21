@@ -12,59 +12,6 @@ import Grid.Model exposing (Model, BackgroundCell, Cells)
 import Grid.Messages exposing (Msg(..))
 
 
-{-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
-
-    addEntity entity entities
--}
-addEntity : Entity -> List Entity -> List Entity
-addEntity entity entityList =
-    entity :: replaceEntityInsideEntity entity entityList
-
-
-replaceEntityInsideEntity : Entity -> List Entity -> List Entity
-replaceEntityInsideEntity entity entityList =
-    let
-        ( min, max ) =
-            Entity.getBoundingRect entity
-    in
-        List.filter
-            (\e ->
-                let
-                    ( entityMin, entityMax ) =
-                        Entity.getBoundingRect e
-                in
-                    not
-                        ((min.x <= entityMax.x && max.x >= entityMin.x)
-                            && (min.y <= entityMax.y && max.y >= entityMin.y)
-                        )
-            )
-            entityList
-
-
-{-| Remove an entity at a given point
-
--}
-removeEntityAtPoint : Point -> List Entity -> List Entity
-removeEntityAtPoint point entityList =
-    let
-        isEntityNotAtPoint point entity =
-            not (isEntityAtPoint point entity)
-    in
-        List.filter (isEntityNotAtPoint point) entityList
-
-
-isEntityAtPoint : Point -> Entity -> Bool
-isEntityAtPoint point entity =
-    case Entity.sizeFor entity of
-        Square size ->
-            let
-                ( min, max ) =
-                    Entity.getBoundingRect entity
-            in
-                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
-
-
-
 -- GENERATORS
 
 
@@ -162,6 +109,58 @@ port receiveExportedBlueprint : (String -> msg) -> Sub msg
 
 
 -- HELPERS
+
+
+{-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
+
+    addEntity entity entities
+-}
+addEntity : Entity -> List Entity -> List Entity
+addEntity entity entityList =
+    entity :: replaceEntityInsideEntity entity entityList
+
+
+replaceEntityInsideEntity : Entity -> List Entity -> List Entity
+replaceEntityInsideEntity entity entityList =
+    let
+        ( min, max ) =
+            Entity.getBoundingRect entity
+    in
+        List.filter
+            (\e ->
+                let
+                    ( entityMin, entityMax ) =
+                        Entity.getBoundingRect e
+                in
+                    not
+                        ((min.x <= entityMax.x && max.x >= entityMin.x)
+                            && (min.y <= entityMax.y && max.y >= entityMin.y)
+                        )
+            )
+            entityList
+
+
+{-| Remove an entity at a given point
+
+-}
+removeEntityAtPoint : Point -> List Entity -> List Entity
+removeEntityAtPoint point entityList =
+    let
+        isEntityNotAtPoint point entity =
+            not (isEntityAtPoint point entity)
+    in
+        List.filter (isEntityNotAtPoint point) entityList
+
+
+isEntityAtPoint : Point -> Entity -> Bool
+isEntityAtPoint point entity =
+    case Entity.sizeFor entity of
+        Square size ->
+            let
+                ( min, max ) =
+                    Entity.getBoundingRect entity
+            in
+                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
 
 
 calculateLineBetweenPoints : Point -> Point -> ( Point, Point )
