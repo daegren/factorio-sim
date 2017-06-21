@@ -7,45 +7,9 @@ import Random exposing (Generator)
 import Mouse
 import Toolbox exposing (Tool(..))
 import Entity exposing (Entity, Size(..))
-import Blueprint exposing (encodeBlueprint)
 import Json.Decode as Json
-
-
--- MODEL
-
-
-type alias Model =
-    { cells : Cells
-    , entities : List Entity
-    , cellSize : Int
-    , size : Int
-    , offset : Point
-    , blueprintString : String
-    , toolbox : Toolbox.Model
-    , shouldIgnoreNextMouseClick : Bool
-    , mouseInsideGrid : Bool
-    , currentMouseGridPosition : Maybe Point
-    , drag : Maybe Drag
-    }
-
-
-emptyGrid : Model
-emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing
-
-
-type alias Drag =
-    { start : Point
-    , current : Point
-    }
-
-
-type alias Cells =
-    List (List BackgroundCell)
-
-
-type alias BackgroundCell =
-    String
+import Grid.Model exposing (Model, BackgroundCell, Cells)
+import Grid.Messages exposing (Msg(..))
 
 
 {-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
@@ -130,7 +94,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         model =
-            emptyGrid
+            Grid.Model.emptyGrid
     in
         ( model
         , Cmd.batch
@@ -197,123 +161,7 @@ port receiveExportedBlueprint : (String -> msg) -> Sub msg
 
 
 
--- UPDATE
-
-
-type Msg
-    = RandomGrid Cells
-    | GridOffset ( Float, Float )
-    | MouseMoved Mouse.Position
-    | MouseEntered
-    | MouseLeft
-    | LoadBlueprint
-    | BlueprintChanged String
-    | SentBlueprint (Result String (List Entity))
-    | ExportBlueprint
-    | ClearEntities
-    | ReceiveExportedBlueprint String
-    | ChangeGridSize Int
-    | DragStart Mouse.Position
-    | DragAt Mouse.Position
-    | DragEnd Mouse.Position
-    | ToolboxMsg Toolbox.Msg
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        RandomGrid grid ->
-            ( { model | cells = grid }, Cmd.none )
-
-        GridOffset ( x, y ) ->
-            let
-                point =
-                    Point (floor x) (floor y)
-            in
-                ( { model | offset = point }, Cmd.none )
-
-        MouseMoved position ->
-            ( { model | currentMouseGridPosition = positionToGridPoint model position }, Cmd.none )
-
-        MouseEntered ->
-            ( { model | mouseInsideGrid = True }, Cmd.none )
-
-        MouseLeft ->
-            ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
-
-        LoadBlueprint ->
-            ( model, parseBlueprint model.blueprintString )
-
-        BlueprintChanged str ->
-            ( { model | blueprintString = str }, Cmd.none )
-
-        SentBlueprint res ->
-            case res of
-                Ok entities ->
-                    ( { model | entities = entities }, Cmd.none )
-
-                Err err ->
-                    let
-                        a =
-                            Debug.log "SentBlueprint error" err
-                    in
-                        ( model, Cmd.none )
-
-        ExportBlueprint ->
-            ( model, exportBlueprint (encodeBlueprint model.entities) )
-
-        ClearEntities ->
-            ( { model | entities = [], blueprintString = "" }, Cmd.none )
-
-        ReceiveExportedBlueprint blueprintString ->
-            ( { model | blueprintString = blueprintString }, Cmd.none )
-
-        ChangeGridSize amount ->
-            let
-                newSize =
-                    model.size + amount
-            in
-                ( { model | size = newSize, shouldIgnoreNextMouseClick = True }, Random.generate RandomGrid (generateGrid newSize) )
-
-        DragStart position ->
-            case positionToGridPoint model position of
-                Just point ->
-                    ( { model | drag = Just (Drag point point) }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        DragAt position ->
-            case positionToGridPoint model position of
-                Just point ->
-                    ( { model | drag = Maybe.map (\{ start } -> Drag start point) model.drag }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
-
-        DragEnd position ->
-            case model.drag of
-                Just drag ->
-                    let
-                        entities =
-                            if drag.start == drag.current then
-                                placeEntityAtPoint model.toolbox drag.start model.entities
-                            else
-                                calculateLineBetweenPoints drag.start drag.current
-                                    |> buildLineBetweenPoints (Toolbox.sizeFor model.toolbox.currentTool)
-                                    |> List.foldl (\point entities -> placeEntityAtPoint model.toolbox point entities) model.entities
-                    in
-                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = positionToGridPoint model position }, exportBlueprint (encodeBlueprint entities) )
-
-                Nothing ->
-                    ( { model | drag = Nothing }, Cmd.none )
-
-        ToolboxMsg msg ->
-            let
-                ( toolboxModel, toolboxCmd ) =
-                    Toolbox.update msg model.toolbox
-            in
-                ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
+-- HELPERS
 
 
 calculateLineBetweenPoints : Point -> Point -> ( Point, Point )

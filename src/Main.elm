@@ -6,14 +6,17 @@ import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Css
 import Grid
+import Grid.Model as GridModel
+import Grid.Messages as GridMessages
 import Grid.View as GridView
+import Grid.Update as GridUpdate
 
 
 -- MODEL
 
 
 type alias Model =
-    { grid : Grid.Model }
+    { grid : GridModel.Model }
 
 
 
@@ -61,7 +64,7 @@ subscriptions model =
 
 
 type Msg
-    = GridMsg Grid.Msg
+    = GridMsg GridMessages.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -70,7 +73,7 @@ update msg model =
         GridMsg msg ->
             let
                 ( gridModel, gridCmd ) =
-                    Grid.update msg model.grid
+                    GridUpdate.update msg model.grid
             in
                 ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
 

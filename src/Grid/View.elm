@@ -12,7 +12,9 @@ import Collage
 import Element
 import Toolbox exposing (Tool(..))
 import Color
-import Grid exposing (Msg(..), Model)
+import Grid.Messages exposing (Msg(..))
+import Grid.Model exposing (Model, BackgroundCell)
+import Grid
 import Entity.Image
 import Entity exposing (Size(..), Entity)
 import Point exposing (Point)
@@ -199,7 +201,7 @@ backgroundGrid model =
         |> Collage.toForm
 
 
-elementRow : Int -> List Grid.BackgroundCell -> Element.Element
+elementRow : Int -> List BackgroundCell -> Element.Element
 elementRow size cells =
     List.map (\c -> Element.image size size c) cells
         |> Element.flow Element.right
