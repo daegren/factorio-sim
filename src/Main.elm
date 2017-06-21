@@ -6,6 +6,7 @@ import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
 import Css
 import Grid
+import Grid.View as GridView
 
 
 -- MODEL
@@ -96,7 +97,7 @@ view model =
     div []
         [ h1 [] [ text "Blueprint Maker" ]
         , div [ id [ Main ] ]
-            [ Html.map GridMsg (Grid.view model.grid)
+            [ Html.map GridMsg (GridView.view model.grid)
             , infoView model
             ]
         , div [ id [ Copyright ] ]
