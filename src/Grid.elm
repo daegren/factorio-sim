@@ -450,10 +450,16 @@ addEntityOffset { cellSize } entity ( x, y ) =
     let
         ( imageSizeX, imageSizeY ) =
             Entity.Image.sizeFor entity
+
+        allowedEntities =
+            [ Entity.WoodenChest, Entity.IronChest, Entity.SteelChest ]
     in
-        case Entity.sizeFor entity of
-            Square size ->
-                ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
+        if List.member entity.name allowedEntities then
+            case Entity.sizeFor entity of
+                Square size ->
+                    ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
+        else
+            ( x, y )
 
 
 
