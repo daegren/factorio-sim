@@ -107,6 +107,16 @@ buildToolRow entityNameList =
     List.map (\a -> toolForEntity a) entityNameList
 
 
+sizeFor : Tool -> Entity.Size
+sizeFor tool =
+    case tool of
+        Placeable entity ->
+            Entity.sizeFor entity
+
+        Clear ->
+            Entity.Square 1
+
+
 
 -- SUBSCRIPTIONS
 
@@ -138,6 +148,9 @@ update msg model =
                     case input of
                         Rotate ->
                             ( { model | currentDirection = rotateDirection model.currentDirection }, Cmd.none )
+
+                        ClearSelection ->
+                            ( { model | currentTool = clearTool }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )

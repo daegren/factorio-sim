@@ -4,20 +4,19 @@ import Html exposing (Html, h1, h2, div, text, img)
 import Html.Attributes exposing (src)
 import SharedStyles exposing (Classes(..))
 import Html.CssHelpers
-import Mouse
 import Css
-import Point exposing (Point, zeroPoint)
 import Grid
+import Grid.Model as GridModel
+import Grid.Messages as GridMessages
+import Grid.View as GridView
+import Grid.Update as GridUpdate
 
 
 -- MODEL
 
 
 type alias Model =
-    { grid : Grid.Model
-    , mouseGridPosition : Maybe Point
-    , currentMousePosition : Point
-    }
+    { grid : GridModel.Model }
 
 
 
@@ -29,11 +28,8 @@ init =
     let
         ( gridModel, gridCmd ) =
             Grid.init
-
-        model =
-            Model gridModel Nothing zeroPoint
     in
-        ( model
+        ( Model gridModel
         , Cmd.map GridMsg gridCmd
         )
 
@@ -60,7 +56,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map GridMsg (Grid.subscriptions model.grid)
-        , Mouse.moves MouseMoved
         ]
 
 
@@ -69,25 +64,16 @@ subscriptions model =
 
 
 type Msg
-    = MouseMoved Mouse.Position
-    | GridMsg Grid.Msg
+    = GridMsg GridMessages.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        MouseMoved position ->
-            ( { model
-                | currentMousePosition = (Point position.x position.y)
-                , mouseGridPosition = Grid.positionToGridPoint model.grid position
-              }
-            , Cmd.none
-            )
-
         GridMsg msg ->
             let
                 ( gridModel, gridCmd ) =
-                    Grid.update msg model.grid
+                    GridUpdate.update msg model.grid
             in
                 ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
 
@@ -114,7 +100,7 @@ view model =
     div []
         [ h1 [] [ text "Blueprint Maker" ]
         , div [ id [ Main ] ]
-            [ Html.map GridMsg (Grid.view model.mouseGridPosition model.grid)
+            [ Html.map GridMsg (GridView.view model.grid)
             , infoView model
             ]
         , div [ id [ Copyright ] ]
@@ -135,5 +121,6 @@ helpText =
         , div [] [ text "Click on an item in the toolbox to set it as your current tool" ]
         , div [] [ text "Left click to place an enitity in the grid" ]
         , div [] [ text "Use the clear tool to remove an enitity" ]
-        , div [] [ text "R to rotate" ]
+        , div [] [ text "q to clear the mouse" ]
+        , div [] [ text "r to rotate" ]
         ]
