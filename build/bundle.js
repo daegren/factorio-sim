@@ -24656,8 +24656,8 @@ var _user$project$Point$Point = F2(
 		return {x: a, y: b};
 	});
 
-var _user$project$Entity$entityID = function (entity) {
-	var _p0 = entity.name;
+var _user$project$Entity$entityIDFromName = function (name) {
+	var _p0 = name;
 	switch (_p0.ctor) {
 		case 'TransportBelt':
 			return 'transport-belt';
@@ -24680,6 +24680,9 @@ var _user$project$Entity$entityID = function (entity) {
 		default:
 			return _p0._0;
 	}
+};
+var _user$project$Entity$entityID = function (entity) {
+	return _user$project$Entity$entityIDFromName(entity.name);
 };
 var _user$project$Entity$readableName = function (entityName) {
 	var _p1 = entityName;
@@ -24718,6 +24721,12 @@ var _user$project$Entity$positionFromPoint = function (point) {
 		y: _elm_lang$core$Basics$toFloat(point.y)
 	};
 };
+var _user$project$Entity$setPosition = F2(
+	function (position, entity) {
+		return _elm_lang$core$Native_Utils.update(
+			entity,
+			{position: position});
+	});
 var _user$project$Entity$zeroPosition = {x: 0.0, y: 0.0};
 var _user$project$Entity$Position = F2(
 	function (a, b) {
@@ -24789,6 +24798,242 @@ var _user$project$Entity$toolboxEntity = function (name) {
 	return A3(_user$project$Entity$Entity, name, _user$project$Entity$zeroPosition, _user$project$Entity$Up);
 };
 
+var _user$project$Entity_Encoder$directionToInt = function (direction) {
+	var _p0 = direction;
+	switch (_p0.ctor) {
+		case 'Down':
+			return _elm_lang$core$Maybe$Just(4);
+		case 'Right':
+			return _elm_lang$core$Maybe$Just(2);
+		case 'Left':
+			return _elm_lang$core$Maybe$Just(6);
+		default:
+			return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Entity_Encoder$encodePosition = function (position) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'x',
+				_1: _elm_lang$core$Json_Encode$float(position.x)
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'y',
+					_1: _elm_lang$core$Json_Encode$float(position.y)
+				},
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Entity_Encoder$encodeDirection = F2(
+	function (direction, props) {
+		var _p1 = _user$project$Entity_Encoder$directionToInt(direction);
+		if (_p1.ctor === 'Just') {
+			return {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'direction',
+					_1: _elm_lang$core$Json_Encode$int(_p1._0)
+				},
+				_1: props
+			};
+		} else {
+			return props;
+		}
+	});
+var _user$project$Entity_Encoder$encodeEntity = F2(
+	function (idx, entity) {
+		var props = {
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string(
+					_user$project$Entity$entityID(entity))
+			},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'position',
+					_1: _user$project$Entity_Encoder$encodePosition(entity.position)
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'entity_number',
+						_1: _elm_lang$core$Json_Encode$int(idx)
+					},
+					_1: {ctor: '[]'}
+				}
+			}
+		};
+		return _elm_lang$core$Json_Encode$object(
+			A2(_user$project$Entity_Encoder$encodeDirection, entity.direction, props));
+	});
+var _user$project$Entity_Encoder$encodeEntities = function (entities) {
+	return _elm_lang$core$Json_Encode$list(
+		A2(_elm_lang$core$List$indexedMap, _user$project$Entity_Encoder$encodeEntity, entities));
+};
+
+var _user$project$Blueprint$getIcon = F2(
+	function (entity, icons) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (_p0) {
+					var _p1 = _p0;
+					return _elm_lang$core$Native_Utils.eq(_p1._1, entity.name);
+				},
+				icons));
+	});
+var _user$project$Blueprint$entityToIcon = F2(
+	function (entity, icons) {
+		var _p2 = A2(_user$project$Blueprint$getIcon, entity, icons);
+		if (_p2.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$List$map,
+				function (_p3) {
+					var _p4 = _p3;
+					var _p6 = _p4._1;
+					var _p5 = _p4._0;
+					return _elm_lang$core$Native_Utils.eq(_p2._0._1, _p6) ? {ctor: '_Tuple2', _0: _p5 + 1, _1: _p6} : {ctor: '_Tuple2', _0: _p5, _1: _p6};
+				},
+				icons);
+		} else {
+			return {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 1, _1: entity.name},
+				_1: icons
+			};
+		}
+	});
+var _user$project$Blueprint$sortIcons = F2(
+	function (_p8, _p7) {
+		var _p9 = _p8;
+		var _p10 = _p7;
+		var _p11 = A2(_elm_lang$core$Basics$compare, _p9._0, _p10._0);
+		switch (_p11.ctor) {
+			case 'LT':
+				return _elm_lang$core$Basics$GT;
+			case 'EQ':
+				return _elm_lang$core$Basics$EQ;
+			default:
+				return _elm_lang$core$Basics$LT;
+		}
+	});
+var _user$project$Blueprint$icons = function (entities) {
+	return A2(
+		_elm_lang$core$List$sortWith,
+		_user$project$Blueprint$sortIcons,
+		A3(
+			_elm_lang$core$List$foldl,
+			_user$project$Blueprint$entityToIcon,
+			{ctor: '[]'},
+			entities));
+};
+var _user$project$Blueprint$encodeIcon = F2(
+	function (idx, _p12) {
+		var _p13 = _p12;
+		return _elm_lang$core$Json_Encode$object(
+			{
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'signal',
+					_1: _elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'type',
+								_1: _elm_lang$core$Json_Encode$string('item')
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'name',
+									_1: _elm_lang$core$Json_Encode$string(
+										_user$project$Entity$entityIDFromName(_p13._1))
+								},
+								_1: {ctor: '[]'}
+							}
+						})
+				},
+				_1: {
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'index',
+						_1: _elm_lang$core$Json_Encode$int(idx + 1)
+					},
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Blueprint$encodeIcons = function (icons) {
+	return _elm_lang$core$Json_Encode$list(
+		A2(
+			_elm_lang$core$List$indexedMap,
+			_user$project$Blueprint$encodeIcon,
+			A2(_elm_lang$core$List$take, 4, icons)));
+};
+var _user$project$Blueprint$encodeBlueprint = function (entities) {
+	return _elm_lang$core$Json_Encode$object(
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'blueprint',
+				_1: _elm_lang$core$Json_Encode$object(
+					{
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'entities',
+							_1: _user$project$Entity_Encoder$encodeEntities(entities)
+						},
+						_1: {
+							ctor: '::',
+							_0: {
+								ctor: '_Tuple2',
+								_0: 'icons',
+								_1: _user$project$Blueprint$encodeIcons(
+									_user$project$Blueprint$icons(entities))
+							},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'item',
+									_1: _elm_lang$core$Json_Encode$string('blueprint')
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'version',
+										_1: _elm_lang$core$Json_Encode$int(64425689088)
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					})
+			},
+			_1: {ctor: '[]'}
+		});
+};
+
 var _user$project$Entity_Decoder$entityName = function (name) {
 	var _p0 = name;
 	switch (_p0) {
@@ -24857,86 +25102,6 @@ var _user$project$Entity_Decoder$decodeEntity = A4(
 		_elm_lang$core$Json_Decode$maybe(
 			A2(_elm_lang$core$Json_Decode$field, 'direction', _elm_lang$core$Json_Decode$int))));
 
-var _user$project$Entity_Encoder$directionToInt = function (direction) {
-	var _p0 = direction;
-	switch (_p0.ctor) {
-		case 'Down':
-			return _elm_lang$core$Maybe$Just(4);
-		case 'Right':
-			return _elm_lang$core$Maybe$Just(2);
-		case 'Left':
-			return _elm_lang$core$Maybe$Just(6);
-		default:
-			return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Entity_Encoder$encodePosition = function (position) {
-	return _elm_lang$core$Json_Encode$object(
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'x',
-				_1: _elm_lang$core$Json_Encode$float(position.x)
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'y',
-					_1: _elm_lang$core$Json_Encode$float(position.y)
-				},
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Entity_Encoder$encodeEntity = F2(
-	function (idx, entity) {
-		var props = {
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'name',
-				_1: _elm_lang$core$Json_Encode$string(
-					_user$project$Entity$entityID(entity))
-			},
-			_1: {
-				ctor: '::',
-				_0: {
-					ctor: '_Tuple2',
-					_0: 'position',
-					_1: _user$project$Entity_Encoder$encodePosition(entity.position)
-				},
-				_1: {
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'entity_number',
-						_1: _elm_lang$core$Json_Encode$int(idx)
-					},
-					_1: {ctor: '[]'}
-				}
-			}
-		};
-		return _elm_lang$core$Json_Encode$object(
-			function () {
-				var _p1 = _user$project$Entity_Encoder$directionToInt(entity.direction);
-				if (_p1.ctor === 'Just') {
-					return {
-						ctor: '::',
-						_0: {
-							ctor: '_Tuple2',
-							_0: 'direction',
-							_1: _elm_lang$core$Json_Encode$int(_p1._0)
-						},
-						_1: props
-					};
-				} else {
-					return props;
-				}
-			}());
-	});
-
 var _user$project$Entity_Image$sizeFor = function (entity) {
 	var _p0 = entity.name;
 	switch (_p0.ctor) {
@@ -24947,11 +25112,17 @@ var _user$project$Entity_Image$sizeFor = function (entity) {
 		case 'SteelChest':
 			return {ctor: '_Tuple2', _0: 46, _1: 33};
 		case 'AssemblingMachine1':
-			return {ctor: '_Tuple2', _0: 96, _1: 96};
+			return {ctor: '_Tuple2', _0: 108, _1: 114};
 		case 'AssemblingMachine2':
-			return {ctor: '_Tuple2', _0: 96, _1: 96};
+			return {ctor: '_Tuple2', _0: 108, _1: 110};
 		case 'AssemblingMachine3':
-			return {ctor: '_Tuple2', _0: 96, _1: 106};
+			return {ctor: '_Tuple2', _0: 108, _1: 119};
+		case 'TransportBelt':
+			return {ctor: '_Tuple2', _0: 40, _1: 40};
+		case 'FastTransportBelt':
+			return {ctor: '_Tuple2', _0: 40, _1: 40};
+		case 'ExpressTransportBelt':
+			return {ctor: '_Tuple2', _0: 40, _1: 40};
 		default:
 			return {ctor: '_Tuple2', _0: 32, _1: 32};
 	}
@@ -24997,178 +25168,6 @@ var _user$project$Entity_Image$image = function (entity) {
 			return A2(_elm_lang$core$Basics_ops['++'], path, '.png');
 	}
 };
-
-var _user$project$GridStyles$Input = {ctor: 'Input'};
-var _user$project$GridStyles$Cell = {ctor: 'Cell'};
-var _user$project$GridStyles$Row = {ctor: 'Row'};
-var _user$project$GridStyles$BlueprintInput = {ctor: 'BlueprintInput'};
-var _user$project$GridStyles$Toolbox = {ctor: 'Toolbox'};
-var _user$project$GridStyles$Grid = {ctor: 'Grid'};
-var _user$project$GridStyles$GridContainer = {ctor: 'GridContainer'};
-var _user$project$GridStyles$css = function (_p0) {
-	return _rtfeldman$elm_css$Css$stylesheet(
-		A2(_rtfeldman$elm_css$Css_Namespace$namespace, 'grid', _p0));
-}(
-	{
-		ctor: '::',
-		_0: A2(
-			_rtfeldman$elm_css$Css$id,
-			_user$project$GridStyles$GridContainer,
-			{
-				ctor: '::',
-				_0: _rtfeldman$elm_css$Css$displayFlex,
-				_1: {
-					ctor: '::',
-					_0: _rtfeldman$elm_css$Css$padding(
-						_rtfeldman$elm_css$Css$px(8)),
-					_1: {ctor: '[]'}
-				}
-			}),
-		_1: {
-			ctor: '::',
-			_0: A2(
-				_rtfeldman$elm_css$Css$id,
-				_user$project$GridStyles$Grid,
-				{
-					ctor: '::',
-					_0: A2(
-						_rtfeldman$elm_css$Css$flex2,
-						_rtfeldman$elm_css$Css$int(0),
-						_rtfeldman$elm_css$Css$int(0)),
-					_1: {
-						ctor: '::',
-						_0: _rtfeldman$elm_css$Css$paddingRight(
-							_rtfeldman$elm_css$Css$px(8)),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_rtfeldman$elm_css$Css$id,
-					_user$project$GridStyles$Toolbox,
-					{
-						ctor: '::',
-						_0: A2(
-							_rtfeldman$elm_css$Css$flex2,
-							_rtfeldman$elm_css$Css$int(1),
-							_rtfeldman$elm_css$Css$int(0)),
-						_1: {
-							ctor: '::',
-							_0: _rtfeldman$elm_css$Css$flexBasis(_rtfeldman$elm_css$Css$auto),
-							_1: {
-								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$marginLeft(
-									_rtfeldman$elm_css$Css$px(24)),
-								_1: {ctor: '[]'}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_rtfeldman$elm_css$Css$id,
-						_user$project$GridStyles$BlueprintInput,
-						{
-							ctor: '::',
-							_0: A2(
-								_rtfeldman$elm_css$Css$margin2,
-								_rtfeldman$elm_css$Css$px(8),
-								_rtfeldman$elm_css$Css$zero),
-							_1: {
-								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$children(
-									{
-										ctor: '::',
-										_0: A2(
-											_rtfeldman$elm_css$Css$class,
-											_user$project$GridStyles$Input,
-											{
-												ctor: '::',
-												_0: _rtfeldman$elm_css$Css$width(
-													_rtfeldman$elm_css$Css$pct(100)),
-												_1: {
-													ctor: '::',
-													_0: _rtfeldman$elm_css$Css$height(
-														_rtfeldman$elm_css$Css$px(150)),
-													_1: {ctor: '[]'}
-												}
-											}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_rtfeldman$elm_css$Css$class,
-							_user$project$GridStyles$Row,
-							{
-								ctor: '::',
-								_0: _rtfeldman$elm_css$Css$displayFlex,
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_rtfeldman$elm_css$Css$class,
-								_user$project$GridStyles$Cell,
-								{
-									ctor: '::',
-									_0: _rtfeldman$elm_css$Css$width(
-										_rtfeldman$elm_css$Css$px(32)),
-									_1: {
-										ctor: '::',
-										_0: _rtfeldman$elm_css$Css$height(
-											_rtfeldman$elm_css$Css$px(32)),
-										_1: {
-											ctor: '::',
-											_0: _rtfeldman$elm_css$Css$hover(
-												{
-													ctor: '::',
-													_0: _rtfeldman$elm_css$Css$before(
-														{
-															ctor: '::',
-															_0: A2(_rtfeldman$elm_css$Css$property, 'content', '\'\''),
-															_1: {
-																ctor: '::',
-																_0: _rtfeldman$elm_css$Css$position(_rtfeldman$elm_css$Css$absolute),
-																_1: {
-																	ctor: '::',
-																	_0: _rtfeldman$elm_css$Css$backgroundColor(_rtfeldman$elm_css$Css_Colors$yellow),
-																	_1: {
-																		ctor: '::',
-																		_0: _rtfeldman$elm_css$Css$opacity(
-																			_rtfeldman$elm_css$Css$num(0.25)),
-																		_1: {
-																			ctor: '::',
-																			_0: _rtfeldman$elm_css$Css$width(
-																				_rtfeldman$elm_css$Css$px(32)),
-																			_1: {
-																				ctor: '::',
-																				_0: _rtfeldman$elm_css$Css$height(
-																					_rtfeldman$elm_css$Css$px(32)),
-																				_1: {ctor: '[]'}
-																			}
-																		}
-																	}
-																}
-															}
-														}),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
-				}
-			}
-		}
-	});
 
 var _user$project$ToolboxStyles$SelectedToolGroupItem = {ctor: 'SelectedToolGroupItem'};
 var _user$project$ToolboxStyles$ToolGroupItem = {ctor: 'ToolGroupItem'};
@@ -25475,13 +25474,17 @@ var _user$project$ToolboxStyles$css = function (_p0) {
 		}
 	});
 
+var _user$project$Input$ClearSelection = {ctor: 'ClearSelection'};
 var _user$project$Input$Rotate = {ctor: 'Rotate'};
 var _user$project$Input$mapKeyboardToInput = function (keyCode) {
 	var _p0 = _elm_lang$core$Char$fromCode(keyCode);
-	if (_p0.valueOf() === 'r') {
-		return _elm_lang$core$Maybe$Just(_user$project$Input$Rotate);
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
+	switch (_p0.valueOf()) {
+		case 'r':
+			return _elm_lang$core$Maybe$Just(_user$project$Input$Rotate);
+		case 'q':
+			return _elm_lang$core$Maybe$Just(_user$project$Input$ClearSelection);
+		default:
+			return _elm_lang$core$Maybe$Nothing;
 	}
 };
 
@@ -25584,55 +25587,25 @@ var _user$project$Toolbox$rotateDirection = function (orientation) {
 			return _user$project$Entity$Up;
 	}
 };
-var _user$project$Toolbox$update = F2(
-	function (msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
-			case 'SelectTool':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{currentTool: _p5._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'KeyPressed':
-				var _p6 = _user$project$Input$mapKeyboardToInput(_p5._0);
-				if (_p6.ctor === 'Just') {
-					var _p7 = _p6._0;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								currentDirection: _user$project$Toolbox$rotateDirection(model.currentDirection)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{currentToolGroup: _p5._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
+var _user$project$Toolbox$sizeFor = function (tool) {
+	var _p5 = tool;
+	if (_p5.ctor === 'Placeable') {
+		return _user$project$Entity$sizeFor(_p5._0);
+	} else {
+		return _user$project$Entity$Square(1);
+	}
+};
 var _user$project$Toolbox$currentToolToEntity = F2(
-	function (_p8, position) {
-		var _p9 = _p8;
-		var _p10 = _p9.currentTool;
-		if (_p10.ctor === 'Clear') {
+	function (_p6, position) {
+		var _p7 = _p6;
+		var _p8 = _p7.currentTool;
+		if (_p8.ctor === 'Clear') {
 			return _elm_lang$core$Maybe$Nothing;
 		} else {
 			return _elm_lang$core$Maybe$Just(
 				_elm_lang$core$Native_Utils.update(
-					_p10._0,
-					{position: position, direction: _p9.currentDirection}));
+					_p8._0,
+					{position: position, direction: _p7.currentDirection}));
 		}
 	});
 var _user$project$Toolbox$Model = F4(
@@ -25651,6 +25624,54 @@ var _user$project$Toolbox$emptyToolGroup = A2(
 	_user$project$Toolbox$Logistics);
 var _user$project$Toolbox$Clear = {ctor: 'Clear'};
 var _user$project$Toolbox$clearTool = _user$project$Toolbox$Clear;
+var _user$project$Toolbox$update = F2(
+	function (msg, model) {
+		var _p9 = msg;
+		switch (_p9.ctor) {
+			case 'SelectTool':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{currentTool: _p9._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'KeyPressed':
+				var _p10 = _user$project$Input$mapKeyboardToInput(_p9._0);
+				if (_p10.ctor === 'Just') {
+					var _p11 = _p10._0;
+					if (_p11.ctor === 'Rotate') {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									currentDirection: _user$project$Toolbox$rotateDirection(model.currentDirection)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{currentTool: _user$project$Toolbox$clearTool}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{currentToolGroup: _p9._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
 var _user$project$Toolbox$Placeable = function (a) {
 	return {ctor: 'Placeable', _0: a};
 };
@@ -25843,8 +25864,8 @@ var _user$project$Toolbox$toolRow = F2(
 	});
 var _user$project$Toolbox$toolGroupView = F2(
 	function (model, toolGroupMaybe) {
-		var _p11 = toolGroupMaybe;
-		if (_p11.ctor === 'Just') {
+		var _p12 = toolGroupMaybe;
+		if (_p12.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -25860,7 +25881,7 @@ var _user$project$Toolbox$toolGroupView = F2(
 				A2(
 					_elm_lang$core$List$map,
 					_user$project$Toolbox$toolRow(model),
-					_p11._0.tools));
+					_p12._0.tools));
 		} else {
 			return _elm_lang$html$Html$text('Please select a tool group.');
 		}
@@ -25935,141 +25956,76 @@ var _user$project$Toolbox$view = function (model) {
 		});
 };
 
-var _user$project$Grid$elementRow = F2(
-	function (size, cells) {
-		return A2(
-			_evancz$elm_graphics$Element$flow,
-			_evancz$elm_graphics$Element$right,
-			A2(
-				_elm_lang$core$List$map,
-				function (c) {
-					return A3(_evancz$elm_graphics$Element$image, size, size, c);
-				},
-				cells));
-	});
-var _user$project$Grid$backgroundGrid = function (model) {
-	return A2(
-		_evancz$elm_graphics$Element$flow,
-		_evancz$elm_graphics$Element$down,
-		A2(
-			_elm_lang$core$List$map,
-			function (row) {
-				return A2(_user$project$Grid$elementRow, model.cellSize, row);
-			},
-			model.cells));
-};
-var _user$project$Grid$styles = function (_p0) {
-	return _elm_lang$html$Html_Attributes$style(
-		_rtfeldman$elm_css$Css$asPairs(_p0));
-};
-var _user$project$Grid$_p1 = _rtfeldman$elm_css_helpers$Html_CssHelpers$withNamespace('grid');
-var _user$project$Grid$id = _user$project$Grid$_p1.id;
-var _user$project$Grid$class = _user$project$Grid$_p1.$class;
-var _user$project$Grid$classList = _user$project$Grid$_p1.classList;
-var _user$project$Grid$addEntityOffset = F3(
-	function (_p3, entity, _p2) {
-		var _p4 = _p3;
-		var _p9 = _p4.cellSize;
-		var _p5 = _p2;
-		var _p6 = _user$project$Entity_Image$sizeFor(entity);
-		var imageSizeX = _p6._0;
-		var imageSizeY = _p6._1;
-		var _p7 = _user$project$Entity$sizeFor(entity);
-		var _p8 = _p7._0;
-		return {
-			ctor: '_Tuple2',
-			_0: _p5._0 + ((_elm_lang$core$Basics$toFloat(imageSizeX) - (_elm_lang$core$Basics$toFloat(_p9) * _elm_lang$core$Basics$toFloat(_p8))) / 2),
-			_1: _p5._1 + ((_elm_lang$core$Basics$toFloat(imageSizeY) - (_elm_lang$core$Basics$toFloat(_p9) * _elm_lang$core$Basics$toFloat(_p8))) / 2)
+var _user$project$Grid_Model$Model = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {cells: a, entities: b, cellSize: c, size: d, offset: e, blueprintString: f, toolbox: g, shouldIgnoreNextMouseClick: h, mouseInsideGrid: i, currentMouseGridPosition: j, drag: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
 		};
+	};
+};
+var _user$project$Grid_Model$emptyGrid = _user$project$Grid_Model$Model(
+	{ctor: '[]'})(
+	{ctor: '[]'})(32)(15)(_user$project$Point$zeroPoint)('')(_user$project$Toolbox$initialModel)(false)(false)(_elm_lang$core$Maybe$Nothing)(_elm_lang$core$Maybe$Nothing);
+var _user$project$Grid_Model$Drag = F2(
+	function (a, b) {
+		return {start: a, current: b};
 	});
-var _user$project$Grid$pointToCollageOffset = F2(
-	function (_p10, point) {
-		var _p11 = _p10;
-		var _p12 = _p11.cellSize;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Basics$toFloat(point.x) * _elm_lang$core$Basics$toFloat(_p12),
-			_1: (_elm_lang$core$Basics$toFloat(point.y) * _elm_lang$core$Basics$toFloat(_p12)) * -1
-		};
-	});
-var _user$project$Grid$buildEntity = F2(
-	function (model, entity) {
-		var _p13 = _user$project$Entity_Image$sizeFor(entity);
-		var x = _p13._0;
-		var y = _p13._1;
-		return A2(
-			_evancz$elm_graphics$Collage$move,
-			A3(
-				_user$project$Grid$addEntityOffset,
-				model,
-				entity,
-				A2(
-					_user$project$Grid$pointToCollageOffset,
-					model,
-					{
-						x: _elm_lang$core$Basics$floor(entity.position.x),
-						y: _elm_lang$core$Basics$floor(entity.position.y)
-					})),
-			_evancz$elm_graphics$Collage$toForm(
-				A3(
-					_evancz$elm_graphics$Element$image,
-					x,
-					y,
-					_user$project$Entity_Image$image(entity))));
-	});
-var _user$project$Grid$entities = F2(
-	function (model, entityList) {
-		return _evancz$elm_graphics$Collage$group(
-			A2(
-				_elm_lang$core$List$map,
-				_user$project$Grid$buildEntity(model),
-				entityList));
-	});
-var _user$project$Grid$hoverBlock = F2(
-	function (maybePoint, model) {
-		var _p14 = maybePoint;
-		if (_p14.ctor === 'Just') {
-			var _p17 = _p14._0;
-			var _p15 = model.toolbox.currentTool;
-			if (_p15.ctor === 'Clear') {
-				return A2(
-					_evancz$elm_graphics$Collage$move,
-					A2(_user$project$Grid$pointToCollageOffset, model, _p17),
-					A2(
-						_evancz$elm_graphics$Collage$filled,
-						A4(_elm_lang$core$Color$rgba, 255, 255, 0, 0.25),
-						A2(_evancz$elm_graphics$Collage$rect, 32, 32)));
-			} else {
-				var dummyEntity = _elm_lang$core$Native_Utils.update(
-					_p15._0,
-					{direction: model.toolbox.currentDirection});
-				var _p16 = _user$project$Entity_Image$sizeFor(dummyEntity);
-				var sizeX = _p16._0;
-				var sizeY = _p16._1;
-				return A2(
-					_evancz$elm_graphics$Collage$move,
-					A3(
-						_user$project$Grid$addEntityOffset,
-						model,
-						dummyEntity,
-						A2(_user$project$Grid$pointToCollageOffset, model, _p17)),
-					_evancz$elm_graphics$Collage$toForm(
-						A2(
-							_evancz$elm_graphics$Element$opacity,
-							0.66,
-							A3(
-								_evancz$elm_graphics$Element$image,
-								sizeX,
-								sizeY,
-								_user$project$Entity_Image$image(dummyEntity)))));
-			}
-		} else {
-			return A2(
-				_evancz$elm_graphics$Collage$filled,
-				_elm_lang$core$Color$black,
-				A2(_evancz$elm_graphics$Collage$rect, 0, 0));
-		}
-	});
+
+var _user$project$Grid_Messages$ToolboxMsg = function (a) {
+	return {ctor: 'ToolboxMsg', _0: a};
+};
+var _user$project$Grid_Messages$DragEnd = function (a) {
+	return {ctor: 'DragEnd', _0: a};
+};
+var _user$project$Grid_Messages$DragAt = function (a) {
+	return {ctor: 'DragAt', _0: a};
+};
+var _user$project$Grid_Messages$DragStart = function (a) {
+	return {ctor: 'DragStart', _0: a};
+};
+var _user$project$Grid_Messages$ChangeGridSize = function (a) {
+	return {ctor: 'ChangeGridSize', _0: a};
+};
+var _user$project$Grid_Messages$ReceiveExportedBlueprint = function (a) {
+	return {ctor: 'ReceiveExportedBlueprint', _0: a};
+};
+var _user$project$Grid_Messages$ClearEntities = {ctor: 'ClearEntities'};
+var _user$project$Grid_Messages$ExportBlueprint = {ctor: 'ExportBlueprint'};
+var _user$project$Grid_Messages$SentBlueprint = function (a) {
+	return {ctor: 'SentBlueprint', _0: a};
+};
+var _user$project$Grid_Messages$BlueprintChanged = function (a) {
+	return {ctor: 'BlueprintChanged', _0: a};
+};
+var _user$project$Grid_Messages$LoadBlueprint = {ctor: 'LoadBlueprint'};
+var _user$project$Grid_Messages$MouseLeft = {ctor: 'MouseLeft'};
+var _user$project$Grid_Messages$MouseEntered = {ctor: 'MouseEntered'};
+var _user$project$Grid_Messages$MouseMoved = function (a) {
+	return {ctor: 'MouseMoved', _0: a};
+};
+var _user$project$Grid_Messages$GridOffset = function (a) {
+	return {ctor: 'GridOffset', _0: a};
+};
+var _user$project$Grid_Messages$RandomGrid = function (a) {
+	return {ctor: 'RandomGrid', _0: a};
+};
+
 var _user$project$Grid$positionToGridPoint = F2(
 	function (grid, position) {
 		var gridMax = _elm_lang$core$Basics$floor(
@@ -26085,6 +26041,150 @@ var _user$project$Grid$positionToGridPoint = F2(
 		return ((_elm_lang$core$Native_Utils.cmp(x, gridMax) > 0) || ((_elm_lang$core$Native_Utils.cmp(x, gridMin) < 0) || ((_elm_lang$core$Native_Utils.cmp(y, gridMax) > 0) || (_elm_lang$core$Native_Utils.cmp(y, gridMin) < 0)))) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
 			A2(_user$project$Point$Point, x, y));
 	});
+var _user$project$Grid$every = F2(
+	function (amount, list) {
+		return A2(
+			_elm_lang$core$List$map,
+			function (_p0) {
+				var _p1 = _p0;
+				return _p1._1;
+			},
+			A2(
+				_elm_lang$core$List$filter,
+				function (_p2) {
+					var _p3 = _p2;
+					return _elm_lang$core$Native_Utils.eq(
+						A2(_elm_lang$core$Basics_ops['%'], _p3._0, amount),
+						0);
+				},
+				A2(
+					_elm_lang$core$List$indexedMap,
+					F2(
+						function (v0, v1) {
+							return {ctor: '_Tuple2', _0: v0, _1: v1};
+						}),
+					list)));
+	});
+var _user$project$Grid$buildLineBetweenPoints = F2(
+	function (size, _p4) {
+		var _p5 = _p4;
+		var _p8 = _p5._0;
+		var _p7 = _p5._1;
+		var offset = function () {
+			var _p6 = size;
+			return _p6._0;
+		}();
+		if (_elm_lang$core$Native_Utils.eq(_p8.x, _p7.x)) {
+			var range = (_elm_lang$core$Native_Utils.cmp(_p8.y, _p7.y) < 0) ? A2(_elm_lang$core$List$range, _p8.y, _p7.y) : _elm_lang$core$List$reverse(
+				A2(_elm_lang$core$List$range, _p7.y, _p8.y));
+			return A2(
+				_elm_lang$core$List$map,
+				function (y) {
+					return A2(_user$project$Point$Point, _p8.x, y);
+				},
+				A2(_user$project$Grid$every, offset, range));
+		} else {
+			var range = (_elm_lang$core$Native_Utils.cmp(_p8.x, _p7.x) < 0) ? A2(_elm_lang$core$List$range, _p8.x, _p7.x) : _elm_lang$core$List$reverse(
+				A2(_elm_lang$core$List$range, _p7.x, _p8.x));
+			return A2(
+				_elm_lang$core$List$map,
+				function (x) {
+					return A2(_user$project$Point$Point, x, _p8.y);
+				},
+				A2(_user$project$Grid$every, offset, range));
+		}
+	});
+var _user$project$Grid$calculateLineBetweenPoints = F2(
+	function (startPoint, endPoint) {
+		var deltaY = _elm_lang$core$Basics$abs(startPoint.y - endPoint.y);
+		var deltaX = _elm_lang$core$Basics$abs(startPoint.x - endPoint.x);
+		return (_elm_lang$core$Native_Utils.cmp(deltaX, deltaY) > 0) ? {
+			ctor: '_Tuple2',
+			_0: startPoint,
+			_1: A2(_user$project$Point$Point, endPoint.x, startPoint.y)
+		} : {
+			ctor: '_Tuple2',
+			_0: startPoint,
+			_1: A2(_user$project$Point$Point, startPoint.x, endPoint.y)
+		};
+	});
+var _user$project$Grid$isEntityAtPoint = F2(
+	function (point, entity) {
+		var _p9 = _user$project$Entity$sizeFor(entity);
+		var _p10 = _user$project$Entity$getBoundingRect(entity);
+		var min = _p10._0;
+		var max = _p10._1;
+		return (_elm_lang$core$Native_Utils.cmp(min.x, point.x) < 1) && ((_elm_lang$core$Native_Utils.cmp(point.x, max.x) < 1) && ((_elm_lang$core$Native_Utils.cmp(min.y, point.y) < 1) && (_elm_lang$core$Native_Utils.cmp(point.y, max.y) < 1)));
+	});
+var _user$project$Grid$removeEntityAtPoint = F2(
+	function (point, entityList) {
+		var isEntityNotAtPoint = F2(
+			function (point, entity) {
+				return !A2(_user$project$Grid$isEntityAtPoint, point, entity);
+			});
+		return A2(
+			_elm_lang$core$List$filter,
+			isEntityNotAtPoint(point),
+			entityList);
+	});
+var _user$project$Grid$replaceEntityInsideEntity = F2(
+	function (entity, entityList) {
+		var _p11 = _user$project$Entity$getBoundingRect(entity);
+		var min = _p11._0;
+		var max = _p11._1;
+		return A2(
+			_elm_lang$core$List$filter,
+			function (e) {
+				var _p12 = _user$project$Entity$getBoundingRect(e);
+				var entityMin = _p12._0;
+				var entityMax = _p12._1;
+				return !(((_elm_lang$core$Native_Utils.cmp(min.x, entityMax.x) < 1) && (_elm_lang$core$Native_Utils.cmp(max.x, entityMin.x) > -1)) && ((_elm_lang$core$Native_Utils.cmp(min.y, entityMax.y) < 1) && (_elm_lang$core$Native_Utils.cmp(max.y, entityMin.y) > -1)));
+			},
+			entityList);
+	});
+var _user$project$Grid$addEntity = F2(
+	function (entity, entityList) {
+		return {
+			ctor: '::',
+			_0: entity,
+			_1: A2(_user$project$Grid$replaceEntityInsideEntity, entity, entityList)
+		};
+	});
+var _user$project$Grid$placeEntityAtPoint = F3(
+	function (toolbox, point, entities) {
+		var _p13 = toolbox.currentTool;
+		if (_p13.ctor === 'Placeable') {
+			var newEntity = _elm_lang$core$Native_Utils.update(
+				_p13._0,
+				{
+					position: _user$project$Entity$positionFromPoint(point),
+					direction: toolbox.currentDirection
+				});
+			return A2(_user$project$Grid$addEntity, newEntity, entities);
+		} else {
+			return A2(_user$project$Grid$removeEntityAtPoint, point, entities);
+		}
+	});
+var _user$project$Grid$dragSubscriptions = function (model) {
+	var _p14 = model.drag;
+	if (_p14.ctor === 'Just') {
+		return _elm_lang$core$Platform_Sub$batch(
+			{
+				ctor: '::',
+				_0: _elm_lang$mouse$Mouse$moves(_user$project$Grid_Messages$DragAt),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$mouse$Mouse$ups(_user$project$Grid_Messages$DragEnd),
+					_1: {ctor: '[]'}
+				}
+			});
+	} else {
+		return _elm_lang$core$Platform_Sub$none;
+	}
+};
+var _user$project$Grid$shouldSubToMouseSubscriptions = function (model) {
+	return (model.mouseInsideGrid && _elm_lang$core$Native_Utils.eq(model.drag, _elm_lang$core$Maybe$Nothing)) ? _elm_lang$mouse$Mouse$moves(_user$project$Grid_Messages$MouseMoved) : _elm_lang$core$Platform_Sub$none;
+};
 var _user$project$Grid$getGrassCell = function (num) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
@@ -26106,53 +26206,32 @@ var _user$project$Grid$generateGrid = function (size) {
 		size,
 		A2(_elm_lang$core$Random$list, size, _user$project$Grid$generateRandomGrassCell));
 };
-var _user$project$Grid$isEntityAtPoint = F2(
-	function (point, entity) {
-		var _p18 = _user$project$Entity$sizeFor(entity);
-		var _p19 = _user$project$Entity$getBoundingRect(entity);
-		var min = _p19._0;
-		var max = _p19._1;
-		return (_elm_lang$core$Native_Utils.cmp(min.x, point.x) < 1) && ((_elm_lang$core$Native_Utils.cmp(point.x, max.x) < 1) && ((_elm_lang$core$Native_Utils.cmp(min.y, point.y) < 1) && (_elm_lang$core$Native_Utils.cmp(point.y, max.y) < 1)));
-	});
-var _user$project$Grid$removeEntityAtPoint = F2(
-	function (point, entityList) {
-		var isEntityNotAtPoint = F2(
-			function (point, entity) {
-				return !A2(_user$project$Grid$isEntityAtPoint, point, entity);
-			});
-		return A2(
-			_elm_lang$core$List$filter,
-			isEntityNotAtPoint(point),
-			entityList);
-	});
-var _user$project$Grid$replaceEntityInsideEntity = F2(
-	function (entity, entityList) {
-		var _p20 = _user$project$Entity$getBoundingRect(entity);
-		var min = _p20._0;
-		var max = _p20._1;
-		return A2(
-			_elm_lang$core$List$filter,
-			function (e) {
-				var _p21 = _user$project$Entity$getBoundingRect(e);
-				var entityMin = _p21._0;
-				var entityMax = _p21._1;
-				return !(((_elm_lang$core$Native_Utils.cmp(min.x, entityMax.x) < 1) && (_elm_lang$core$Native_Utils.cmp(max.x, entityMin.x) > -1)) && ((_elm_lang$core$Native_Utils.cmp(min.y, entityMax.y) < 1) && (_elm_lang$core$Native_Utils.cmp(max.y, entityMin.y) > -1)));
-			},
-			entityList);
-	});
-var _user$project$Grid$addEntity = F2(
-	function (entity, entityList) {
-		return {
-			ctor: '::',
-			_0: entity,
-			_1: A2(_user$project$Grid$replaceEntityInsideEntity, entity, entityList)
-		};
-	});
 var _user$project$Grid$getOffsetOfGrid = _elm_lang$core$Native_Platform.outgoingPort(
 	'getOffsetOfGrid',
 	function (v) {
 		return null;
 	});
+var _user$project$Grid$init = function () {
+	var model = _user$project$Grid_Model$emptyGrid;
+	return {
+		ctor: '_Tuple2',
+		_0: model,
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$Random$generate,
+					_user$project$Grid_Messages$RandomGrid,
+					_user$project$Grid$generateGrid(model.size)),
+				_1: {
+					ctor: '::',
+					_0: _user$project$Grid$getOffsetOfGrid(
+						{ctor: '_Tuple0'}),
+					_1: {ctor: '[]'}
+				}
+			})
+	};
+}();
 var _user$project$Grid$parseBlueprint = _elm_lang$core$Native_Platform.outgoingPort(
 	'parseBlueprint',
 	function (v) {
@@ -26179,26 +26258,446 @@ var _user$project$Grid$receiveOffset = _elm_lang$core$Native_Platform.incomingPo
 		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$float)));
 var _user$project$Grid$loadBlueprint = _elm_lang$core$Native_Platform.incomingPort('loadBlueprint', _elm_lang$core$Json_Decode$value);
 var _user$project$Grid$receiveExportedBlueprint = _elm_lang$core$Native_Platform.incomingPort('receiveExportedBlueprint', _elm_lang$core$Json_Decode$string);
-var _user$project$Grid$Model = F7(
-	function (a, b, c, d, e, f, g) {
-		return {cells: a, entities: b, cellSize: c, size: d, offset: e, blueprintString: f, toolbox: g};
+var _user$project$Grid$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: _user$project$Grid$receiveOffset(_user$project$Grid_Messages$GridOffset),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Grid$loadBlueprint(
+					function (_p15) {
+						return _user$project$Grid_Messages$SentBlueprint(
+							A2(
+								_elm_lang$core$Json_Decode$decodeValue,
+								_elm_lang$core$Json_Decode$list(_user$project$Entity_Decoder$decodeEntity),
+								_p15));
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$core$Platform_Sub$map,
+						_user$project$Grid_Messages$ToolboxMsg,
+						_user$project$Toolbox$subscriptions(model.toolbox)),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Grid$receiveExportedBlueprint(_user$project$Grid_Messages$ReceiveExportedBlueprint),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Grid$shouldSubToMouseSubscriptions(model),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Grid$dragSubscriptions(model),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+
+var _user$project$Grid_Update$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'RandomGrid':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{cells: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'GridOffset':
+				var point = A2(
+					_user$project$Point$Point,
+					_elm_lang$core$Basics$floor(_p0._0._0),
+					_elm_lang$core$Basics$floor(_p0._0._1));
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{offset: point}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'MouseMoved':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							currentMouseGridPosition: A2(_user$project$Grid$positionToGridPoint, model, _p0._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'MouseEntered':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{mouseInsideGrid: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'MouseLeft':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{mouseInsideGrid: false, currentMouseGridPosition: _elm_lang$core$Maybe$Nothing}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'LoadBlueprint':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Grid$parseBlueprint(model.blueprintString)
+				};
+			case 'BlueprintChanged':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{blueprintString: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'SentBlueprint':
+				var _p1 = _p0._0;
+				if (_p1.ctor === 'Ok') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{entities: _p1._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					var a = A2(_elm_lang$core$Debug$log, 'SentBlueprint error', _p1._0);
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'ExportBlueprint':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Grid$exportBlueprint(
+						_user$project$Blueprint$encodeBlueprint(model.entities))
+				};
+			case 'ClearEntities':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							entities: {ctor: '[]'},
+							blueprintString: ''
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ReceiveExportedBlueprint':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{blueprintString: _p0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ChangeGridSize':
+				var newSize = model.size + _p0._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{size: newSize, shouldIgnoreNextMouseClick: true}),
+					_1: A2(
+						_elm_lang$core$Random$generate,
+						_user$project$Grid_Messages$RandomGrid,
+						_user$project$Grid$generateGrid(newSize))
+				};
+			case 'DragStart':
+				var _p2 = A2(_user$project$Grid$positionToGridPoint, model, _p0._0);
+				if (_p2.ctor === 'Just') {
+					var _p3 = _p2._0;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								drag: _elm_lang$core$Maybe$Just(
+									A2(_user$project$Grid_Model$Drag, _p3, _p3))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'DragAt':
+				var _p4 = A2(_user$project$Grid$positionToGridPoint, model, _p0._0);
+				if (_p4.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								drag: A2(
+									_elm_lang$core$Maybe$map,
+									function (_p5) {
+										var _p6 = _p5;
+										return A2(_user$project$Grid_Model$Drag, _p6.start, _p4._0);
+									},
+									model.drag)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'DragEnd':
+				var _p7 = model.drag;
+				if (_p7.ctor === 'Just') {
+					var _p8 = _p7._0;
+					var entities = _elm_lang$core$Native_Utils.eq(_p8.start, _p8.current) ? A3(_user$project$Grid$placeEntityAtPoint, model.toolbox, _p8.start, model.entities) : A3(
+						_elm_lang$core$List$foldl,
+						F2(
+							function (point, entities) {
+								return A3(_user$project$Grid$placeEntityAtPoint, model.toolbox, point, entities);
+							}),
+						model.entities,
+						A2(
+							_user$project$Grid$buildLineBetweenPoints,
+							_user$project$Toolbox$sizeFor(model.toolbox.currentTool),
+							A2(_user$project$Grid$calculateLineBetweenPoints, _p8.start, _p8.current)));
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								drag: _elm_lang$core$Maybe$Nothing,
+								entities: entities,
+								currentMouseGridPosition: A2(_user$project$Grid$positionToGridPoint, model, _p0._0)
+							}),
+						_1: _user$project$Grid$exportBlueprint(
+							_user$project$Blueprint$encodeBlueprint(entities))
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{drag: _elm_lang$core$Maybe$Nothing}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			default:
+				var _p9 = A2(_user$project$Toolbox$update, _p0._0, model.toolbox);
+				var toolboxModel = _p9._0;
+				var toolboxCmd = _p9._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{toolbox: toolboxModel}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Grid_Messages$ToolboxMsg, toolboxCmd)
+				};
+		}
 	});
-var _user$project$Grid$emptyGrid = A7(
-	_user$project$Grid$Model,
-	{ctor: '[]'},
-	{ctor: '[]'},
-	32,
-	15,
-	_user$project$Point$zeroPoint,
-	'',
-	_user$project$Toolbox$initialModel);
-var _user$project$Grid$ToolboxMsg = function (a) {
-	return {ctor: 'ToolboxMsg', _0: a};
+
+var _user$project$GridStyles$Input = {ctor: 'Input'};
+var _user$project$GridStyles$Cell = {ctor: 'Cell'};
+var _user$project$GridStyles$Row = {ctor: 'Row'};
+var _user$project$GridStyles$BlueprintInput = {ctor: 'BlueprintInput'};
+var _user$project$GridStyles$Toolbox = {ctor: 'Toolbox'};
+var _user$project$GridStyles$Grid = {ctor: 'Grid'};
+var _user$project$GridStyles$GridContainer = {ctor: 'GridContainer'};
+var _user$project$GridStyles$css = function (_p0) {
+	return _rtfeldman$elm_css$Css$stylesheet(
+		A2(_rtfeldman$elm_css$Css_Namespace$namespace, 'grid', _p0));
+}(
+	{
+		ctor: '::',
+		_0: A2(
+			_rtfeldman$elm_css$Css$id,
+			_user$project$GridStyles$GridContainer,
+			{
+				ctor: '::',
+				_0: _rtfeldman$elm_css$Css$displayFlex,
+				_1: {
+					ctor: '::',
+					_0: _rtfeldman$elm_css$Css$padding(
+						_rtfeldman$elm_css$Css$px(8)),
+					_1: {ctor: '[]'}
+				}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_rtfeldman$elm_css$Css$id,
+				_user$project$GridStyles$Grid,
+				{
+					ctor: '::',
+					_0: A2(
+						_rtfeldman$elm_css$Css$flex2,
+						_rtfeldman$elm_css$Css$int(0),
+						_rtfeldman$elm_css$Css$int(0)),
+					_1: {
+						ctor: '::',
+						_0: _rtfeldman$elm_css$Css$paddingRight(
+							_rtfeldman$elm_css$Css$px(8)),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_rtfeldman$elm_css$Css$id,
+					_user$project$GridStyles$Toolbox,
+					{
+						ctor: '::',
+						_0: A2(
+							_rtfeldman$elm_css$Css$flex2,
+							_rtfeldman$elm_css$Css$int(1),
+							_rtfeldman$elm_css$Css$int(0)),
+						_1: {
+							ctor: '::',
+							_0: _rtfeldman$elm_css$Css$flexBasis(_rtfeldman$elm_css$Css$auto),
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$marginLeft(
+									_rtfeldman$elm_css$Css$px(24)),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_rtfeldman$elm_css$Css$id,
+						_user$project$GridStyles$BlueprintInput,
+						{
+							ctor: '::',
+							_0: A2(
+								_rtfeldman$elm_css$Css$margin2,
+								_rtfeldman$elm_css$Css$px(8),
+								_rtfeldman$elm_css$Css$zero),
+							_1: {
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$children(
+									{
+										ctor: '::',
+										_0: A2(
+											_rtfeldman$elm_css$Css$class,
+											_user$project$GridStyles$Input,
+											{
+												ctor: '::',
+												_0: _rtfeldman$elm_css$Css$width(
+													_rtfeldman$elm_css$Css$pct(100)),
+												_1: {
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Css$height(
+														_rtfeldman$elm_css$Css$px(150)),
+													_1: {ctor: '[]'}
+												}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_rtfeldman$elm_css$Css$class,
+							_user$project$GridStyles$Row,
+							{
+								ctor: '::',
+								_0: _rtfeldman$elm_css$Css$displayFlex,
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_rtfeldman$elm_css$Css$class,
+								_user$project$GridStyles$Cell,
+								{
+									ctor: '::',
+									_0: _rtfeldman$elm_css$Css$width(
+										_rtfeldman$elm_css$Css$px(32)),
+									_1: {
+										ctor: '::',
+										_0: _rtfeldman$elm_css$Css$height(
+											_rtfeldman$elm_css$Css$px(32)),
+										_1: {
+											ctor: '::',
+											_0: _rtfeldman$elm_css$Css$hover(
+												{
+													ctor: '::',
+													_0: _rtfeldman$elm_css$Css$before(
+														{
+															ctor: '::',
+															_0: A2(_rtfeldman$elm_css$Css$property, 'content', '\'\''),
+															_1: {
+																ctor: '::',
+																_0: _rtfeldman$elm_css$Css$position(_rtfeldman$elm_css$Css$absolute),
+																_1: {
+																	ctor: '::',
+																	_0: _rtfeldman$elm_css$Css$backgroundColor(_rtfeldman$elm_css$Css_Colors$yellow),
+																	_1: {
+																		ctor: '::',
+																		_0: _rtfeldman$elm_css$Css$opacity(
+																			_rtfeldman$elm_css$Css$num(0.25)),
+																		_1: {
+																			ctor: '::',
+																			_0: _rtfeldman$elm_css$Css$width(
+																				_rtfeldman$elm_css$Css$px(32)),
+																			_1: {
+																				ctor: '::',
+																				_0: _rtfeldman$elm_css$Css$height(
+																					_rtfeldman$elm_css$Css$px(32)),
+																				_1: {ctor: '[]'}
+																			}
+																		}
+																	}
+																}
+															}
+														}),
+													_1: {ctor: '[]'}
+												}),
+											_1: {ctor: '[]'}
+										}
+									}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}
+				}
+			}
+		}
+	});
+
+var _user$project$Grid_View$elementRow = F2(
+	function (size, cells) {
+		return A2(
+			_evancz$elm_graphics$Element$flow,
+			_evancz$elm_graphics$Element$right,
+			A2(
+				_elm_lang$core$List$map,
+				function (c) {
+					return A3(_evancz$elm_graphics$Element$image, size, size, c);
+				},
+				cells));
+	});
+var _user$project$Grid_View$backgroundGrid = function (model) {
+	return _evancz$elm_graphics$Collage$toForm(
+		A2(
+			_evancz$elm_graphics$Element$flow,
+			_evancz$elm_graphics$Element$down,
+			A2(
+				_elm_lang$core$List$map,
+				function (row) {
+					return A2(_user$project$Grid_View$elementRow, model.cellSize, row);
+				},
+				model.cells)));
 };
-var _user$project$Grid$ChangeGridSize = function (a) {
-	return {ctor: 'ChangeGridSize', _0: a};
-};
-var _user$project$Grid$gridSizeView = A2(
+var _user$project$Grid_View$gridSizeView = A2(
 	_elm_lang$html$Html$div,
 	{ctor: '[]'},
 	{
@@ -26222,7 +26721,7 @@ var _user$project$Grid$gridSizeView = A2(
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$Grid$ChangeGridSize(-2)),
+										_user$project$Grid_Messages$ChangeGridSize(-2)),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -26241,7 +26740,7 @@ var _user$project$Grid$gridSizeView = A2(
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Grid$ChangeGridSize(2)),
+											_user$project$Grid_Messages$ChangeGridSize(2)),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -26253,24 +26752,168 @@ var _user$project$Grid$gridSizeView = A2(
 			_1: {ctor: '[]'}
 		}
 	});
-var _user$project$Grid$ReceiveExportedBlueprint = function (a) {
-	return {ctor: 'ReceiveExportedBlueprint', _0: a};
+var _user$project$Grid_View$addEntityOffset = F3(
+	function (_p1, entity, _p0) {
+		var _p2 = _p1;
+		var _p9 = _p2.cellSize;
+		var _p3 = _p0;
+		var _p8 = _p3._1;
+		var _p7 = _p3._0;
+		var allowedEntities = {
+			ctor: '::',
+			_0: _user$project$Entity$WoodenChest,
+			_1: {
+				ctor: '::',
+				_0: _user$project$Entity$IronChest,
+				_1: {
+					ctor: '::',
+					_0: _user$project$Entity$SteelChest,
+					_1: {ctor: '[]'}
+				}
+			}
+		};
+		var _p4 = _user$project$Entity_Image$sizeFor(entity);
+		var imageSizeX = _p4._0;
+		var imageSizeY = _p4._1;
+		if (A2(_elm_lang$core$List$member, entity.name, allowedEntities)) {
+			var _p5 = _user$project$Entity$sizeFor(entity);
+			var _p6 = _p5._0;
+			return {
+				ctor: '_Tuple2',
+				_0: _p7 + ((_elm_lang$core$Basics$toFloat(imageSizeX) - (_elm_lang$core$Basics$toFloat(_p9) * _elm_lang$core$Basics$toFloat(_p6))) / 2),
+				_1: _p8 + ((_elm_lang$core$Basics$toFloat(imageSizeY) - (_elm_lang$core$Basics$toFloat(_p9) * _elm_lang$core$Basics$toFloat(_p6))) / 2)
+			};
+		} else {
+			return {ctor: '_Tuple2', _0: _p7, _1: _p8};
+		}
+	});
+var _user$project$Grid_View$pointToCollageOffset = F2(
+	function (_p10, point) {
+		var _p11 = _p10;
+		var _p12 = _p11.cellSize;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$toFloat(point.x) * _elm_lang$core$Basics$toFloat(_p12),
+			_1: (_elm_lang$core$Basics$toFloat(point.y) * _elm_lang$core$Basics$toFloat(_p12)) * -1
+		};
+	});
+var _user$project$Grid_View$buildEntity = F2(
+	function (model, entity) {
+		var _p13 = _user$project$Entity_Image$sizeFor(entity);
+		var x = _p13._0;
+		var y = _p13._1;
+		return A2(
+			_evancz$elm_graphics$Collage$move,
+			A3(
+				_user$project$Grid_View$addEntityOffset,
+				model,
+				entity,
+				A2(
+					_user$project$Grid_View$pointToCollageOffset,
+					model,
+					{
+						x: _elm_lang$core$Basics$floor(entity.position.x),
+						y: _elm_lang$core$Basics$floor(entity.position.y)
+					})),
+			_evancz$elm_graphics$Collage$toForm(
+				A3(
+					_evancz$elm_graphics$Element$image,
+					x,
+					y,
+					_user$project$Entity_Image$image(entity))));
+	});
+var _user$project$Grid_View$entities = function (model) {
+	return _evancz$elm_graphics$Collage$group(
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Grid_View$buildEntity(model),
+			model.entities));
 };
-var _user$project$Grid$ClearEntities = {ctor: 'ClearEntities'};
-var _user$project$Grid$ExportBlueprint = {ctor: 'ExportBlueprint'};
-var _user$project$Grid$SentBlueprint = function (a) {
-	return {ctor: 'SentBlueprint', _0: a};
+var _user$project$Grid_View$entityPreview = F2(
+	function (model, point) {
+		var _p14 = model.toolbox.currentTool;
+		if (_p14.ctor === 'Clear') {
+			return A2(
+				_evancz$elm_graphics$Collage$move,
+				A2(_user$project$Grid_View$pointToCollageOffset, model, point),
+				A2(
+					_evancz$elm_graphics$Collage$filled,
+					A4(_elm_lang$core$Color$rgba, 255, 255, 0, 0.25),
+					A2(_evancz$elm_graphics$Collage$rect, 32, 32)));
+		} else {
+			var dummyEntity = _elm_lang$core$Native_Utils.update(
+				_p14._0,
+				{direction: model.toolbox.currentDirection});
+			var _p15 = _user$project$Entity_Image$sizeFor(dummyEntity);
+			var sizeX = _p15._0;
+			var sizeY = _p15._1;
+			return A2(
+				_evancz$elm_graphics$Collage$move,
+				A3(
+					_user$project$Grid_View$addEntityOffset,
+					model,
+					dummyEntity,
+					A2(_user$project$Grid_View$pointToCollageOffset, model, point)),
+				_evancz$elm_graphics$Collage$toForm(
+					A2(
+						_evancz$elm_graphics$Element$opacity,
+						0.66,
+						A3(
+							_evancz$elm_graphics$Element$image,
+							sizeX,
+							sizeY,
+							_user$project$Entity_Image$image(dummyEntity)))));
+		}
+	});
+var _user$project$Grid_View$hoverBlock = function (model) {
+	var _p16 = model.currentMouseGridPosition;
+	if (_p16.ctor === 'Just') {
+		return A2(_user$project$Grid_View$entityPreview, model, _p16._0);
+	} else {
+		return A2(
+			_evancz$elm_graphics$Collage$filled,
+			_elm_lang$core$Color$black,
+			A2(_evancz$elm_graphics$Collage$rect, 0, 0));
+	}
 };
-var _user$project$Grid$BlueprintChanged = function (a) {
-	return {ctor: 'BlueprintChanged', _0: a};
+var _user$project$Grid_View$dragPreview = function (model) {
+	var _p17 = model.drag;
+	if (_p17.ctor === 'Just') {
+		var _p18 = _p17._0;
+		return _elm_lang$core$Native_Utils.eq(_p18.start, _p18.current) ? A2(_user$project$Grid_View$entityPreview, model, _p18.start) : _evancz$elm_graphics$Collage$group(
+			A2(
+				_elm_lang$core$List$map,
+				_user$project$Grid_View$entityPreview(model),
+				A2(
+					_user$project$Grid$buildLineBetweenPoints,
+					_user$project$Toolbox$sizeFor(model.toolbox.currentTool),
+					A2(_user$project$Grid$calculateLineBetweenPoints, _p18.start, _p18.current))));
+	} else {
+		return _user$project$Grid_View$hoverBlock(model);
+	}
 };
-var _user$project$Grid$LoadBlueprint = {ctor: 'LoadBlueprint'};
-var _user$project$Grid$blueprintInput = function (model) {
+var _user$project$Grid_View$mouseOptions = {stopPropagation: true, preventDefault: true};
+var _user$project$Grid_View$onMouseDown = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'mousedown',
+		_user$project$Grid_View$mouseOptions,
+		A2(_elm_lang$core$Json_Decode$map, msg, _elm_lang$mouse$Mouse$position));
+};
+var _user$project$Grid_View$styles = function (_p19) {
+	return _elm_lang$html$Html_Attributes$style(
+		_rtfeldman$elm_css$Css$asPairs(_p19));
+};
+var _user$project$Grid_View$_p20 = _rtfeldman$elm_css_helpers$Html_CssHelpers$withNamespace('grid');
+var _user$project$Grid_View$id = _user$project$Grid_View$_p20.id;
+var _user$project$Grid_View$class = _user$project$Grid_View$_p20.$class;
+var _user$project$Grid_View$classList = _user$project$Grid_View$_p20.classList;
+var _user$project$Grid_View$blueprintInput = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _user$project$Grid$id(
+			_0: _user$project$Grid_View$id(
 				{
 					ctor: '::',
 					_0: _user$project$GridStyles$BlueprintInput,
@@ -26284,7 +26927,7 @@ var _user$project$Grid$blueprintInput = function (model) {
 				_elm_lang$html$Html$textarea,
 				{
 					ctor: '::',
-					_0: _user$project$Grid$class(
+					_0: _user$project$Grid_View$class(
 						{
 							ctor: '::',
 							_0: _user$project$GridStyles$Input,
@@ -26292,7 +26935,7 @@ var _user$project$Grid$blueprintInput = function (model) {
 						}),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Grid$BlueprintChanged),
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Grid_Messages$BlueprintChanged),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$value(model.blueprintString),
@@ -26313,7 +26956,7 @@ var _user$project$Grid$blueprintInput = function (model) {
 							_0: _elm_lang$html$Html_Attributes$value('Load Blueprint'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$LoadBlueprint),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid_Messages$LoadBlueprint),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -26331,7 +26974,7 @@ var _user$project$Grid$blueprintInput = function (model) {
 								_0: _elm_lang$html$Html_Attributes$value('Export Blueprint'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ExportBlueprint),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid_Messages$ExportBlueprint),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -26349,7 +26992,7 @@ var _user$project$Grid$blueprintInput = function (model) {
 									_0: _elm_lang$html$Html_Attributes$value('Clear Entities'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid$ClearEntities),
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Grid_Messages$ClearEntities),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -26361,281 +27004,93 @@ var _user$project$Grid$blueprintInput = function (model) {
 			}
 		});
 };
-var _user$project$Grid$view = F2(
-	function (currentGridPosition, model) {
-		var gridSize = model.cellSize * model.size;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _user$project$Grid$id(
-					{
-						ctor: '::',
-						_0: _user$project$GridStyles$GridContainer,
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _user$project$Grid$id(
-							{
-								ctor: '::',
-								_0: _user$project$GridStyles$Grid,
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _evancz$elm_graphics$Element$toHtml(
-							A3(
-								_evancz$elm_graphics$Collage$collage,
-								gridSize,
-								gridSize,
-								{
-									ctor: '::',
-									_0: _evancz$elm_graphics$Collage$toForm(
-										_user$project$Grid$backgroundGrid(model)),
-									_1: {
-										ctor: '::',
-										_0: A2(_user$project$Grid$entities, model, model.entities),
-										_1: {
-											ctor: '::',
-											_0: A2(_user$project$Grid$hoverBlock, currentGridPosition, model),
-											_1: {ctor: '[]'}
-										}
-									}
-								})),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$map,
-								_user$project$Grid$ToolboxMsg,
-								_user$project$Toolbox$view(model.toolbox)),
-							_1: {
-								ctor: '::',
-								_0: _user$project$Grid$blueprintInput(model),
-								_1: {
-									ctor: '::',
-									_0: _user$project$Grid$gridSizeView,
-									_1: {ctor: '[]'}
-								}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Grid$MouseClicked = function (a) {
-	return {ctor: 'MouseClicked', _0: a};
-};
-var _user$project$Grid$GridOffset = function (a) {
-	return {ctor: 'GridOffset', _0: a};
-};
-var _user$project$Grid$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
+var _user$project$Grid_View$view = function (model) {
+	var gridSize = model.cellSize * model.size;
+	return A2(
+		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _user$project$Grid$receiveOffset(_user$project$Grid$GridOffset),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$mouse$Mouse$clicks(_user$project$Grid$MouseClicked),
-				_1: {
+			_0: _user$project$Grid_View$id(
+				{
 					ctor: '::',
-					_0: _user$project$Grid$loadBlueprint(
-						function (_p22) {
-							return _user$project$Grid$SentBlueprint(
-								A2(
-									_elm_lang$core$Json_Decode$decodeValue,
-									_elm_lang$core$Json_Decode$list(_user$project$Entity_Decoder$decodeEntity),
-									_p22));
+					_0: _user$project$GridStyles$GridContainer,
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _user$project$Grid_View$id(
+						{
+							ctor: '::',
+							_0: _user$project$GridStyles$Grid,
+							_1: {ctor: '[]'}
 						}),
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$core$Platform_Sub$map,
-							_user$project$Grid$ToolboxMsg,
-							_user$project$Toolbox$subscriptions(model.toolbox)),
+						_0: _elm_lang$html$Html_Events$onMouseEnter(_user$project$Grid_Messages$MouseEntered),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Grid$receiveExportedBlueprint(_user$project$Grid$ReceiveExportedBlueprint),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Events$onMouseLeave(_user$project$Grid_Messages$MouseLeft),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Grid_View$onMouseDown(_user$project$Grid_Messages$DragStart),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
-				}
+				},
+				{
+					ctor: '::',
+					_0: _evancz$elm_graphics$Element$toHtml(
+						A3(
+							_evancz$elm_graphics$Collage$collage,
+							gridSize,
+							gridSize,
+							{
+								ctor: '::',
+								_0: _user$project$Grid_View$backgroundGrid(model),
+								_1: {
+									ctor: '::',
+									_0: _user$project$Grid_View$entities(model),
+									_1: {
+										ctor: '::',
+										_0: _user$project$Grid_View$dragPreview(model),
+										_1: {ctor: '[]'}
+									}
+								}
+							})),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$map,
+							_user$project$Grid_Messages$ToolboxMsg,
+							_user$project$Toolbox$view(model.toolbox)),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Grid_View$blueprintInput(model),
+							_1: {
+								ctor: '::',
+								_0: _user$project$Grid_View$gridSizeView,
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Grid$RandomGrid = function (a) {
-	return {ctor: 'RandomGrid', _0: a};
-};
-var _user$project$Grid$init = function () {
-	var model = _user$project$Grid$emptyGrid;
-	return {
-		ctor: '_Tuple2',
-		_0: model,
-		_1: _elm_lang$core$Platform_Cmd$batch(
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$core$Random$generate,
-					_user$project$Grid$RandomGrid,
-					_user$project$Grid$generateGrid(model.size)),
-				_1: {
-					ctor: '::',
-					_0: _user$project$Grid$getOffsetOfGrid(
-						{ctor: '_Tuple0'}),
-					_1: {ctor: '[]'}
-				}
-			})
-	};
-}();
-var _user$project$Grid$update = F2(
-	function (msg, model) {
-		var _p23 = msg;
-		switch (_p23.ctor) {
-			case 'RandomGrid':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{cells: _p23._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'GridOffset':
-				var point = A2(
-					_user$project$Point$Point,
-					_elm_lang$core$Basics$floor(_p23._0._0),
-					_elm_lang$core$Basics$floor(_p23._0._1));
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{offset: point}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'MouseClicked':
-				var _p24 = A2(_user$project$Grid$positionToGridPoint, model, _p23._0);
-				if (_p24.ctor === 'Just') {
-					var _p26 = _p24._0;
-					var cells = function () {
-						var _p25 = model.toolbox.currentTool;
-						if (_p25.ctor === 'Placeable') {
-							var newEntity = _elm_lang$core$Native_Utils.update(
-								_p25._0,
-								{
-									position: _user$project$Entity$positionFromPoint(_p26),
-									direction: model.toolbox.currentDirection
-								});
-							return A2(_user$project$Grid$addEntity, newEntity, model.entities);
-						} else {
-							return A2(_user$project$Grid$removeEntityAtPoint, _p26, model.entities);
-						}
-					}();
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{entities: cells}),
-						_1: _user$project$Grid$exportBlueprint(
-							_elm_lang$core$Json_Encode$list(
-								A2(_elm_lang$core$List$indexedMap, _user$project$Entity_Encoder$encodeEntity, cells)))
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'LoadBlueprint':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Grid$parseBlueprint(model.blueprintString)
-				};
-			case 'BlueprintChanged':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{blueprintString: _p23._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'SentBlueprint':
-				var _p27 = _p23._0;
-				if (_p27.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{entities: _p27._0}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				} else {
-					var a = A2(_elm_lang$core$Debug$log, 'SentBlueprint error', _p27._0);
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'ExportBlueprint':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Grid$exportBlueprint(
-						_elm_lang$core$Json_Encode$list(
-							A2(_elm_lang$core$List$indexedMap, _user$project$Entity_Encoder$encodeEntity, model.entities)))
-				};
-			case 'ClearEntities':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							entities: {ctor: '[]'},
-							blueprintString: ''
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ReceiveExportedBlueprint':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{blueprintString: _p23._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'ChangeGridSize':
-				var newSize = model.size + _p23._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{size: newSize}),
-					_1: A2(
-						_elm_lang$core$Random$generate,
-						_user$project$Grid$RandomGrid,
-						_user$project$Grid$generateGrid(newSize))
-				};
-			default:
-				var _p28 = A2(_user$project$Toolbox$update, _p23._0, model.toolbox);
-				var toolboxModel = _p28._0;
-				var toolboxCmd = _p28._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{toolbox: toolboxModel}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Grid$ToolboxMsg, toolboxCmd)
-				};
-		}
-	});
 
 var _user$project$SharedStyles$Copyright = {ctor: 'Copyright'};
 var _user$project$SharedStyles$Main = {ctor: 'Main'};
@@ -26716,10 +27171,21 @@ var _user$project$Main$helpText = A2(
 							{ctor: '[]'},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text('R to rotate'),
+								_0: _elm_lang$html$Html$text('q to clear the mouse'),
 								_1: {ctor: '[]'}
 							}),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('r to rotate'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -26743,10 +27209,9 @@ var _user$project$Main$_p1 = _rtfeldman$elm_css_helpers$Html_CssHelpers$withName
 var _user$project$Main$id = _user$project$Main$_p1.id;
 var _user$project$Main$class = _user$project$Main$_p1.$class;
 var _user$project$Main$classList = _user$project$Main$_p1.classList;
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {grid: a, mouseGridPosition: b, currentMousePosition: c};
-	});
+var _user$project$Main$Model = function (a) {
+	return {grid: a};
+};
 var _user$project$Main$GridMsg = function (a) {
 	return {ctor: 'GridMsg', _0: a};
 };
@@ -26754,40 +27219,36 @@ var _user$project$Main$init = function () {
 	var _p2 = _user$project$Grid$init;
 	var gridModel = _p2._0;
 	var gridCmd = _p2._1;
-	var model = A3(_user$project$Main$Model, gridModel, _elm_lang$core$Maybe$Nothing, _user$project$Point$zeroPoint);
 	return {
 		ctor: '_Tuple2',
-		_0: model,
+		_0: _user$project$Main$Model(gridModel),
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
 	};
 }();
+var _user$project$Main$subscriptions = function (model) {
+	return _elm_lang$core$Platform_Sub$batch(
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$Platform_Sub$map,
+				_user$project$Main$GridMsg,
+				_user$project$Grid$subscriptions(model.grid)),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p3 = msg;
-		if (_p3.ctor === 'MouseMoved') {
-			var _p4 = _p3._0;
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						currentMousePosition: A2(_user$project$Point$Point, _p4.x, _p4.y),
-						mouseGridPosition: A2(_user$project$Grid$positionToGridPoint, model.grid, _p4)
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			var _p5 = A2(_user$project$Grid$update, _p3._0, model.grid);
-			var gridModel = _p5._0;
-			var gridCmd = _p5._1;
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{grid: gridModel}),
-				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
-			};
-		}
+		var _p4 = A2(_user$project$Grid_Update$update, _p3._0, model.grid);
+		var gridModel = _p4._0;
+		var gridCmd = _p4._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{grid: gridModel}),
+			_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Main$GridMsg, gridCmd)
+		};
 	});
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -26822,7 +27283,7 @@ var _user$project$Main$view = function (model) {
 						_0: A2(
 							_elm_lang$html$Html$map,
 							_user$project$Main$GridMsg,
-							A2(_user$project$Grid$view, model.mouseGridPosition, model.grid)),
+							_user$project$Grid_View$view(model.grid)),
 						_1: {
 							ctor: '::',
 							_0: _user$project$Main$infoView(model),
@@ -26850,24 +27311,6 @@ var _user$project$Main$view = function (model) {
 						}),
 					_1: {ctor: '[]'}
 				}
-			}
-		});
-};
-var _user$project$Main$MouseMoved = function (a) {
-	return {ctor: 'MouseMoved', _0: a};
-};
-var _user$project$Main$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$batch(
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$core$Platform_Sub$map,
-				_user$project$Main$GridMsg,
-				_user$project$Grid$subscriptions(model.grid)),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$mouse$Mouse$moves(_user$project$Main$MouseMoved),
-				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -33262,25 +33705,8 @@ function parse(string, callback) {
   })
 }
 
-function exportBlueprint(entities, callback) {
-  const json = {
-    blueprint: {
-      icons: [
-          {
-            signal: {
-              type: "item",
-              name: "transport-belt"
-            },
-            index:1
-          }
-        ],
-      entities: entities,
-      item: "blueprint",
-      version: 64425689088
-    }
-  }
-
-  const buff = __WEBPACK_IMPORTED_MODULE_1_buffer__["Buffer"].from(JSON.stringify(json), 'utf8')
+function exportBlueprint(blueprint, callback) {
+  const buff = __WEBPACK_IMPORTED_MODULE_1_buffer__["Buffer"].from(JSON.stringify(blueprint), 'utf8')
   __WEBPACK_IMPORTED_MODULE_0_zlib___default.a.deflate(buff, (err, buf) => {
     if (!err) {
       const result = `0${buf.toString('base64')}`
