@@ -77,25 +77,30 @@ addEntityOffset { cellSize } entity ( x, y ) =
 -- VIEW
 
 
-view : Model -> Html Msg
-view model =
+type alias Context =
+    { model : Grid.Model.Model
+    , toolbox : Toolbox.Model
+    }
+
+
+view : Context -> Html Msg
+view context =
     let
         gridSize =
-            model.cellSize * model.size
+            context.model.cellSize * context.model.size
     in
         div [ id [ GridStyles.GridContainer ] ]
             [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
                 [ Collage.collage gridSize
                     gridSize
-                    [ backgroundGrid model
-                    , entities model
-                    , dragPreview model
+                    [ backgroundGrid context.model
+                    , entities context.model
+                    , dragPreview context
                     ]
                     |> Element.toHtml
                 ]
             , div []
-                [ Html.map ToolboxMsg (Toolbox.view model.toolbox)
-                , blueprintInput model
+                [ blueprintInput context.model
                 , gridSizeView
                 ]
             ]
@@ -122,20 +127,20 @@ blueprintInput model =
         ]
 
 
-dragPreview : Model -> Collage.Form
-dragPreview model =
-    case model.drag of
+dragPreview : Context -> Collage.Form
+dragPreview context =
+    case context.model.drag of
         Just drag ->
             if drag.start == drag.current then
-                entityPreview model drag.start
+                entityPreview context drag.start
             else
                 Grid.calculateLineBetweenPoints drag.start drag.current
-                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor model.toolbox.currentTool)
-                    |> List.map (entityPreview model)
+                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor context.toolbox.currentTool)
+                    |> List.map (entityPreview context)
                     |> Collage.group
 
         Nothing ->
-            hoverBlock model
+            hoverBlock context
 
 
 entities : Model -> Collage.Form
@@ -158,9 +163,9 @@ buildEntity model entity =
                 )
 
 
-entityPreview : Model -> Point -> Collage.Form
-entityPreview model point =
-    case model.toolbox.currentTool of
+entityPreview : Context -> Point -> Collage.Form
+entityPreview { model, toolbox } point =
+    case toolbox.currentTool of
         Clear ->
             Collage.rect 32 32
                 |> Collage.filled (Color.rgba 255 255 0 0.25)
@@ -169,7 +174,7 @@ entityPreview model point =
         Placeable entity ->
             let
                 dummyEntity =
-                    { entity | direction = model.toolbox.currentDirection }
+                    { entity | direction = toolbox.currentDirection }
 
                 ( sizeX, sizeY ) =
                     Entity.Image.sizeFor dummyEntity
@@ -183,11 +188,11 @@ entityPreview model point =
                         )
 
 
-hoverBlock : Model -> Collage.Form
-hoverBlock model =
-    case model.currentMouseGridPosition of
+hoverBlock : Context -> Collage.Form
+hoverBlock context =
+    case context.model.currentMouseGridPosition of
         Just point ->
-            entityPreview model point
+            entityPreview context point
 
         Nothing ->
             Collage.rect 0 0

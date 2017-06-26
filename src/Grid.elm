@@ -60,7 +60,6 @@ subscriptions model =
     Sub.batch
         [ receiveOffset GridOffset
         , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
-        , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , receiveExportedBlueprint ReceiveExportedBlueprint
         , shouldSubToMouseSubscriptions model
         , dragSubscriptions model

@@ -3,7 +3,6 @@ module Grid.Messages exposing (Msg(..))
 import Grid.Model exposing (Cells)
 import Mouse
 import Entity exposing (Entity)
-import Toolbox
 
 
 type Msg
@@ -22,4 +21,3 @@ type Msg
     | DragStart Mouse.Position
     | DragAt Mouse.Position
     | DragEnd Mouse.Position
-    | ToolboxMsg Toolbox.Msg
