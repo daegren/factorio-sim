@@ -1,4 +1,4 @@
-module GridStyles exposing (..)
+module Grid.Styles exposing (..)
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -21,11 +21,7 @@ type Ids
 css : Stylesheet
 css =
     (stylesheet << namespace "grid")
-        [ id GridContainer
-            [ displayFlex
-            , padding (px 8)
-            ]
-        , id Grid
+        [ id Grid
             [ flex2 (int 0) (int 0)
             , paddingRight (px 8)
             ]

@@ -7,7 +7,7 @@ import Html.CssHelpers
 import Css
 import Mouse
 import Json.Decode as Json
-import GridStyles
+import Grid.Styles as GridStyles
 import Collage
 import Element
 import Toolbox exposing (Tool(..))
@@ -89,7 +89,7 @@ view context =
         gridSize =
             context.model.cellSize * context.model.size
     in
-        div [ id [ GridStyles.GridContainer ] ]
+        div []
             [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
                 [ Collage.collage gridSize
                     gridSize

@@ -32,6 +32,8 @@ css =
             [ flex2 zero zero
             , displayFlex
             , flexDirection column
+            , minWidth (pct 33)
+            , margin2 zero (px 8)
             ]
         , id ToolboxContainer
             [ flex2 (num 1) zero ]

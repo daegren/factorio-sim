@@ -6,6 +6,8 @@ import Entity.Encoder exposing (encodeEntities)
 import Html exposing (Html, div, textarea, input)
 import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onClick, onInput)
+import Html.CssHelpers
+import BlueprintStyles exposing (Classes(..))
 
 
 -- MODEL
@@ -156,13 +158,21 @@ update msg { model, entities } =
 
 
 
+-- CSS
+
+
+{ id, class, classList } =
+    Html.CssHelpers.withNamespace "blueprint"
+
+
+
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ textarea [ onInput Changed, value model ] []
+        [ textarea [ class [ Input ], onInput Changed, value model ] []
         , input [ type_ "button", value "Load Blueprint", onClick Load ] []
         , input [ type_ "button", value "Export Blueprint", onClick Export ] []
           -- , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
