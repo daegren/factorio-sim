@@ -11,12 +11,8 @@ type Msg
     | MouseMoved Mouse.Position
     | MouseEntered
     | MouseLeft
-    | LoadBlueprint
-    | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
-    | ExportBlueprint
     | ClearEntities
-    | ReceiveExportedBlueprint String
     | ChangeGridSize Int
     | DragStart Mouse.Position
     | DragAt Mouse.Position

@@ -29,5 +29,12 @@ css =
         , id GridContainer
             [ flex2 (num 1) zero ]
         , id Sidebar
+            [ flex2 zero zero
+            , displayFlex
+            , flexDirection column
+            ]
+        , id ToolboxContainer
+            [ flex2 (num 1) zero ]
+        , id BlueprintContainer
             [ flex2 zero zero ]
         ]

@@ -41,12 +41,6 @@ update msg { model, toolbox } =
         MouseLeft ->
             ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
 
-        LoadBlueprint ->
-            ( model, Grid.parseBlueprint model.blueprintString )
-
-        BlueprintChanged str ->
-            ( { model | blueprintString = str }, Cmd.none )
-
         SentBlueprint res ->
             case res of
                 Ok entities ->
@@ -59,14 +53,8 @@ update msg { model, toolbox } =
                     in
                         ( model, Cmd.none )
 
-        ExportBlueprint ->
-            ( model, Grid.exportBlueprint (encodeBlueprint model.entities) )
-
         ClearEntities ->
             ( { model | entities = [], blueprintString = "" }, Cmd.none )
-
-        ReceiveExportedBlueprint blueprintString ->
-            ( { model | blueprintString = blueprintString }, Cmd.none )
 
         ChangeGridSize amount ->
             let
@@ -103,7 +91,7 @@ update msg { model, toolbox } =
                                     |> Grid.buildLineBetweenPoints (Toolbox.sizeFor toolbox.currentTool)
                                     |> List.foldl (\point entities -> Grid.placeEntityAtPoint toolbox point entities) model.entities
                     in
-                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Grid.exportBlueprint (encodeBlueprint entities) )
+                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint entities) )
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )

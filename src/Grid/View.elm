@@ -99,10 +99,7 @@ view context =
                     ]
                     |> Element.toHtml
                 ]
-            , div []
-                [ blueprintInput context.model
-                , gridSizeView
-                ]
+            , gridSizeView
             ]
 
 
@@ -114,16 +111,6 @@ gridSizeView =
             [ input [ type_ "button", value "-", onClick (ChangeGridSize -2) ] []
             , input [ type_ "button", value "+", onClick (ChangeGridSize 2) ] []
             ]
-        ]
-
-
-blueprintInput : Model -> Html Msg
-blueprintInput model =
-    div [ id [ GridStyles.BlueprintInput ] ]
-        [ textarea [ class [ GridStyles.Input ], onInput BlueprintChanged, value model.blueprintString ] []
-        , input [ type_ "button", value "Load Blueprint", onClick LoadBlueprint ] []
-        , input [ type_ "button", value "Export Blueprint", onClick ExportBlueprint ] []
-        , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
         ]
 
 
