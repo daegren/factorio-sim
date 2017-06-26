@@ -7,6 +7,8 @@ import Grid.Messages
 import Grid.View as GridView
 import Grid.Update as GridUpdate
 import Toolbox
+import SharedStyles exposing (Ids(..))
+import Html.CssHelpers
 
 
 -- MODEL
@@ -67,12 +69,20 @@ update msg model =
 
 
 
+-- CSS
+
+
+{ id, class, classList } =
+    Html.CssHelpers.withNamespace "main"
+
+
+
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox })
-        , Html.map ToolboxMsg (Toolbox.view model.toolbox)
+    div [ id [ MainContainer ] ]
+        [ div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox }) ]
+        , div [ id [ Sidebar ] ] [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
         ]
