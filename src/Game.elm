@@ -8,6 +8,7 @@ import Grid.View as GridView
 import Grid.Update as GridUpdate
 import Toolbox
 import SharedStyles exposing (Ids(..))
+import Tools
 import Blueprint
 import Html.CssHelpers
 
@@ -19,6 +20,7 @@ type alias Model =
     { grid : GridModel.Model
     , toolbox : Toolbox.Model
     , blueprint : Blueprint.Model
+    , tools : Tools.Model
     }
 
 
@@ -31,6 +33,7 @@ init =
         ( { grid = gridModel
           , toolbox = Toolbox.initialModel
           , blueprint = Blueprint.init
+          , tools = Tools.init
           }
         , Cmd.map GridMsg gridCmd
         )
@@ -53,6 +56,7 @@ type Msg
     = GridMsg Grid.Messages.Msg
     | ToolboxMsg Toolbox.Msg
     | BlueprintMsg Blueprint.Msg
+    | ToolsMsg Tools.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,6 +83,13 @@ update msg model =
             in
                 ( { model | blueprint = blueprintModel }, Cmd.map BlueprintMsg blueprintCmd )
 
+        ToolsMsg msg ->
+            let
+                ( toolsModel, toolsCmd ) =
+                    Tools.update msg model.tools
+            in
+                ( { model | tools = toolsModel }, Cmd.map ToolsMsg toolsCmd )
+
 
 
 -- CSS
@@ -95,7 +106,8 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div [ id [ MainContainer ] ]
-        [ div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox }) ]
+        [ div [ id [ ToolContainer ] ] [ Html.map ToolsMsg (Tools.view model.tools) ]
+        , div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox }) ]
         , div [ id [ Sidebar ] ]
             [ div [ id [ ToolboxContainer ] ] [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
             , div [ id [ BlueprintContainer ] ] [ Html.map BlueprintMsg (Blueprint.view model.blueprint) ]

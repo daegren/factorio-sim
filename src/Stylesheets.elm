@@ -5,6 +5,7 @@ import Grid.Styles as GridStyles
 import SharedStyles
 import ToolboxStyles
 import BlueprintStyles
+import Tools
 
 
 port files : CssFileStructure -> Cmd msg
@@ -19,6 +20,7 @@ cssFiles =
                 , GridStyles.css
                 , ToolboxStyles.css
                 , BlueprintStyles.css
+                , Tools.css
                 ]
           )
         ]
