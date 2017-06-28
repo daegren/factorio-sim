@@ -71,7 +71,7 @@ pointFromPosition position =
 -}
 getBoundingRect : Entity -> ( Point, Point )
 getBoundingRect entity =
-    case sizeFor entity of
+    case sizeFor entity.name of
         Square size ->
             let
                 point =
@@ -89,8 +89,8 @@ getBoundingRect entity =
                 ( Point minX minY, Point maxX maxY )
 
 
-sizeFor : Entity -> Size
-sizeFor { name } =
+sizeFor : EntityName -> Size
+sizeFor name =
     case name of
         AssemblingMachine1 ->
             Square 3

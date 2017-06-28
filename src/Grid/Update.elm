@@ -2,16 +2,19 @@ module Grid.Update exposing (update)
 
 import Grid.Model exposing (Cells, Model, Drag)
 import Grid.Messages exposing (Msg(..))
+import Entity
+import Entity.Picker
 import Random
 import Grid
-import Toolbox
+import Tools
 import Point exposing (Point)
 import Blueprint exposing (encodeBlueprint)
 
 
 type alias Context =
     { model : Grid.Model.Model
-    , toolbox : Toolbox.Model
+    , tools : Tools.Model
+    , picker : Entity.Picker.Model
     }
 
 
@@ -20,7 +23,7 @@ type alias Context =
 
 
 update : Msg -> Context -> ( Model, Cmd Msg )
-update msg { model, toolbox } =
+update msg { model, tools, picker } =
     case msg of
         RandomGrid grid ->
             ( { model | cells = grid }, Cmd.none )
@@ -85,11 +88,11 @@ update msg { model, toolbox } =
                     let
                         entities =
                             if drag.start == drag.current then
-                                Grid.placeEntityAtPoint toolbox drag.start model.entities
+                                Grid.placeEntityAtPoint tools picker drag.start model.entities
                             else
                                 Grid.calculateLineBetweenPoints drag.start drag.current
-                                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor toolbox.currentTool)
-                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint toolbox point entities) model.entities
+                                    |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
+                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint tools picker point entities) model.entities
                     in
                         ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint entities) )
 

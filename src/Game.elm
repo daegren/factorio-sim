@@ -6,7 +6,6 @@ import Grid.Model as GridModel
 import Grid.Messages
 import Grid.View as GridView
 import Grid.Update as GridUpdate
-import Toolbox
 import SharedStyles exposing (Ids(..))
 import Entity.Picker
 import Tools
@@ -19,7 +18,6 @@ import Html.CssHelpers
 
 type alias Model =
     { grid : GridModel.Model
-    , toolbox : Toolbox.Model
     , blueprint : Blueprint.Model
     , tools : Tools.Model
     , picker : Entity.Picker.Model
@@ -33,7 +31,6 @@ init =
             Grid.init
     in
         ( { grid = gridModel
-          , toolbox = Toolbox.initialModel
           , blueprint = Blueprint.init
           , tools = Tools.init
           , picker = Entity.Picker.init
@@ -46,6 +43,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map GridMsg (Grid.subscriptions model.grid)
+        , Sub.map ToolsMsg (Tools.subscriptions model.tools)
         , Sub.map BlueprintMsg (Blueprint.subscriptions model.blueprint)
         ]
 
@@ -67,7 +65,7 @@ update msg model =
         GridMsg msg ->
             let
                 ( gridModel, gridCmd ) =
-                    GridUpdate.update msg { model = model.grid, toolbox = model.toolbox }
+                    GridUpdate.update msg { model = model.grid, tools = model.tools, picker = model.picker }
             in
                 ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
 
@@ -109,7 +107,7 @@ view : Model -> Html Msg
 view model =
     div [ id [ MainContainer ] ]
         [ div [ id [ ToolContainer ] ] [ Html.map ToolsMsg (Tools.view model.tools) ]
-        , div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox }) ]
+        , div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, tools = model.tools, picker = model.picker }) ]
         , div [ id [ Sidebar ] ]
             [ div [ id [ ToolboxContainer ] ] [ Html.map PickerMsg (Entity.Picker.view model.picker) ]
             , div [ id [ BlueprintContainer ] ] [ Html.map BlueprintMsg (Blueprint.view model.blueprint) ]

@@ -10,7 +10,8 @@ import Json.Decode as Json
 import Grid.Styles as GridStyles
 import Collage
 import Element
-import Toolbox exposing (Tool(..))
+import Entity.Picker
+import Tools exposing (Tool(..))
 import Color
 import Grid.Messages exposing (Msg(..))
 import Grid.Model exposing (Model, BackgroundCell)
@@ -66,7 +67,7 @@ addEntityOffset { cellSize } entity ( x, y ) =
             [ Entity.WoodenChest, Entity.IronChest, Entity.SteelChest ]
     in
         if List.member entity.name allowedEntities then
-            case Entity.sizeFor entity of
+            case Entity.sizeFor entity.name of
                 Square size ->
                     ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
         else
@@ -79,7 +80,8 @@ addEntityOffset { cellSize } entity ( x, y ) =
 
 type alias Context =
     { model : Grid.Model.Model
-    , toolbox : Toolbox.Model
+    , tools : Tools.Model
+    , picker : Entity.Picker.Model
     }
 
 
@@ -122,7 +124,7 @@ dragPreview context =
                 entityPreview context drag.start
             else
                 Grid.calculateLineBetweenPoints drag.start drag.current
-                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor context.toolbox.currentTool)
+                    |> Grid.buildLineBetweenPoints (Entity.sizeFor context.picker.currentEntity)
                     |> List.map (entityPreview context)
                     |> Collage.group
 
@@ -151,17 +153,17 @@ buildEntity model entity =
 
 
 entityPreview : Context -> Point -> Collage.Form
-entityPreview { model, toolbox } point =
-    case toolbox.currentTool of
+entityPreview { model, tools, picker } point =
+    case tools.currentTool of
         Clear ->
             Collage.rect 32 32
                 |> Collage.filled (Color.rgba 255 255 0 0.25)
                 |> Collage.move (pointToCollageOffset model point)
 
-        Placeable entity ->
+        Place ->
             let
                 dummyEntity =
-                    { entity | direction = toolbox.currentDirection }
+                    { name = picker.currentEntity, position = Entity.positionFromPoint point, direction = tools.currentDirection }
 
                 ( sizeX, sizeY ) =
                     Entity.Image.sizeFor dummyEntity

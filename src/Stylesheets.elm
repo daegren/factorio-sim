@@ -3,9 +3,9 @@ port module Stylesheets exposing (..)
 import Css.File exposing (..)
 import Grid.Styles as GridStyles
 import SharedStyles
-import ToolboxStyles
 import BlueprintStyles
 import Tools
+import Entity.PickerStyles
 
 
 port files : CssFileStructure -> Cmd msg
@@ -18,7 +18,7 @@ cssFiles =
           , compile
                 [ SharedStyles.css
                 , GridStyles.css
-                , ToolboxStyles.css
+                , Entity.PickerStyles.css
                 , BlueprintStyles.css
                 , Tools.css
                 ]

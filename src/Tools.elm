@@ -7,13 +7,18 @@ import Css exposing (Stylesheet)
 import Css.Namespace exposing (namespace)
 import Html.CssHelpers
 import Css.Elements
+import Entity exposing (Direction(..))
+import Input exposing (Input(..))
+import Keyboard
 
 
 -- MODEL
 
 
 type alias Model =
-    { currentTool : Tool }
+    { currentTool : Tool
+    , currentDirection : Direction
+    }
 
 
 type Tool
@@ -23,7 +28,9 @@ type Tool
 
 init : Model
 init =
-    { currentTool = Place }
+    { currentTool = Place
+    , currentDirection = Up
+    }
 
 
 allTools : List Tool
@@ -37,6 +44,7 @@ allTools =
 
 type Msg
     = SelectTool Tool
+    | KeyPressed Keyboard.KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,6 +52,44 @@ update msg model =
     case msg of
         SelectTool tool ->
             ( { model | currentTool = tool }, Cmd.none )
+
+        KeyPressed key ->
+            case Input.mapKeyboardToInput key of
+                Just input ->
+                    case input of
+                        Rotate ->
+                            ( { model | currentDirection = rotateDirection model.currentDirection }, Cmd.none )
+
+                        ClearSelection ->
+                            ( { model | currentTool = Clear }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+
+rotateDirection : Direction -> Direction
+rotateDirection orientation =
+    case orientation of
+        Up ->
+            Right
+
+        Right ->
+            Down
+
+        Down ->
+            Left
+
+        Left ->
+            Up
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Keyboard.presses KeyPressed
 
 
 

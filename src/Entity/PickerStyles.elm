@@ -1,4 +1,4 @@
-module ToolboxStyles exposing (..)
+module Entity.PickerStyles exposing (..)
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -25,7 +25,7 @@ type Ids
 
 css : Stylesheet
 css =
-    (stylesheet << namespace "toolbox")
+    (stylesheet << namespace "picker")
         [ id Container
             [ border2 (px 1) solid
             , padding (px 8)

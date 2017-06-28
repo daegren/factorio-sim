@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Entity exposing (EntityName(..))
 import Entity.Image
 import Html.CssHelpers
-import ToolboxStyles exposing (Ids(..), Classes(..))
+import Entity.PickerStyles as PickerStyles exposing (Ids(..), Classes(..))
 
 
 -- MODEL
@@ -88,7 +88,7 @@ update msg model =
 
 
 { id, class, classList } =
-    Html.CssHelpers.withNamespace "toolbox"
+    Html.CssHelpers.withNamespace "picker"
 
 
 
@@ -99,7 +99,7 @@ view : Model -> Html Msg
 view model =
     div [ id [ Container ] ]
         [ div [ id [ ToolGroupContainer ] ]
-            [ div [ id [ ToolboxStyles.ToolGroup ] ] (List.map (tabView model) allGroups)
+            [ div [ id [ PickerStyles.ToolGroup ] ] (List.map (tabView model) allGroups)
             , groupView model
             ]
         ]
@@ -124,12 +124,12 @@ groupView model =
 
 rowView : Model -> Row -> Html Msg
 rowView model row =
-    div [ class [ ToolboxStyles.ToolRow ] ] (List.map (selectableEntityView model) row)
+    div [ class [ PickerStyles.ToolRow ] ] (List.map (selectableEntityView model) row)
 
 
 selectableEntityView : Model -> EntityName -> Html Msg
 selectableEntityView model entity =
-    div [ class [ ToolboxStyles.Tool ], onClick (SelectEntity entity) ]
+    div [ class [ PickerStyles.Tool ], onClick (SelectEntity entity) ]
         [ enitityView model entity ]
 
 
