@@ -6,14 +6,14 @@ import Entity
 import Entity.Picker
 import Random
 import Grid
-import Tools
+import Tool
 import Point exposing (Point)
 import Blueprint exposing (encodeBlueprint)
 
 
 type alias Context =
     { model : Grid.Model.Model
-    , tools : Tools.Model
+    , tools : Tool.Model
     , picker : Entity.Picker.Model
     }
 

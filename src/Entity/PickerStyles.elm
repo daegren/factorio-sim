@@ -8,12 +8,12 @@ import Css.Elements exposing (img)
 type Classes
     = Tool
     | CurrentTool
-    | ToolList
+    | EntityList
     | Button
     | SelectedButton
     | ToolRow
-    | ToolGroupItem
-    | SelectedToolGroupItem
+    | Item
+    | SelectedItem
 
 
 type Ids
@@ -63,9 +63,9 @@ css =
         , class SelectedButton
             [ backgroundPosition2 (px -40) (px 1) ]
         , class CurrentTool [ margin (px 8) ]
-        , class ToolList [ displayFlex ]
+        , class EntityList [ displayFlex ]
         , class ToolRow [ displayFlex ]
-        , class ToolGroupItem
+        , class Item
             [ backgroundImage (url "~assets/images/button-72.png")
             , backgroundPosition2 (px 0) (px -2)
             , margin2 zero (px 2)
@@ -74,5 +74,5 @@ css =
             , children
                 [ img [ width (px 68), height (px 68), padding (px 2) ] ]
             ]
-        , class SelectedToolGroupItem [ backgroundPosition2 (px 74) (px -2) ]
+        , class SelectedItem [ backgroundPosition2 (px 74) (px -2) ]
         ]

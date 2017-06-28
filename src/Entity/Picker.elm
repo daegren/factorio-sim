@@ -110,9 +110,9 @@ tabView model group =
     let
         classes =
             if group == model.currentGroup then
-                class [ ToolGroupItem, SelectedToolGroupItem ]
+                class [ Item, SelectedItem ]
             else
-                class [ ToolGroupItem ]
+                class [ Item ]
     in
         div [ classes, onClick (SelectGroup group) ] [ img [ src (imageForGroup group) ] [] ]
 

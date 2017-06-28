@@ -11,7 +11,7 @@ import Grid.Styles as GridStyles
 import Collage
 import Element
 import Entity.Picker
-import Tools exposing (Tool(..))
+import Tool exposing (Tool(..))
 import Color
 import Grid.Messages exposing (Msg(..))
 import Grid.Model exposing (Model, BackgroundCell)
@@ -80,7 +80,7 @@ addEntityOffset { cellSize } entity ( x, y ) =
 
 type alias Context =
     { model : Grid.Model.Model
-    , tools : Tools.Model
+    , tools : Tool.Model
     , picker : Entity.Picker.Model
     }
 

@@ -5,7 +5,7 @@ import Json.Decode exposing (Value)
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
-import Tools exposing (Tool(..))
+import Tool exposing (Tool(..))
 import Entity.Picker
 import Entity exposing (Entity, Size(..))
 import Json.Decode as Json
@@ -214,7 +214,7 @@ every amount list =
         |> List.map (\( i, val ) -> val)
 
 
-placeEntityAtPoint : Tools.Model -> Entity.Picker.Model -> Point -> List Entity -> List Entity
+placeEntityAtPoint : Tool.Model -> Entity.Picker.Model -> Point -> List Entity -> List Entity
 placeEntityAtPoint tools picker point entities =
     case tools.currentTool of
         Place ->

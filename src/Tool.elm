@@ -1,4 +1,4 @@
-module Tools exposing (..)
+module Tool exposing (..)
 
 import Html exposing (Html, div, img)
 import Html.Attributes exposing (src, alt)
@@ -33,8 +33,8 @@ init =
     }
 
 
-allTools : List Tool
-allTools =
+allTool : List Tool
+allTool =
     [ Place, Clear ]
 
 
@@ -139,7 +139,7 @@ css =
 
 view : Model -> Html Msg
 view model =
-    div [] (List.map (toolView model.currentTool) allTools)
+    div [] (List.map (toolView model.currentTool) allTool)
 
 
 toolView : Tool -> Tool -> Html Msg

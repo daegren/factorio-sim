@@ -4,7 +4,7 @@ import Css.File exposing (..)
 import Grid.Styles as GridStyles
 import SharedStyles
 import BlueprintStyles
-import Tools
+import Tool
 import Entity.PickerStyles
 
 
@@ -20,7 +20,7 @@ cssFiles =
                 , GridStyles.css
                 , Entity.PickerStyles.css
                 , BlueprintStyles.css
-                , Tools.css
+                , Tool.css
                 ]
           )
         ]
