@@ -3,7 +3,6 @@ module Grid.Messages exposing (Msg(..))
 import Grid.Model exposing (Cells)
 import Mouse
 import Entity exposing (Entity)
-import Toolbox
 
 
 type Msg
@@ -12,14 +11,9 @@ type Msg
     | MouseMoved Mouse.Position
     | MouseEntered
     | MouseLeft
-    | LoadBlueprint
-    | BlueprintChanged String
     | SentBlueprint (Result String (List Entity))
-    | ExportBlueprint
     | ClearEntities
-    | ReceiveExportedBlueprint String
     | ChangeGridSize Int
     | DragStart Mouse.Position
     | DragAt Mouse.Position
     | DragEnd Mouse.Position
-    | ToolboxMsg Toolbox.Msg

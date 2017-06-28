@@ -9,11 +9,18 @@ import Point exposing (Point)
 import Blueprint exposing (encodeBlueprint)
 
 
+type alias Context =
+    { model : Grid.Model.Model
+    , toolbox : Toolbox.Model
+    }
+
+
+
 -- UPDATE
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> Context -> ( Model, Cmd Msg )
+update msg { model, toolbox } =
     case msg of
         RandomGrid grid ->
             ( { model | cells = grid }, Cmd.none )
@@ -34,12 +41,6 @@ update msg model =
         MouseLeft ->
             ( { model | mouseInsideGrid = False, currentMouseGridPosition = Nothing }, Cmd.none )
 
-        LoadBlueprint ->
-            ( model, Grid.parseBlueprint model.blueprintString )
-
-        BlueprintChanged str ->
-            ( { model | blueprintString = str }, Cmd.none )
-
         SentBlueprint res ->
             case res of
                 Ok entities ->
@@ -52,14 +53,8 @@ update msg model =
                     in
                         ( model, Cmd.none )
 
-        ExportBlueprint ->
-            ( model, Grid.exportBlueprint (encodeBlueprint model.entities) )
-
         ClearEntities ->
             ( { model | entities = [], blueprintString = "" }, Cmd.none )
-
-        ReceiveExportedBlueprint blueprintString ->
-            ( { model | blueprintString = blueprintString }, Cmd.none )
 
         ChangeGridSize amount ->
             let
@@ -90,20 +85,13 @@ update msg model =
                     let
                         entities =
                             if drag.start == drag.current then
-                                Grid.placeEntityAtPoint model.toolbox drag.start model.entities
+                                Grid.placeEntityAtPoint toolbox drag.start model.entities
                             else
                                 Grid.calculateLineBetweenPoints drag.start drag.current
-                                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor model.toolbox.currentTool)
-                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint model.toolbox point entities) model.entities
+                                    |> Grid.buildLineBetweenPoints (Toolbox.sizeFor toolbox.currentTool)
+                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint toolbox point entities) model.entities
                     in
-                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Grid.exportBlueprint (encodeBlueprint entities) )
+                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint entities) )
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )
-
-        ToolboxMsg msg ->
-            let
-                ( toolboxModel, toolboxCmd ) =
-                    Toolbox.update msg model.toolbox
-            in
-                ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )

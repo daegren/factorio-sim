@@ -2,7 +2,6 @@ module Grid.Model exposing (..)
 
 import Point exposing (Point, zeroPoint)
 import Entity exposing (Entity)
-import Toolbox
 
 
 -- MODEL
@@ -15,7 +14,6 @@ type alias Model =
     , size : Int
     , offset : Point
     , blueprintString : String
-    , toolbox : Toolbox.Model
     , shouldIgnoreNextMouseClick : Bool
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
@@ -25,7 +23,7 @@ type alias Model =
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint "" Toolbox.initialModel False False Nothing Nothing
+    Model [] [] 32 15 zeroPoint "" False False Nothing Nothing
 
 
 type alias Drag =

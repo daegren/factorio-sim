@@ -3,20 +3,16 @@ module Main exposing (..)
 import Html exposing (Html, h1, h2, div, text, img)
 import Html.Attributes exposing (src)
 import SharedStyles exposing (Classes(..))
+import Game
 import Html.CssHelpers
 import Css
-import Grid
-import Grid.Model as GridModel
-import Grid.Messages as GridMessages
-import Grid.View as GridView
-import Grid.Update as GridUpdate
 
 
 -- MODEL
 
 
 type alias Model =
-    { grid : GridModel.Model }
+    { game : Game.Model }
 
 
 
@@ -26,11 +22,11 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( gridModel, gridCmd ) =
-            Grid.init
+        ( gameModel, gameCmd ) =
+            Game.init
     in
-        ( Model gridModel
-        , Cmd.map GridMsg gridCmd
+        ( Model gameModel
+        , Cmd.map GameMsg gameCmd
         )
 
 
@@ -54,9 +50,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Sub.map GridMsg (Grid.subscriptions model.grid)
-        ]
+    Sub.map GameMsg (Game.subscriptions model.game)
 
 
 
@@ -64,18 +58,18 @@ subscriptions model =
 
 
 type Msg
-    = GridMsg GridMessages.Msg
+    = GameMsg Game.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GridMsg msg ->
+        GameMsg msg ->
             let
-                ( gridModel, gridCmd ) =
-                    GridUpdate.update msg model.grid
+                ( gameModel, gameCmd ) =
+                    Game.update msg model.game
             in
-                ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
+                ( { model | game = gameModel }, Cmd.map GameMsg gameCmd )
 
 
 
@@ -100,7 +94,7 @@ view model =
     div []
         [ h1 [] [ text "Blueprint Maker" ]
         , div [ id [ Main ] ]
-            [ Html.map GridMsg (GridView.view model.grid)
+            [ Html.map GameMsg (Game.view model.game)
             , infoView model
             ]
         , div [ id [ Copyright ] ]
