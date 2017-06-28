@@ -32,6 +32,10 @@ styles =
     Css.asPairs >> Html.Attributes.style
 
 
+
+-- VIEW HELPERS
+
+
 mouseOptions : Html.Events.Options
 mouseOptions =
     { stopPropagation = True, preventDefault = True }
@@ -40,10 +44,6 @@ mouseOptions =
 onMouseDown : (Mouse.Position -> msg) -> Html.Attribute msg
 onMouseDown msg =
     onWithOptions "mousedown" mouseOptions (Json.map msg Mouse.position)
-
-
-
--- VIEW HELPERS
 
 
 {-| Converts a grid point into an (x, y) coordinate in the collage. This represents the center of the cell.
