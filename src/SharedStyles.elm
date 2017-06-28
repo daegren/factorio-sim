@@ -13,6 +13,7 @@ type Ids
     = MainContainer
     | GridContainer
     | ToolboxContainer
+    | ToolContainer
     | BlueprintContainer
     | Sidebar
 
@@ -33,6 +34,10 @@ css =
             , displayFlex
             , flexDirection column
             , minWidth (pct 33)
+            , margin2 zero (px 8)
+            ]
+        , id ToolContainer
+            [ flex2 zero zero
             , margin2 zero (px 8)
             ]
         , id ToolboxContainer

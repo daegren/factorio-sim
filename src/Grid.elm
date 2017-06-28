@@ -5,7 +5,8 @@ import Json.Decode exposing (Value)
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
-import Toolbox exposing (Tool(..))
+import Tool exposing (Tool(..))
+import Entity.Picker
 import Entity exposing (Entity, Size(..))
 import Json.Decode as Json
 import Grid.Model exposing (Model, BackgroundCell, Cells)
@@ -143,7 +144,7 @@ removeEntityAtPoint point entityList =
 
 isEntityAtPoint : Point -> Entity -> Bool
 isEntityAtPoint point entity =
-    case Entity.sizeFor entity of
+    case Entity.sizeFor entity.name of
         Square size ->
             let
                 ( min, max ) =
@@ -213,13 +214,16 @@ every amount list =
         |> List.map (\( i, val ) -> val)
 
 
-placeEntityAtPoint : Toolbox.Model -> Point -> List Entity -> List Entity
-placeEntityAtPoint toolbox point entities =
-    case toolbox.currentTool of
-        Placeable entity ->
+placeEntityAtPoint : Tool.Model -> Entity.Picker.Model -> Point -> List Entity -> List Entity
+placeEntityAtPoint tools picker point entities =
+    case tools.currentTool of
+        Place ->
             let
                 newEntity =
-                    { entity | position = Entity.positionFromPoint point, direction = toolbox.currentDirection }
+                    { name = picker.currentEntity
+                    , position = Entity.positionFromPoint point
+                    , direction = tools.currentDirection
+                    }
             in
                 addEntity newEntity entities
 

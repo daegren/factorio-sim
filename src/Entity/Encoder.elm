@@ -17,7 +17,7 @@ encodeEntity : Int -> Entity -> Value
 encodeEntity idx entity =
     let
         props =
-            [ ( "name", string (entityID entity) )
+            [ ( "name", string (entityID entity.name) )
             , ( "position", encodePosition entity.position )
             , ( "entity_number", int idx )
             ]

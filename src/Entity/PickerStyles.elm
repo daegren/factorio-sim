@@ -1,4 +1,4 @@
-module ToolboxStyles exposing (..)
+module Entity.PickerStyles exposing (..)
 
 import Css exposing (..)
 import Css.Namespace exposing (namespace)
@@ -8,12 +8,12 @@ import Css.Elements exposing (img)
 type Classes
     = Tool
     | CurrentTool
-    | ToolList
+    | EntityList
     | Button
     | SelectedButton
     | ToolRow
-    | ToolGroupItem
-    | SelectedToolGroupItem
+    | Item
+    | SelectedItem
 
 
 type Ids
@@ -25,11 +25,11 @@ type Ids
 
 css : Stylesheet
 css =
-    (stylesheet << namespace "toolbox")
+    (stylesheet << namespace "picker")
         [ id Container
             [ border2 (px 1) solid
             , padding (px 8)
-            , width (px 200)
+            , displayFlex
             ]
         , id ToolboxItems
             [ displayFlex
@@ -46,25 +46,26 @@ css =
             ]
         , class Tool [ flex2 zero zero ]
         , class Button
-            [ textAlign center
-            , alignSelf center
-            , backgroundImage (url "~assets/images/gui.png")
-            , backgroundPosition2 (px 204) (px 148)
-            , width (px 36)
+            [ width (px 36)
             , height (px 36)
+            , textAlign center
+            , verticalAlign center
+            , backgroundImage (url "~assets/images/button-36.png")
+            , backgroundPosition2 (px -2) zero
             , children
                 [ img
-                    [ width (px 32)
-                    , height (px 32)
-                    , padding2 (px 2) zero
+                    [ width (px 30)
+                    , height (px 30)
+                    , margin2 (px 4) (px 3)
                     ]
                 ]
             ]
-        , class SelectedButton [ backgroundPosition2 (px 204) zero ]
+        , class SelectedButton
+            [ backgroundPosition2 (px -40) (px 1) ]
         , class CurrentTool [ margin (px 8) ]
-        , class ToolList [ displayFlex ]
+        , class EntityList [ displayFlex ]
         , class ToolRow [ displayFlex ]
-        , class ToolGroupItem
+        , class Item
             [ backgroundImage (url "~assets/images/button-72.png")
             , backgroundPosition2 (px 0) (px -2)
             , margin2 zero (px 2)
@@ -73,5 +74,5 @@ css =
             , children
                 [ img [ width (px 68), height (px 68), padding (px 2) ] ]
             ]
-        , class SelectedToolGroupItem [ backgroundPosition2 (px 74) (px -2) ]
+        , class SelectedItem [ backgroundPosition2 (px 74) (px -2) ]
         ]

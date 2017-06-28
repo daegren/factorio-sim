@@ -41,7 +41,7 @@ image : Entity -> String
 image entity =
     let
         path =
-            entityPath ++ Entity.entityID entity
+            entityPath ++ Entity.entityID entity.name
     in
         case entity.name of
             TransportBelt ->
@@ -57,7 +57,7 @@ image entity =
                 path ++ ".png"
 
 
-icon : Entity -> String
+icon : EntityName -> String
 icon entity =
     let
         id =

@@ -53,7 +53,7 @@ encodeIcon idx ( count, name ) =
         [ ( "signal"
           , object
                 [ ( "type", string "item" )
-                , ( "name", string (Entity.entityIDFromName name) )
+                , ( "name", string (Entity.entityID name) )
                 ]
           )
         , ( "index", int (idx + 1) )
