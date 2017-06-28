@@ -8,6 +8,7 @@ import Grid.View as GridView
 import Grid.Update as GridUpdate
 import Toolbox
 import SharedStyles exposing (Ids(..))
+import Entity.Picker
 import Tools
 import Blueprint
 import Html.CssHelpers
@@ -21,6 +22,7 @@ type alias Model =
     , toolbox : Toolbox.Model
     , blueprint : Blueprint.Model
     , tools : Tools.Model
+    , picker : Entity.Picker.Model
     }
 
 
@@ -34,6 +36,7 @@ init =
           , toolbox = Toolbox.initialModel
           , blueprint = Blueprint.init
           , tools = Tools.init
+          , picker = Entity.Picker.init
           }
         , Cmd.map GridMsg gridCmd
         )
@@ -43,7 +46,6 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map GridMsg (Grid.subscriptions model.grid)
-        , Sub.map ToolboxMsg (Toolbox.subscriptions model.toolbox)
         , Sub.map BlueprintMsg (Blueprint.subscriptions model.blueprint)
         ]
 
@@ -54,7 +56,7 @@ subscriptions model =
 
 type Msg
     = GridMsg Grid.Messages.Msg
-    | ToolboxMsg Toolbox.Msg
+    | PickerMsg Entity.Picker.Msg
     | BlueprintMsg Blueprint.Msg
     | ToolsMsg Tools.Msg
 
@@ -69,12 +71,12 @@ update msg model =
             in
                 ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
 
-        ToolboxMsg msg ->
+        PickerMsg msg ->
             let
-                ( toolboxModel, toolboxCmd ) =
-                    Toolbox.update msg model.toolbox
+                ( pickerModel, pickerCmd ) =
+                    Entity.Picker.update msg model.picker
             in
-                ( { model | toolbox = toolboxModel }, Cmd.map ToolboxMsg toolboxCmd )
+                ( { model | picker = pickerModel }, Cmd.map PickerMsg pickerCmd )
 
         BlueprintMsg msg ->
             let
@@ -109,7 +111,7 @@ view model =
         [ div [ id [ ToolContainer ] ] [ Html.map ToolsMsg (Tools.view model.tools) ]
         , div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, toolbox = model.toolbox }) ]
         , div [ id [ Sidebar ] ]
-            [ div [ id [ ToolboxContainer ] ] [ Html.map ToolboxMsg (Toolbox.view model.toolbox) ]
+            [ div [ id [ ToolboxContainer ] ] [ Html.map PickerMsg (Entity.Picker.view model.picker) ]
             , div [ id [ BlueprintContainer ] ] [ Html.map BlueprintMsg (Blueprint.view model.blueprint) ]
             ]
         ]

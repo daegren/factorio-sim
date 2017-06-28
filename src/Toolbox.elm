@@ -264,5 +264,5 @@ toolView model tool =
                         [ Button ]
             in
                 div [ class classes ]
-                    [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity.name) ] []
+                    [ img [ src (Entity.Image.icon entity.name), alt (Entity.readableName entity.name) ] []
                     ]

@@ -127,7 +127,7 @@ imageFor : Tool -> String
 imageFor tool =
     case tool of
         Place ->
-            "assets/images/tools/place.png"
+            "assets/images/icons/transport-belt.png"
 
         Clear ->
             "assets/images/cancel.png"

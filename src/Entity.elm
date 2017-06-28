@@ -139,13 +139,8 @@ readableName entityName =
             str
 
 
-entityID : Entity -> String
-entityID entity =
-    entityIDFromName entity.name
-
-
-entityIDFromName : EntityName -> String
-entityIDFromName name =
+entityID : EntityName -> String
+entityID name =
     case name of
         TransportBelt ->
             "transport-belt"
