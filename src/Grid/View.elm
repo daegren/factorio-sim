@@ -163,11 +163,8 @@ entityPreview { model, tools, picker } point =
         Place ->
             let
                 dummyEntity =
-                    { name = picker.currentEntity
-                    , position = Entity.positionFromPoint point
-                    , direction = tools.currentDirection
-                    , recipe = Nothing
-                    }
+                    Entity.entity picker.currentEntity tools.currentDirection
+                        |> Entity.setPosition (Entity.positionFromPoint point)
 
                 ( sizeX, sizeY ) =
                     Entity.Image.sizeFor dummyEntity

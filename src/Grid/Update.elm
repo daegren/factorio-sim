@@ -87,11 +87,7 @@ update msg { model, tools, picker } =
                 Just drag ->
                     let
                         entity =
-                            { name = picker.currentEntity
-                            , position = Entity.zeroPosition
-                            , direction = tools.currentDirection
-                            , recipe = Nothing
-                            }
+                            Entity.entity picker.currentEntity tools.currentDirection
 
                         entities =
                             if drag.start == drag.current then

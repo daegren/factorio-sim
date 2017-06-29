@@ -26,6 +26,15 @@ type alias Entity =
     }
 
 
+entity : EntityName -> Direction -> Entity
+entity entityName direction =
+    { name = entityName
+    , position = zeroPosition
+    , direction = direction
+    , recipe = Nothing
+    }
+
+
 toolboxEntity : EntityName -> Entity
 toolboxEntity name =
     Entity name zeroPosition Up Nothing
