@@ -4,7 +4,6 @@ import Html exposing (Html, div, text, input, textarea)
 import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onWithOptions, onMouseEnter, onMouseLeave, onClick, onInput)
 import Html.CssHelpers
-import Css
 import Mouse
 import Json.Decode as Json
 import Grid.Styles as GridStyles
@@ -26,11 +25,6 @@ import Point exposing (Point)
 
 { id, class, classList } =
     Html.CssHelpers.withNamespace "grid"
-
-
-styles : List Css.Mixin -> Html.Attribute msg
-styles =
-    Css.asPairs >> Html.Attributes.style
 
 
 
