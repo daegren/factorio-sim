@@ -90,6 +90,7 @@ update msg { model, tools, picker } =
                             { name = picker.currentEntity
                             , position = Entity.zeroPosition
                             , direction = tools.currentDirection
+                            , recipe = Nothing
                             }
 
                         entities =

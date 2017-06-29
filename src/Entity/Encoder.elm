@@ -38,6 +38,16 @@ encodeDirection direction props =
             props
 
 
+encodeRecipe : Maybe EntityName -> List ( String, Value ) -> List ( String, Value )
+encodeRecipe nameMaybe props =
+    case nameMaybe of
+        Just name ->
+            ( "recipe", string (entityID name) ) :: props
+
+        Nothing ->
+            props
+
+
 encodePosition : Position -> Value
 encodePosition position =
     object
