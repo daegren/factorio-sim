@@ -6,7 +6,6 @@ import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Tool exposing (Tool(..))
-import Entity.Picker
 import Entity exposing (Entity, Size(..))
 import Json.Decode as Json
 import Grid.Model exposing (Model, BackgroundCell, Cells)
@@ -214,18 +213,11 @@ every amount list =
         |> List.map (\( i, val ) -> val)
 
 
-placeEntityAtPoint : Tool.Model -> Entity.Picker.Model -> Point -> List Entity -> List Entity
-placeEntityAtPoint tools picker point entities =
+placeEntityAtPoint : Tool.Model -> Entity -> Point -> List Entity -> List Entity
+placeEntityAtPoint tools entity point entities =
     case tools.currentTool of
         Place ->
-            let
-                newEntity =
-                    { name = picker.currentEntity
-                    , position = Entity.positionFromPoint point
-                    , direction = tools.currentDirection
-                    }
-            in
-                addEntity newEntity entities
+            addEntity (Entity.setPosition (Entity.positionFromPoint point) entity) entities
 
         Clear ->
             removeEntityAtPoint point entities

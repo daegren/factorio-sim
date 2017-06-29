@@ -86,13 +86,19 @@ update msg { model, tools, picker } =
             case model.drag of
                 Just drag ->
                     let
+                        entity =
+                            { name = picker.currentEntity
+                            , position = Entity.zeroPosition
+                            , direction = tools.currentDirection
+                            }
+
                         entities =
                             if drag.start == drag.current then
-                                Grid.placeEntityAtPoint tools picker drag.start model.entities
+                                Grid.placeEntityAtPoint tools entity drag.start model.entities
                             else
                                 Grid.calculateLineBetweenPoints drag.start drag.current
                                     |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
-                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint tools picker point entities) model.entities
+                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint tools entity point entities) model.entities
                     in
                         ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint entities) )
 
