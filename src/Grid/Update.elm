@@ -94,24 +94,18 @@ update msg { model, tools, picker } =
                                             Entity.entity picker.currentEntity tools.currentDirection
 
                                         entities =
-                                            if drag.start == drag.current then
-                                                Grid.addEntity (Entity.setPosition (Entity.positionFromPoint drag.current) entity) model.entities
-                                            else
-                                                Grid.calculateLineBetweenPoints drag.start drag.current
-                                                    |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
-                                                    |> List.foldl (\point entities -> Grid.addEntity (Entity.setPosition (Entity.positionFromPoint point) entity) entities) model.entities
+                                            Grid.calculateLineBetweenPoints drag.start drag.current
+                                                |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
+                                                |> List.foldl (\point entities -> Grid.addEntity (Entity.setPosition (Entity.positionFromPoint point) entity) entities) model.entities
                                     in
                                         { model | entities = entities }
 
                                 Clear ->
                                     let
                                         entities =
-                                            if drag.start == drag.current then
-                                                Grid.removeEntityAtPoint drag.current model.entities
-                                            else
-                                                Grid.calculateLineBetweenPoints drag.start drag.current
-                                                    |> Grid.buildLineBetweenPoints (Entity.Square 1)
-                                                    |> List.foldl (\point entities -> Grid.removeEntityAtPoint point entities) model.entities
+                                            Grid.calculateLineBetweenPoints drag.start drag.current
+                                                |> Grid.buildLineBetweenPoints (Entity.Square 1)
+                                                |> List.foldl (\point entities -> Grid.removeEntityAtPoint point entities) model.entities
                                     in
                                         { model | entities = entities }
 
