@@ -57,7 +57,7 @@ update msg { model, tools, picker } =
                         ( model, Cmd.none )
 
         ClearEntities ->
-            ( { model | entities = [], blueprintString = "" }, Cmd.none )
+            ( { model | entities = [] }, Cmd.none )
 
         ChangeGridSize amount ->
             let
