@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.5
+
+### New Features
+
+ * Added Recipe tool, allows setting of recipes on Assembling Machines
+
+### Changes
+
+ * Updated UI to allow larger space for grid.
+
 ## 0.4
 
 ### New Features
