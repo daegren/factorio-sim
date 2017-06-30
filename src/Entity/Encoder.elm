@@ -23,6 +23,7 @@ encodeEntity idx entity =
             ]
     in
         encodeDirection entity.direction props
+            |> encodeRecipe entity.recipe
             |> object
 
 
@@ -33,6 +34,16 @@ encodeDirection direction props =
     case directionToInt direction of
         Just dir ->
             ( "direction", int dir ) :: props
+
+        Nothing ->
+            props
+
+
+encodeRecipe : Maybe EntityName -> List ( String, Value ) -> List ( String, Value )
+encodeRecipe nameMaybe props =
+    case nameMaybe of
+        Just name ->
+            ( "recipe", string (entityID name) ) :: props
 
         Nothing ->
             props

@@ -115,6 +115,7 @@ helpText =
         , div [] [ text "Click on an item in the toolbox to set it as your current tool" ]
         , div [] [ text "Left click to place an enitity in the grid" ]
         , div [] [ text "Use the clear tool to remove an enitity" ]
+        , div [] [ text "Use the recipe tool to set a recipe for assembling machines." ]
         , div [] [ text "q to clear the mouse" ]
         , div [] [ text "r to rotate" ]
         ]

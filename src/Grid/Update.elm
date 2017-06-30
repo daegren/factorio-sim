@@ -6,7 +6,7 @@ import Entity
 import Entity.Picker
 import Random
 import Grid
-import Tool
+import Tool exposing (Tool(..))
 import Point exposing (Point)
 import Blueprint exposing (encodeBlueprint)
 
@@ -86,15 +86,45 @@ update msg { model, tools, picker } =
             case model.drag of
                 Just drag ->
                     let
-                        entities =
-                            if drag.start == drag.current then
-                                Grid.placeEntityAtPoint tools picker drag.start model.entities
-                            else
-                                Grid.calculateLineBetweenPoints drag.start drag.current
-                                    |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
-                                    |> List.foldl (\point entities -> Grid.placeEntityAtPoint tools picker point entities) model.entities
+                        newModel =
+                            case tools.currentTool of
+                                Place ->
+                                    let
+                                        entity =
+                                            Entity.entity picker.currentEntity tools.currentDirection
+
+                                        entities =
+                                            Grid.calculateLineBetweenPoints drag.start drag.current
+                                                |> Grid.buildLineBetweenPoints (Entity.sizeFor picker.currentEntity)
+                                                |> List.foldl (\point entities -> Grid.addEntity (Entity.setPosition (Entity.positionFromPoint point) entity) entities) model.entities
+                                    in
+                                        { model | entities = entities }
+
+                                Clear ->
+                                    let
+                                        entities =
+                                            Grid.calculateLineBetweenPoints drag.start drag.current
+                                                |> Grid.buildLineBetweenPoints (Entity.Square 1)
+                                                |> List.foldl (\point entities -> Grid.removeEntityAtPoint point entities) model.entities
+                                    in
+                                        { model | entities = entities }
+
+                                SetRecipe ->
+                                    let
+                                        allowedEntities =
+                                            [ Entity.AssemblingMachine1, Entity.AssemblingMachine2, Entity.AssemblingMachine3 ]
+                                    in
+                                        case Grid.getEntityAtPoint drag.current model.entities of
+                                            Just entity ->
+                                                if List.member entity.name allowedEntities then
+                                                    { model | entities = Grid.updateEntity { entity | recipe = Just picker.currentEntity } model.entities }
+                                                else
+                                                    model
+
+                                            Nothing ->
+                                                model
                     in
-                        ( { model | drag = Nothing, entities = entities, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint entities) )
+                        ( { newModel | drag = Nothing, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint newModel.entities) )
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )

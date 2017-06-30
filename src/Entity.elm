@@ -22,12 +22,22 @@ type alias Entity =
     { name : EntityName
     , position : Position
     , direction : Direction
+    , recipe : Maybe EntityName
+    }
+
+
+entity : EntityName -> Direction -> Entity
+entity entityName direction =
+    { name = entityName
+    , position = zeroPosition
+    , direction = direction
+    , recipe = Nothing
     }
 
 
 toolboxEntity : EntityName -> Entity
 toolboxEntity name =
-    Entity name zeroPosition Up
+    Entity name zeroPosition Up Nothing
 
 
 setPosition : Position -> Entity -> Entity

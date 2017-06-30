@@ -4,7 +4,6 @@ import Html exposing (Html, div, text, input, textarea)
 import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onWithOptions, onMouseEnter, onMouseLeave, onClick, onInput)
 import Html.CssHelpers
-import Css
 import Mouse
 import Json.Decode as Json
 import Grid.Styles as GridStyles
@@ -26,11 +25,6 @@ import Point exposing (Point)
 
 { id, class, classList } =
     Html.CssHelpers.withNamespace "grid"
-
-
-styles : List Css.Mixin -> Html.Attribute msg
-styles =
-    Css.asPairs >> Html.Attributes.style
 
 
 
@@ -123,10 +117,22 @@ dragPreview context =
             if drag.start == drag.current then
                 entityPreview context drag.start
             else
-                Grid.calculateLineBetweenPoints drag.start drag.current
-                    |> Grid.buildLineBetweenPoints (Entity.sizeFor context.picker.currentEntity)
-                    |> List.map (entityPreview context)
-                    |> Collage.group
+                case context.tools.currentTool of
+                    Place ->
+                        Grid.calculateLineBetweenPoints drag.start drag.current
+                            |> Grid.buildLineBetweenPoints (Entity.sizeFor context.picker.currentEntity)
+                            |> List.map (entityPreview context)
+                            |> Collage.group
+
+                    Clear ->
+                        Grid.calculateLineBetweenPoints drag.start drag.current
+                            |> Grid.buildLineBetweenPoints (Entity.Square 1)
+                            |> List.map (entityPreview context)
+                            |> Collage.group
+
+                    SetRecipe ->
+                        Collage.rect 0 0
+                            |> Collage.filled Color.black
 
         Nothing ->
             hoverBlock context
@@ -138,18 +144,53 @@ entities model =
         |> Collage.group
 
 
+recipeGradient : Color.Gradient
+recipeGradient =
+    Color.radial ( 0, 0 )
+        0
+        ( 0, 0 )
+        24
+        [ ( 0, Color.black )
+        , ( 0.75, Color.rgba 0 0 0 0.8 )
+        , ( 1, Color.rgba 0 0 0 0 )
+        ]
+
+
 buildEntity : Model -> Entity.Entity -> Collage.Form
 buildEntity model entity =
     let
         ( x, y ) =
             Entity.Image.sizeFor entity
     in
-        Element.image x y (Entity.Image.image entity)
-            |> Collage.toForm
-            |> Collage.move
-                (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
-                    |> addEntityOffset model entity
-                )
+        let
+            elem =
+                Element.image x y (Entity.Image.image entity)
+                    |> Collage.toForm
+
+            collage =
+                case entity.recipe of
+                    Just name ->
+                        let
+                            icon =
+                                [ Collage.circle 32
+                                    |> Collage.gradient recipeGradient
+                                , Element.image 32 32 (Entity.Image.icon name)
+                                    |> Collage.toForm
+                                ]
+                                    |> Collage.group
+                                    |> Collage.move ( 0, 10 )
+                        in
+                            [ elem, icon ]
+                                |> Collage.group
+
+                    Nothing ->
+                        elem
+        in
+            collage
+                |> Collage.move
+                    (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
+                        |> addEntityOffset model entity
+                    )
 
 
 entityPreview : Context -> Point -> Collage.Form
@@ -163,7 +204,8 @@ entityPreview { model, tools, picker } point =
         Place ->
             let
                 dummyEntity =
-                    { name = picker.currentEntity, position = Entity.positionFromPoint point, direction = tools.currentDirection }
+                    Entity.entity picker.currentEntity tools.currentDirection
+                        |> Entity.setPosition (Entity.positionFromPoint point)
 
                 ( sizeX, sizeY ) =
                     Entity.Image.sizeFor dummyEntity
@@ -175,6 +217,10 @@ entityPreview { model, tools, picker } point =
                         (pointToCollageOffset model point
                             |> addEntityOffset model dummyEntity
                         )
+
+        SetRecipe ->
+            Collage.rect 0 0
+                |> Collage.filled Color.black
 
 
 hoverBlock : Context -> Collage.Form

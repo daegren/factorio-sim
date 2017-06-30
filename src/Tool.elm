@@ -24,6 +24,7 @@ type alias Model =
 type Tool
     = Place
     | Clear
+    | SetRecipe
 
 
 init : Model
@@ -35,7 +36,7 @@ init =
 
 allTool : List Tool
 allTool =
-    [ Place, Clear ]
+    [ Place, Clear, SetRecipe ]
 
 
 
@@ -168,6 +169,9 @@ altFor tool =
         Clear ->
             "Clear"
 
+        SetRecipe ->
+            "Set Recipe"
+
 
 imageFor : Tool -> String
 imageFor tool =
@@ -177,3 +181,6 @@ imageFor tool =
 
         Clear ->
             "assets/images/cancel.png"
+
+        SetRecipe ->
+            "assets/images/icons/assembling-machine-1.png"

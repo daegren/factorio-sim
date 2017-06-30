@@ -13,12 +13,18 @@ decodePosition =
 
 decodeEntity : Decoder Entity
 decodeEntity =
-    map3 Entity
-        (map entityName (field "name" string))
+    map4 Entity
+        ((field "name" string)
+            |> map entityName
+        )
         (field "position" decodePosition)
         ((field "direction" int)
             |> maybe
             |> map direction
+        )
+        ((field "recipe" string)
+            |> maybe
+            |> map (Maybe.map entityName)
         )
 
 

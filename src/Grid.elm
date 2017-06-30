@@ -5,8 +5,6 @@ import Json.Decode exposing (Value)
 import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
-import Tool exposing (Tool(..))
-import Entity.Picker
 import Entity exposing (Entity, Size(..))
 import Json.Decode as Json
 import Grid.Model exposing (Model, BackgroundCell, Cells)
@@ -130,6 +128,24 @@ replaceEntityInsideEntity entity entityList =
             entityList
 
 
+updateEntity : Entity -> List Entity -> List Entity
+updateEntity entity entityList =
+    List.map
+        (\e ->
+            if e.position == entity.position then
+                entity
+            else
+                e
+        )
+        entityList
+
+
+getEntityAtPoint : Point -> List Entity -> Maybe Entity
+getEntityAtPoint point entityList =
+    List.filter (isEntityAtPoint point) entityList
+        |> List.head
+
+
 {-| Remove an entity at a given point
 
 -}
@@ -212,23 +228,6 @@ every amount list =
     List.indexedMap (,) list
         |> List.filter (\( i, val ) -> i % amount == 0)
         |> List.map (\( i, val ) -> val)
-
-
-placeEntityAtPoint : Tool.Model -> Entity.Picker.Model -> Point -> List Entity -> List Entity
-placeEntityAtPoint tools picker point entities =
-    case tools.currentTool of
-        Place ->
-            let
-                newEntity =
-                    { name = picker.currentEntity
-                    , position = Entity.positionFromPoint point
-                    , direction = tools.currentDirection
-                    }
-            in
-                addEntity newEntity entities
-
-        Clear ->
-            removeEntityAtPoint point entities
 
 
 {-| Converts a mouse position to it's respective grid position.
