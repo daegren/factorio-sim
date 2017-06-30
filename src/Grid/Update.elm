@@ -114,6 +114,21 @@ update msg { model, tools, picker } =
                                                     |> List.foldl (\point entities -> Grid.removeEntityAtPoint point entities) model.entities
                                     in
                                         { model | entities = entities }
+
+                                SetRecipe ->
+                                    let
+                                        allowedEntities =
+                                            [ Entity.AssemblingMachine1, Entity.AssemblingMachine2, Entity.AssemblingMachine3 ]
+                                    in
+                                        case Grid.getEntityAtPoint drag.current model.entities of
+                                            Just entity ->
+                                                if List.member entity.name allowedEntities then
+                                                    { model | entities = Grid.updateEntity { entity | recipe = Just picker.currentEntity } model.entities }
+                                                else
+                                                    model
+
+                                            Nothing ->
+                                                model
                     in
                         ( { newModel | drag = Nothing, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint newModel.entities) )
 

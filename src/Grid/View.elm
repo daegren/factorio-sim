@@ -117,19 +117,22 @@ dragPreview context =
             if drag.start == drag.current then
                 entityPreview context drag.start
             else
-                let
-                    size =
-                        case context.tools.currentTool of
-                            Place ->
-                                Entity.sizeFor context.picker.currentEntity
+                case context.tools.currentTool of
+                    Place ->
+                        Grid.calculateLineBetweenPoints drag.start drag.current
+                            |> Grid.buildLineBetweenPoints (Entity.sizeFor context.picker.currentEntity)
+                            |> List.map (entityPreview context)
+                            |> Collage.group
 
-                            Clear ->
-                                Entity.Square 1
-                in
-                    Grid.calculateLineBetweenPoints drag.start drag.current
-                        |> Grid.buildLineBetweenPoints size
-                        |> List.map (entityPreview context)
-                        |> Collage.group
+                    Clear ->
+                        Grid.calculateLineBetweenPoints drag.start drag.current
+                            |> Grid.buildLineBetweenPoints (Entity.Square 1)
+                            |> List.map (entityPreview context)
+                            |> Collage.group
+
+                    SetRecipe ->
+                        Collage.rect 0 0
+                            |> Collage.filled Color.black
 
         Nothing ->
             hoverBlock context
@@ -179,6 +182,10 @@ entityPreview { model, tools, picker } point =
                         (pointToCollageOffset model point
                             |> addEntityOffset model dummyEntity
                         )
+
+        SetRecipe ->
+            Collage.rect 0 0
+                |> Collage.filled Color.black
 
 
 hoverBlock : Context -> Collage.Form

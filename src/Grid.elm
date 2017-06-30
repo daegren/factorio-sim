@@ -128,6 +128,24 @@ replaceEntityInsideEntity entity entityList =
             entityList
 
 
+updateEntity : Entity -> List Entity -> List Entity
+updateEntity entity entityList =
+    List.map
+        (\e ->
+            if e.position == entity.position then
+                entity
+            else
+                e
+        )
+        entityList
+
+
+getEntityAtPoint : Point -> List Entity -> Maybe Entity
+getEntityAtPoint point entityList =
+    List.filter (isEntityAtPoint point) entityList
+        |> List.head
+
+
 {-| Remove an entity at a given point
 
 -}
