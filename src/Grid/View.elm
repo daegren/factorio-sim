@@ -117,10 +117,19 @@ dragPreview context =
             if drag.start == drag.current then
                 entityPreview context drag.start
             else
-                Grid.calculateLineBetweenPoints drag.start drag.current
-                    |> Grid.buildLineBetweenPoints (Entity.sizeFor context.picker.currentEntity)
-                    |> List.map (entityPreview context)
-                    |> Collage.group
+                let
+                    size =
+                        case context.tools.currentTool of
+                            Place ->
+                                Entity.sizeFor context.picker.currentEntity
+
+                            Clear ->
+                                Entity.Square 1
+                in
+                    Grid.calculateLineBetweenPoints drag.start drag.current
+                        |> Grid.buildLineBetweenPoints size
+                        |> List.map (entityPreview context)
+                        |> Collage.group
 
         Nothing ->
             hoverBlock context
