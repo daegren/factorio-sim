@@ -13,7 +13,6 @@ type alias Model =
     , cellSize : Int
     , size : Int
     , offset : Point
-    , shouldIgnoreNextMouseClick : Bool
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
     , drag : Maybe Drag
@@ -22,7 +21,7 @@ type alias Model =
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint False False Nothing Nothing
+    Model [] [] 32 15 zeroPoint False Nothing Nothing
 
 
 type alias Drag =

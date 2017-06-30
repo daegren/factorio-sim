@@ -64,7 +64,7 @@ update msg { model, tools, picker } =
                 newSize =
                     model.size + amount
             in
-                ( { model | size = newSize, shouldIgnoreNextMouseClick = True }, Random.generate RandomGrid (Grid.generateGrid newSize) )
+                ( { model | size = newSize }, Random.generate RandomGrid (Grid.generateGrid newSize) )
 
         DragStart position ->
             case Grid.positionToGridPoint model position of
