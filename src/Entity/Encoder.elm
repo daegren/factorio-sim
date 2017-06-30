@@ -23,6 +23,7 @@ encodeEntity idx entity =
             ]
     in
         encodeDirection entity.direction props
+            |> encodeRecipe entity.recipe
             |> object
 
 

@@ -144,18 +144,53 @@ entities model =
         |> Collage.group
 
 
+recipeGradient : Color.Gradient
+recipeGradient =
+    Color.radial ( 0, 0 )
+        0
+        ( 0, 0 )
+        24
+        [ ( 0, Color.black )
+        , ( 0.75, Color.rgba 0 0 0 0.8 )
+        , ( 1, Color.rgba 0 0 0 0 )
+        ]
+
+
 buildEntity : Model -> Entity.Entity -> Collage.Form
 buildEntity model entity =
     let
         ( x, y ) =
             Entity.Image.sizeFor entity
     in
-        Element.image x y (Entity.Image.image entity)
-            |> Collage.toForm
-            |> Collage.move
-                (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
-                    |> addEntityOffset model entity
-                )
+        let
+            elem =
+                Element.image x y (Entity.Image.image entity)
+                    |> Collage.toForm
+
+            collage =
+                case entity.recipe of
+                    Just name ->
+                        let
+                            icon =
+                                [ Collage.circle 32
+                                    |> Collage.gradient recipeGradient
+                                , Element.image 32 32 (Entity.Image.icon name)
+                                    |> Collage.toForm
+                                ]
+                                    |> Collage.group
+                                    |> Collage.move ( 0, 10 )
+                        in
+                            [ elem, icon ]
+                                |> Collage.group
+
+                    Nothing ->
+                        elem
+        in
+            collage
+                |> Collage.move
+                    (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
+                        |> addEntityOffset model entity
+                    )
 
 
 entityPreview : Context -> Point -> Collage.Form
