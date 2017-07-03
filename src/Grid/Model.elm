@@ -16,12 +16,13 @@ type alias Model =
     , mouseInsideGrid : Bool
     , currentMouseGridPosition : Maybe Point
     , drag : Maybe Drag
+    , debug : Bool
     }
 
 
 emptyGrid : Model
 emptyGrid =
-    Model [] [] 32 15 zeroPoint False Nothing Nothing
+    Model [] [] 32 15 zeroPoint False Nothing Nothing False
 
 
 type alias Drag =

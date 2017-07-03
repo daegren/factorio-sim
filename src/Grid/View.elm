@@ -1,7 +1,7 @@
 module Grid.View exposing (view)
 
-import Html exposing (Html, div, text, input, textarea)
-import Html.Attributes exposing (type_, value)
+import Html exposing (Html, div, text, input, textarea, label)
+import Html.Attributes exposing (type_, value, checked)
 import Html.Events exposing (onWithOptions, onMouseEnter, onMouseLeave, onClick, onInput)
 import Html.CssHelpers
 import Mouse
@@ -92,20 +92,57 @@ view context =
                     [ backgroundGrid context.model
                     , entities context.model
                     , dragPreview context
+                    , drawGridLines context.model
                     ]
                     |> Element.toHtml
                 ]
-            , gridSizeView
+            , gridSizeView context.model
             ]
 
 
-gridSizeView : Html Msg
-gridSizeView =
+drawGridLines : Model -> Collage.Form
+drawGridLines model =
+    let
+        stops =
+            List.range 0 (model.size)
+                |> List.map (\i -> toFloat (i * model.cellSize))
+
+        fullSize =
+            toFloat (model.cellSize * model.size)
+
+        buildLine start end =
+            Collage.segment start end
+                |> Collage.traced (Collage.solid (Color.rgba 255 255 255 0.25))
+
+        horizLines =
+            List.map (\x -> buildLine ( x, 0 ) ( x, fullSize )) stops
+                |> Collage.group
+
+        vertLines =
+            List.map (\y -> buildLine ( 0, y ) ( fullSize, y )) stops
+                |> Collage.group
+    in
+        if model.debug then
+            [ horizLines, vertLines ]
+                |> Collage.group
+                |> Collage.move ( -fullSize / 2, -fullSize / 2 )
+        else
+            Collage.group []
+
+
+gridSizeView : Model -> Html Msg
+gridSizeView model =
     div []
         [ text "Change grid size"
         , div []
             [ input [ type_ "button", value "-", onClick (ChangeGridSize -2) ] []
             , input [ type_ "button", value "+", onClick (ChangeGridSize 2) ] []
+            ]
+        , div []
+            [ label []
+                [ input [ type_ "checkbox", checked model.debug, onClick ToggleDebug ] []
+                , text "Show grid lines"
+                ]
             ]
         ]
 

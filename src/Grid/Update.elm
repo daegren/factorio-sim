@@ -129,3 +129,6 @@ update msg { model, tools, picker } =
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )
+
+        ToggleDebug ->
+            ( { model | debug = not model.debug }, Cmd.none )
