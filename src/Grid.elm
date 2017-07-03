@@ -1,4 +1,4 @@
-port module Grid exposing (..)
+module Grid exposing (..)
 
 import Entity.Decoder
 import Json.Decode exposing (Value)
@@ -6,6 +6,7 @@ import Point exposing (Point, zeroPoint)
 import Random exposing (Generator)
 import Mouse
 import Entity exposing (Entity, Size(..))
+import Ports
 import Json.Decode as Json
 import Grid.Model exposing (Model, BackgroundCell, Cells)
 import Grid.Messages exposing (Msg(..))
@@ -45,7 +46,7 @@ init =
         ( model
         , Cmd.batch
             [ Random.generate RandomGrid (generateGrid model.size)
-            , getOffsetOfGrid ()
+            , Ports.getOffsetOfGrid ()
             ]
         )
 
@@ -57,8 +58,8 @@ init =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ receiveOffset GridOffset
-        , loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
+        [ Ports.receiveOffset GridOffset
+        , Ports.loadBlueprint (Json.Decode.decodeValue (Json.Decode.list Entity.Decoder.decodeEntity) >> SentBlueprint)
         , shouldSubToMouseSubscriptions model
         , dragSubscriptions model
         ]
@@ -80,19 +81,6 @@ dragSubscriptions model =
 
         Nothing ->
             Sub.none
-
-
-
--- PORTS
-
-
-port getOffsetOfGrid : () -> Cmd msg
-
-
-port receiveOffset : (( Float, Float ) -> msg) -> Sub msg
-
-
-port loadBlueprint : (Value -> msg) -> Sub msg
 
 
 
