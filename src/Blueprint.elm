@@ -1,4 +1,4 @@
-port module Blueprint exposing (..)
+module Blueprint exposing (..)
 
 import Json.Encode exposing (..)
 import Entity exposing (Entity, EntityName)
@@ -8,6 +8,7 @@ import Html.Attributes exposing (type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
 import BlueprintStyles exposing (Classes(..))
+import Ports
 
 
 -- MODEL
@@ -108,20 +109,7 @@ getIcon entity icons =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    receiveExportedBlueprint ReceiveExportedBlueprint
-
-
-
--- PORTS
-
-
-port parseBlueprint : String -> Cmd msg
-
-
-port exportBlueprint : Value -> Cmd msg
-
-
-port receiveExportedBlueprint : (String -> msg) -> Sub msg
+    Ports.receiveExportedBlueprint ReceiveExportedBlueprint
 
 
 
@@ -145,13 +133,13 @@ update : Msg -> Context -> ( Model, Cmd Msg )
 update msg { model, entities } =
     case msg of
         Changed blueprint ->
-            ( blueprint, parseBlueprint blueprint )
+            ( blueprint, Ports.parseBlueprint blueprint )
 
         Load ->
-            ( model, parseBlueprint model )
+            ( model, Ports.parseBlueprint model )
 
         Export ->
-            ( model, exportBlueprint (encodeBlueprint entities) )
+            ( model, Ports.exportBlueprint (encodeBlueprint entities) )
 
         ReceiveExportedBlueprint blueprint ->
             ( blueprint, Cmd.none )
@@ -175,5 +163,4 @@ view model =
         [ textarea [ class [ Input ], onInput Changed, value model ] []
         , input [ type_ "button", value "Load Blueprint", onClick Load ] []
         , input [ type_ "button", value "Export Blueprint", onClick Export ] []
-          -- , input [ type_ "button", value "Clear Entities", onClick ClearEntities ] []
         ]

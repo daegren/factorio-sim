@@ -2,6 +2,7 @@ module Grid.Update exposing (update)
 
 import Grid.Model exposing (Cells, Model, Drag)
 import Grid.Messages exposing (Msg(..))
+import Ports
 import Entity
 import Entity.Picker
 import Random
@@ -124,7 +125,7 @@ update msg { model, tools, picker } =
                                             Nothing ->
                                                 model
                     in
-                        ( { newModel | drag = Nothing, currentMouseGridPosition = Grid.positionToGridPoint model position }, Blueprint.exportBlueprint (encodeBlueprint newModel.entities) )
+                        ( { newModel | drag = Nothing, currentMouseGridPosition = Grid.positionToGridPoint model position }, Ports.exportBlueprint (encodeBlueprint newModel.entities) )
 
                 Nothing ->
                     ( { model | drag = Nothing }, Cmd.none )
