@@ -1,9 +1,7 @@
 module Main exposing (..)
 
-import Css
 import Game
 import Html exposing (Html, div, h1, h2, img, text)
-import Html.Attributes exposing (src)
 import Html.CssHelpers
 import SharedStyles exposing (Classes(..))
 
@@ -78,11 +76,6 @@ update msg model =
 
 { id, class, classList } =
     Html.CssHelpers.withNamespace "grid"
-
-
-styles : List Css.Mixin -> Html.Attribute msg
-styles =
-    Css.asPairs >> Html.Attributes.style
 
 
 
