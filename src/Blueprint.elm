@@ -1,13 +1,12 @@
 module Blueprint exposing (..)
 
-import BlueprintStyles exposing (Classes(..))
+import Css exposing (..)
 import Entity exposing (Entity, EntityName)
 import Entity.Encoder exposing (encodeEntities)
-import Html exposing (Html, div, input, textarea)
-import Html.Attributes exposing (type_, value)
-import Html.CssHelpers
-import Html.Events exposing (onClick, onInput)
-import Json.Encode exposing (..)
+import Html.Styled exposing (Html, div, input, textarea)
+import Html.Styled.Attributes exposing (css, type_, value)
+import Html.Styled.Events exposing (onClick, onInput)
+import Json.Encode as Json exposing (..)
 import Ports
 
 
@@ -27,7 +26,7 @@ init =
     ""
 
 
-encodeBlueprint : List Entity -> Value
+encodeBlueprint : List Entity -> Json.Value
 encodeBlueprint entities =
     object
         [ ( "blueprint"
@@ -35,20 +34,20 @@ encodeBlueprint entities =
                 [ ( "entities", encodeEntities entities )
                 , ( "icons", icons entities |> encodeIcons )
                 , ( "item", string "blueprint" )
-                , ( "version", int 64425689088 )
+                , ( "version", Json.int 64425689088 )
                 ]
           )
         ]
 
 
-encodeIcons : List Icon -> Value
+encodeIcons : List Icon -> Json.Value
 encodeIcons icons =
     List.take 4 icons
         |> List.indexedMap encodeIcon
         |> list
 
 
-encodeIcon : Int -> Icon -> Value
+encodeIcon : Int -> Icon -> Json.Value
 encodeIcon idx ( count, name ) =
     object
         [ ( "signal"
@@ -57,7 +56,7 @@ encodeIcon idx ( count, name ) =
                 , ( "name", string (Entity.entityID name) )
                 ]
           )
-        , ( "index", int (idx + 1) )
+        , ( "index", Json.int (idx + 1) )
         ]
 
 
@@ -146,21 +145,21 @@ update msg { model, entities } =
 
 
 
--- CSS
-
-
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace "blueprint"
-
-
-
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
     div []
-        [ textarea [ class [ Input ], onInput Changed, value model ] []
+        [ textarea
+            [ css
+                [ width (pct 100)
+                , height (px 150)
+                ]
+            , onInput Changed
+            , value model
+            ]
+            []
         , input [ type_ "button", value "Load Blueprint", onClick Load ] []
         , input [ type_ "button", value "Export Blueprint", onClick Export ] []
         ]

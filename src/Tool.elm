@@ -1,13 +1,10 @@
 module Tool exposing (..)
 
-import Css exposing (Stylesheet)
-import Css.Elements
-import Css.Namespace exposing (namespace)
+import Css exposing (..)
 import Entity exposing (Direction(..))
-import Html exposing (Html, div, img)
-import Html.Attributes exposing (alt, src)
-import Html.CssHelpers
-import Html.Events exposing (onClick)
+import Html.Styled exposing (Html, div, img)
+import Html.Styled.Attributes exposing (alt, css, src, styled)
+import Html.Styled.Events exposing (onClick)
 import Input exposing (Input(..))
 import Keyboard
 
@@ -97,41 +94,30 @@ subscriptions model =
 -- CSS
 
 
-type Classes
-    = Button
-    | SelectedButton
-
-
-name : String
-name =
-    "tools"
-
-
-css : Stylesheet
-css =
-    (Css.stylesheet << namespace name)
-        [ Css.class Button
-            [ Css.width (Css.px 36)
-            , Css.height (Css.px 36)
-            , Css.textAlign Css.center
-            , Css.verticalAlign Css.center
-            , Css.backgroundImage (Css.url "~assets/images/button-36.png")
-            , Css.backgroundPosition2 (Css.px -2) Css.zero
-            , Css.children
-                [ Css.Elements.img
-                    [ Css.width (Css.px 30)
-                    , Css.height (Css.px 30)
-                    , Css.margin2 (Css.px 4) (Css.px 3)
-                    ]
-                ]
-            ]
-        , Css.class SelectedButton
-            [ Css.backgroundPosition2 (Css.px -40) Css.zero ]
+buttonStyles : Style
+buttonStyles =
+    batch
+        [ width (px 36)
+        , height (px 36)
+        , textAlign center
+        , verticalAlign center
+        , backgroundImage (url "/assets/images/button-36.png")
+        , backgroundPosition2 (px -2) zero
         ]
 
 
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace name
+selectedButtonStyles : Style
+selectedButtonStyles =
+    batch [ backgroundPosition2 (px -40) zero ]
+
+
+image : List (Html.Styled.Attribute msg) -> List (Html msg) -> Html msg
+image =
+    styled img
+        [ width (px 30)
+        , height (px 30)
+        , margin2 (px 4) (px 3)
+        ]
 
 
 
@@ -148,12 +134,12 @@ toolView currentTool tool =
     let
         classes =
             if currentTool == tool then
-                class [ Button, SelectedButton ]
+                [ buttonStyles, selectedButtonStyles ]
             else
-                class [ Button ]
+                [ buttonStyles ]
     in
-    div [ classes, onClick (SelectTool tool) ]
-        [ img [ src (imageFor tool), alt (altFor tool) ] [] ]
+    div [ css classes, onClick (SelectTool tool) ]
+        [ image [ src (imageFor tool), alt (altFor tool) ] [] ]
 
 
 

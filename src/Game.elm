@@ -1,15 +1,15 @@
 module Game exposing (..)
 
 import Blueprint
+import Css exposing (..)
 import Entity.Picker
 import Grid
 import Grid.Messages
 import Grid.Model as GridModel
 import Grid.Update as GridUpdate
 import Grid.View as GridView
-import Html exposing (Html, div, text)
-import Html.CssHelpers
-import SharedStyles exposing (Ids(..))
+import Html.Styled exposing (Html, div, text)
+import Html.Styled.Attributes exposing (css)
 import Tool
 
 
@@ -92,24 +92,33 @@ update msg model =
 
 
 
--- CSS
-
-
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace "main"
-
-
-
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    div [ id [ MainContainer ] ]
-        [ div [ id [ ToolContainer ] ] [ Html.map ToolMsg (Tool.view model.tools) ]
-        , div [ id [ GridContainer ] ] [ Html.map GridMsg (GridView.view { model = model.grid, tools = model.tools, picker = model.picker }) ]
-        , div [ id [ Sidebar ] ]
-            [ div [ id [ ToolboxContainer ] ] [ Html.map PickerMsg (Entity.Picker.view model.picker) ]
-            , div [ id [ BlueprintContainer ] ] [ Html.map BlueprintMsg (Blueprint.view model.blueprint) ]
+    div [ css [ displayFlex ] ]
+        [ div
+            [ css
+                [ flex2 zero zero
+                , margin2 zero (px 8)
+                ]
+            ]
+            [ Html.Styled.map ToolMsg (Tool.view model.tools) ]
+        , div [ css [ flex2 (num 1) zero ] ]
+            [ Html.Styled.map GridMsg (GridView.view { model = model.grid, tools = model.tools, picker = model.picker }) ]
+        , div
+            [ css
+                [ flex2 zero zero
+                , displayFlex
+                , flexDirection column
+                , minWidth (pct 33)
+                , margin2 zero (px 8)
+                ]
+            ]
+            [ div [ css [ flex2 (num 1) zero ] ]
+                [ Html.Styled.map PickerMsg (Entity.Picker.view model.picker) ]
+            , div [ css [ flex2 zero zero ] ]
+                [ Html.Styled.map BlueprintMsg (Blueprint.view model.blueprint) ]
             ]
         ]

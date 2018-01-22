@@ -1,12 +1,11 @@
 module Entity.Picker exposing (..)
 
+import Css exposing (..)
 import Entity exposing (EntityName(..))
 import Entity.Image
-import Entity.PickerStyles as PickerStyles exposing (Classes(..), Ids(..))
-import Html exposing (Html, div, img)
-import Html.Attributes exposing (alt, src)
-import Html.CssHelpers
-import Html.Events exposing (onClick)
+import Html.Styled exposing (Html, div, img)
+import Html.Styled.Attributes exposing (alt, css, src, styled)
+import Html.Styled.Events exposing (onClick)
 
 
 -- MODEL
@@ -84,22 +83,26 @@ update msg model =
 
 
 
--- CSS
-
-
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace "picker"
-
-
-
 -- VIEW
 
 
 view : Model -> Html Msg
 view model =
-    div [ id [ Container ] ]
-        [ div [ id [ ToolGroupContainer ] ]
-            [ div [ id [ PickerStyles.ToolGroup ] ] (List.map (tabView model) allGroups)
+    div
+        [ css
+            [ border2 (px 1) solid
+            , padding (px 8)
+            , displayFlex
+            ]
+        ]
+        [ div
+            [ css
+                [ backgroundColor (hex "#888")
+                , padding (px 4)
+                , margin2 (px 4) zero
+                ]
+            ]
+            [ div [ css [ displayFlex ] ] (List.map (tabView model) allGroups)
             , groupView model
             ]
         ]
@@ -108,42 +111,87 @@ view model =
 tabView : Model -> Group -> Html Msg
 tabView model group =
     let
+        image =
+            styled img
+                [ width (px 68), height (px 68), padding (px 2) ]
+
+        itemStyles =
+            Css.batch
+                [ backgroundImage (url "/assets/images/button-72.png")
+                , backgroundPosition2 (px 0) (px -2)
+                , margin2 zero (px 2)
+                , width (px 72)
+                , height (px 72)
+                ]
+
+        selectedItemStyles =
+            Css.batch [ backgroundPosition2 (px 74) (px -2) ]
+
         classes =
             if group == model.currentGroup then
-                class [ Item, SelectedItem ]
+                css [ itemStyles, selectedItemStyles ]
             else
-                class [ Item ]
+                css [ itemStyles ]
     in
-    div [ classes, onClick (SelectGroup group) ] [ img [ src (imageForGroup group) ] [] ]
+    div [ classes, onClick (SelectGroup group) ] [ image [ src (imageForGroup group) ] [] ]
 
 
 groupView : Model -> Html Msg
 groupView model =
-    div [ id [ ToolboxItems ] ] (List.map (rowView model) model.currentGroup.entities)
+    div
+        [ css
+            [ displayFlex
+            , flexWrap wrap
+            , textAlign center
+            , margin2 (px 8) zero
+            , flexDirection column
+            ]
+        ]
+        (List.map (rowView model) model.currentGroup.entities)
 
 
 rowView : Model -> Row -> Html Msg
 rowView model row =
-    div [ class [ PickerStyles.ToolRow ] ] (List.map (selectableEntityView model) row)
+    div [ css [ displayFlex ] ] (List.map (selectableEntityView model) row)
 
 
 selectableEntityView : Model -> EntityName -> Html Msg
 selectableEntityView model entity =
-    div [ class [ PickerStyles.Tool ], onClick (SelectEntity entity) ]
+    div [ css [ flex2 zero zero ], onClick (SelectEntity entity) ]
         [ enitityView model entity ]
 
 
 enitityView : Model -> EntityName -> Html msg
 enitityView model entity =
     let
+        image =
+            styled img
+                [ width (px 30)
+                , height (px 30)
+                , margin2 (px 4) (px 3)
+                ]
+
+        buttonStyles =
+            Css.batch
+                [ width (px 36)
+                , height (px 36)
+                , textAlign center
+                , verticalAlign center
+                , backgroundImage (url "/assets/images/button-36.png")
+                , backgroundPosition2 (px -2) zero
+                ]
+
+        selectedButtonStyles =
+            Css.batch [ backgroundPosition2 (px -40) (px 1) ]
+
         classes =
             if model.currentEntity == entity then
-                [ Button, SelectedButton ]
+                [ buttonStyles, selectedButtonStyles ]
             else
-                [ Button ]
+                [ buttonStyles ]
     in
-    div [ class classes ]
-        [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity) ] []
+    div [ css classes ]
+        [ image [ src (Entity.Image.icon entity), alt (Entity.readableName entity) ] []
         ]
 
 

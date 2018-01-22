@@ -1,8 +1,5 @@
 "use strict";
 
-// require stylesheet
-require("./Stylesheets.elm");
-
 // import helper libs
 const blueprint = require("./lib/blueprint");
 

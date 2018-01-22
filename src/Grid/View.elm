@@ -2,6 +2,7 @@ module Grid.View exposing (view)
 
 import Collage
 import Color
+import Css exposing (..)
 import Element
 import Entity exposing (Entity, Size(..))
 import Entity.Image
@@ -9,34 +10,24 @@ import Entity.Picker
 import Grid
 import Grid.Messages exposing (Msg(..))
 import Grid.Model exposing (BackgroundCell, Model)
-import Grid.Styles as GridStyles
-import Html exposing (Html, div, input, label, text, textarea)
-import Html.Attributes exposing (checked, type_, value)
-import Html.CssHelpers
-import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave, onWithOptions)
+import Html.Styled exposing (Html, div, input, label, text, textarea)
+import Html.Styled.Attributes exposing (checked, css, type_, value)
+import Html.Styled.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave, onWithOptions)
 import Json.Decode as Json
 import Mouse
 import Point exposing (Point)
 import Tool exposing (Tool(..))
 
 
--- CSS
-
-
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace "grid"
-
-
-
 -- VIEW HELPERS
 
 
-mouseOptions : Html.Events.Options
+mouseOptions : Html.Styled.Events.Options
 mouseOptions =
     { stopPropagation = True, preventDefault = True }
 
 
-onMouseDown : (Mouse.Position -> msg) -> Html.Attribute msg
+onMouseDown : (Mouse.Position -> msg) -> Html.Styled.Attribute msg
 onMouseDown msg =
     onWithOptions "mousedown" mouseOptions (Json.map msg Mouse.position)
 
@@ -85,7 +76,16 @@ view context =
             context.model.cellSize * context.model.size
     in
     div []
-        [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
+        [ div
+            [ css
+                [ flex2 (int 0) (int 0)
+                , paddingRight (px 8)
+                ]
+            , Html.Styled.Attributes.id "Grid"
+            , onMouseEnter MouseEntered
+            , onMouseLeave MouseLeft
+            , onMouseDown DragStart
+            ]
             [ Collage.collage gridSize
                 gridSize
                 [ backgroundGrid context.model
@@ -94,6 +94,7 @@ view context =
                 , drawGridLines context.model
                 ]
                 |> Element.toHtml
+                |> Html.Styled.fromUnstyled
             ]
         , gridSizeView context.model
         ]
@@ -139,7 +140,7 @@ gridSizeView model =
             ]
         , div []
             [ label []
-                [ input [ type_ "checkbox", checked model.debug, onClick ToggleDebug ] []
+                [ input [ type_ "checkbox", Html.Styled.Attributes.checked model.debug, onClick ToggleDebug ] []
                 , text "Show grid lines"
                 ]
             ]

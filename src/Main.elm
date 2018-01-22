@@ -1,9 +1,10 @@
 module Main exposing (..)
 
+import Css exposing (..)
 import Game
-import Html exposing (Html, div, h1, h2, img, text)
-import Html.CssHelpers
-import SharedStyles exposing (Classes(..))
+import Html
+import Html.Styled exposing (Html, div, h1, h2, img, text)
+import Html.Styled.Attributes exposing (css)
 
 
 -- MODEL
@@ -38,7 +39,7 @@ main =
         { init = init
         , update = update
         , subscriptions = subscriptions
-        , view = view
+        , view = view >> Html.Styled.toUnstyled
         }
 
 
@@ -71,14 +72,6 @@ update msg model =
 
 
 
--- CSS
-
-
-{ id, class, classList } =
-    Html.CssHelpers.withNamespace "grid"
-
-
-
 -- VIEW
 
 
@@ -86,11 +79,11 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Blueprint Maker" ]
-        , div [ id [ Main ] ]
-            [ Html.map GameMsg (Game.view model.game)
+        , div []
+            [ Html.Styled.map GameMsg (Game.view model.game)
             , infoView model
             ]
-        , div [ id [ Copyright ] ]
+        , div [ css [ margin2 (px 20) zero ] ]
             [ text "Images ©Wube Software Inc."
             ]
         ]
