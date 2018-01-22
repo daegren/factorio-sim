@@ -3,8 +3,8 @@ module Entity.Picker exposing (..)
 import Css exposing (..)
 import Entity exposing (EntityName(..))
 import Entity.Image
-import Html.Styled exposing (Html, div, img)
-import Html.Styled.Attributes exposing (alt, css, src, styled)
+import Html.Styled exposing (Html, div, img, styled)
+import Html.Styled.Attributes exposing (alt, css, src)
 import Html.Styled.Events exposing (onClick)
 
 
