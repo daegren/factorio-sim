@@ -1,9 +1,9 @@
-module Entity.Image exposing (image, icon, sizeFor)
+module Entity.Image exposing (icon, image, sizeFor)
 
 {-| Mapping for entities to their respective images
 -}
 
-import Entity exposing (Entity, EntityName(..), Direction(..))
+import Entity exposing (Direction(..), Entity, EntityName(..))
 
 
 basePath : String
@@ -43,18 +43,18 @@ image entity =
         path =
             entityPath ++ Entity.entityID entity.name
     in
-        case entity.name of
-            TransportBelt ->
-                entityImage entity.direction path
+    case entity.name of
+        TransportBelt ->
+            entityImage entity.direction path
 
-            FastTransportBelt ->
-                entityImage entity.direction path
+        FastTransportBelt ->
+            entityImage entity.direction path
 
-            ExpressTransportBelt ->
-                entityImage entity.direction path
+        ExpressTransportBelt ->
+            entityImage entity.direction path
 
-            _ ->
-                path ++ ".png"
+        _ ->
+            path ++ ".png"
 
 
 icon : EntityName -> String
@@ -63,7 +63,7 @@ icon entity =
         id =
             Entity.entityID entity
     in
-        iconPath ++ id ++ ".png"
+    iconPath ++ id ++ ".png"
 
 
 sizeFor : Entity -> ( Int, Int )

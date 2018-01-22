@@ -1,8 +1,8 @@
 module Entity.PickerStyles exposing (..)
 
 import Css exposing (..)
-import Css.Namespace exposing (namespace)
 import Css.Elements exposing (img)
+import Css.Namespace exposing (namespace)
 
 
 type Classes

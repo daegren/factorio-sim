@@ -1,11 +1,11 @@
 module Main exposing (..)
 
-import Html exposing (Html, h1, h2, div, text, img)
-import Html.Attributes exposing (src)
-import SharedStyles exposing (Classes(..))
-import Game
-import Html.CssHelpers
 import Css
+import Game
+import Html exposing (Html, div, h1, h2, img, text)
+import Html.Attributes exposing (src)
+import Html.CssHelpers
+import SharedStyles exposing (Classes(..))
 
 
 -- MODEL
@@ -25,9 +25,9 @@ init =
         ( gameModel, gameCmd ) =
             Game.init
     in
-        ( Model gameModel
-        , Cmd.map GameMsg gameCmd
-        )
+    ( Model gameModel
+    , Cmd.map GameMsg gameCmd
+    )
 
 
 
@@ -69,7 +69,7 @@ update msg model =
                 ( gameModel, gameCmd ) =
                     Game.update msg model.game
             in
-                ( { model | game = gameModel }, Cmd.map GameMsg gameCmd )
+            ( { model | game = gameModel }, Cmd.map GameMsg gameCmd )
 
 
 

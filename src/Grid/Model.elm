@@ -1,7 +1,7 @@
 module Grid.Model exposing (..)
 
-import Point exposing (Point, zeroPoint)
 import Entity exposing (Entity)
+import Point exposing (Point, zeroPoint)
 
 
 -- MODEL

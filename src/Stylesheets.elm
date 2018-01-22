@@ -1,11 +1,11 @@
 port module Stylesheets exposing (..)
 
+import BlueprintStyles
 import Css.File exposing (..)
+import Entity.PickerStyles
 import Grid.Styles as GridStyles
 import SharedStyles
-import BlueprintStyles
 import Tool
-import Entity.PickerStyles
 
 
 port files : CssFileStructure -> Cmd msg

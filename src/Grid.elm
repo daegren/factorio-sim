@@ -1,15 +1,14 @@
 module Grid exposing (..)
 
-import Entity.Decoder
-import Json.Decode exposing (Value)
-import Point exposing (Point, zeroPoint)
-import Random exposing (Generator)
-import Mouse
 import Entity exposing (Entity, Size(..))
-import Ports
-import Json.Decode as Json
-import Grid.Model exposing (Model, BackgroundCell, Cells)
+import Entity.Decoder
 import Grid.Messages exposing (Msg(..))
+import Grid.Model exposing (BackgroundCell, Cells, Model)
+import Json.Decode exposing (Value)
+import Mouse
+import Point exposing (Point, zeroPoint)
+import Ports
+import Random exposing (Generator)
 
 
 -- GENERATORS
@@ -17,7 +16,7 @@ import Grid.Messages exposing (Msg(..))
 
 getGrassCell : Int -> BackgroundCell
 getGrassCell num =
-    "assets/images/grass/" ++ (toString num) ++ ".png"
+    "assets/images/grass/" ++ toString num ++ ".png"
 
 
 generateRandomGrassCell : Generator BackgroundCell
@@ -26,7 +25,6 @@ generateRandomGrassCell =
 
 
 {-| Generate a grid with random background cells
-
 -}
 generateGrid : Int -> Generator Cells
 generateGrid size =
@@ -43,12 +41,12 @@ init =
         model =
             Grid.Model.emptyGrid
     in
-        ( model
-        , Cmd.batch
-            [ Random.generate RandomGrid (generateGrid model.size)
-            , Ports.getOffsetOfGrid ()
-            ]
-        )
+    ( model
+    , Cmd.batch
+        [ Random.generate RandomGrid (generateGrid model.size)
+        , Ports.getOffsetOfGrid ()
+        ]
+    )
 
 
 
@@ -90,6 +88,7 @@ dragSubscriptions model =
 {-| Adds an entity to the list of entities at the given point. Replaces an existing entity at the same point if one already exists.
 
     addEntity entity entities
+
 -}
 addEntity : Entity -> List Entity -> List Entity
 addEntity entity entityList =
@@ -102,18 +101,18 @@ replaceEntityInsideEntity entity entityList =
         ( min, max ) =
             Entity.getBoundingRect entity
     in
-        List.filter
-            (\e ->
-                let
-                    ( entityMin, entityMax ) =
-                        Entity.getBoundingRect e
-                in
-                    not
-                        ((min.x <= entityMax.x && max.x >= entityMin.x)
-                            && (min.y <= entityMax.y && max.y >= entityMin.y)
-                        )
-            )
-            entityList
+    List.filter
+        (\e ->
+            let
+                ( entityMin, entityMax ) =
+                    Entity.getBoundingRect e
+            in
+            not
+                ((min.x <= entityMax.x && max.x >= entityMin.x)
+                    && (min.y <= entityMax.y && max.y >= entityMin.y)
+                )
+        )
+        entityList
 
 
 updateEntity : Entity -> List Entity -> List Entity
@@ -135,7 +134,6 @@ getEntityAtPoint point entityList =
 
 
 {-| Remove an entity at a given point
-
 -}
 removeEntityAtPoint : Point -> List Entity -> List Entity
 removeEntityAtPoint point entityList =
@@ -143,7 +141,7 @@ removeEntityAtPoint point entityList =
         isEntityNotAtPoint point entity =
             not (isEntityAtPoint point entity)
     in
-        List.filter (isEntityNotAtPoint point) entityList
+    List.filter (isEntityNotAtPoint point) entityList
 
 
 isEntityAtPoint : Point -> Entity -> Bool
@@ -154,7 +152,7 @@ isEntityAtPoint point entity =
                 ( min, max ) =
                     Entity.getBoundingRect entity
             in
-                (min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y)
+            min.x <= point.x && point.x <= max.x && min.y <= point.y && point.y <= max.y
 
 
 calculateLineBetweenPoints : Point -> Point -> ( Point, Point )
@@ -166,10 +164,10 @@ calculateLineBetweenPoints startPoint endPoint =
         deltaY =
             abs (startPoint.y - endPoint.y)
     in
-        if deltaX > deltaY then
-            ( startPoint, Point endPoint.x startPoint.y )
-        else
-            ( startPoint, Point startPoint.x endPoint.y )
+    if deltaX > deltaY then
+        ( startPoint, Point endPoint.x startPoint.y )
+    else
+        ( startPoint, Point startPoint.x endPoint.y )
 
 
 {-| Builds a straight line between the given points, accounting for an entity size.
@@ -178,6 +176,7 @@ Assumes the points are aligned on either the x or y axis.
 
     buildLineBetweenPoints (Square 1) ( Point 0 -1, Point 0 1) == [ Point 0 -1, Point 0 0, Point 0 1 ]
     buildLineBetweenPoints (Square 3) ( Point 0 -1 , Point 0 2) == [ Point 0 -1, Point 0 2 ]
+
 -}
 buildLineBetweenPoints : Entity.Size -> ( Point, Point ) -> List Point
 buildLineBetweenPoints size ( start, end ) =
@@ -187,28 +186,28 @@ buildLineBetweenPoints size ( start, end ) =
                 Square i ->
                     i
     in
-        if start.x == end.x then
-            let
-                range =
-                    if start.y < end.y then
-                        List.range start.y end.y
-                    else
-                        List.range end.y start.y
-                            |> List.reverse
-            in
-                every offset range
-                    |> List.map (\y -> Point start.x y)
-        else
-            let
-                range =
-                    if start.x < end.x then
-                        List.range start.x end.x
-                    else
-                        List.range end.x start.x
-                            |> List.reverse
-            in
-                every offset range
-                    |> List.map (\x -> Point x start.y)
+    if start.x == end.x then
+        let
+            range =
+                if start.y < end.y then
+                    List.range start.y end.y
+                else
+                    List.range end.y start.y
+                        |> List.reverse
+        in
+        every offset range
+            |> List.map (\y -> Point start.x y)
+    else
+        let
+            range =
+                if start.x < end.x then
+                    List.range start.x end.x
+                else
+                    List.range end.x start.x
+                        |> List.reverse
+        in
+        every offset range
+            |> List.map (\x -> Point x start.y)
 
 
 every : Int -> List a -> List a
@@ -221,6 +220,7 @@ every amount list =
 {-| Converts a mouse position to it's respective grid position.
 
 Returns `Nothing` if Mouse is outside of the grid bounds.
+
 -}
 positionToGridPoint : Model -> Mouse.Position -> Maybe Point
 positionToGridPoint grid position =
@@ -232,13 +232,13 @@ positionToGridPoint grid position =
             toFloat width / 2
 
         offset =
-            (toFloat grid.cellSize / 2)
+            toFloat grid.cellSize / 2
 
         x =
-            floor ((toFloat (position.x - grid.offset.x) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
+            floor ((toFloat (position.x - grid.offset.x) + offset) / toFloat grid.cellSize - halfWidth / toFloat grid.cellSize)
 
         y =
-            floor ((toFloat (position.y - grid.offset.y) + offset) / (toFloat grid.cellSize) - halfWidth / toFloat grid.cellSize)
+            floor ((toFloat (position.y - grid.offset.y) + offset) / toFloat grid.cellSize - halfWidth / toFloat grid.cellSize)
 
         gridMax =
             floor (toFloat grid.size / 2)
@@ -246,7 +246,7 @@ positionToGridPoint grid position =
         gridMin =
             gridMax * -1
     in
-        if x > gridMax || x < gridMin || y > gridMax || y < gridMin then
-            Nothing
-        else
-            Just (Point x y)
+    if x > gridMax || x < gridMin || y > gridMax || y < gridMin then
+        Nothing
+    else
+        Just (Point x y)

@@ -1,7 +1,7 @@
 module Input exposing (..)
 
-import Keyboard exposing (KeyCode)
 import Char exposing (fromCode)
+import Keyboard exposing (KeyCode)
 
 
 type Input
@@ -10,7 +10,6 @@ type Input
 
 
 {-| Maps a keyboard key press to an Input type
-
 -}
 mapKeyboardToInput : KeyCode -> Maybe Input
 mapKeyboardToInput keyCode =

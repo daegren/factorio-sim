@@ -1,7 +1,7 @@
 module Entity.Encoder exposing (..)
 
+import Entity exposing (Direction(..), Entity, EntityName(..), Position, entityID)
 import Json.Encode exposing (..)
-import Entity exposing (Entity, EntityName(..), Position, Direction(..), entityID)
 
 
 {-| Encode a `List Entity` into a JSON `Value`
@@ -22,9 +22,9 @@ encodeEntity idx entity =
             , ( "entity_number", int idx )
             ]
     in
-        encodeDirection entity.direction props
-            |> encodeRecipe entity.recipe
-            |> object
+    encodeDirection entity.direction props
+        |> encodeRecipe entity.recipe
+        |> object
 
 
 {-| Appends a direction field to an object, if required

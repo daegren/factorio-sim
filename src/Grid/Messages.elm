@@ -1,8 +1,8 @@
 module Grid.Messages exposing (Msg(..))
 
+import Entity exposing (Entity)
 import Grid.Model exposing (Cells)
 import Mouse
-import Entity exposing (Entity)
 
 
 type Msg

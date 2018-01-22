@@ -1,13 +1,13 @@
 module Blueprint exposing (..)
 
-import Json.Encode exposing (..)
+import BlueprintStyles exposing (Classes(..))
 import Entity exposing (Entity, EntityName)
 import Entity.Encoder exposing (encodeEntities)
-import Html exposing (Html, div, textarea, input)
+import Html exposing (Html, div, input, textarea)
 import Html.Attributes exposing (type_, value)
-import Html.Events exposing (onClick, onInput)
 import Html.CssHelpers
-import BlueprintStyles exposing (Classes(..))
+import Html.Events exposing (onClick, onInput)
+import Json.Encode exposing (..)
 import Ports
 
 
@@ -63,7 +63,7 @@ encodeIcon idx ( count, name ) =
 
 icons : List Entity -> List Icon
 icons entities =
-    (List.foldl entityToIcon [] entities)
+    List.foldl entityToIcon [] entities
         |> List.sortWith sortIcons
 
 

@@ -1,7 +1,7 @@
 module Entity.Decoder exposing (..)
 
+import Entity exposing (Direction(..), Entity, EntityName(..), Position)
 import Json.Decode exposing (..)
-import Entity exposing (Position, Entity, EntityName(..), Direction(..))
 
 
 decodePosition : Decoder Position
@@ -14,15 +14,15 @@ decodePosition =
 decodeEntity : Decoder Entity
 decodeEntity =
     map4 Entity
-        ((field "name" string)
+        (field "name" string
             |> map entityName
         )
         (field "position" decodePosition)
-        ((field "direction" int)
+        (field "direction" int
             |> maybe
             |> map direction
         )
-        ((field "recipe" string)
+        (field "recipe" string
             |> maybe
             |> map (Maybe.map entityName)
         )

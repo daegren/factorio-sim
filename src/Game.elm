@@ -1,16 +1,16 @@
 module Game exposing (..)
 
-import Html exposing (Html, div, text)
-import Grid
-import Grid.Model as GridModel
-import Grid.Messages
-import Grid.View as GridView
-import Grid.Update as GridUpdate
-import SharedStyles exposing (Ids(..))
-import Entity.Picker
-import Tool
 import Blueprint
+import Entity.Picker
+import Grid
+import Grid.Messages
+import Grid.Model as GridModel
+import Grid.Update as GridUpdate
+import Grid.View as GridView
+import Html exposing (Html, div, text)
 import Html.CssHelpers
+import SharedStyles exposing (Ids(..))
+import Tool
 
 
 -- MODEL
@@ -30,13 +30,13 @@ init =
         ( gridModel, gridCmd ) =
             Grid.init
     in
-        ( { grid = gridModel
-          , blueprint = Blueprint.init
-          , tools = Tool.init
-          , picker = Entity.Picker.init
-          }
-        , Cmd.map GridMsg gridCmd
-        )
+    ( { grid = gridModel
+      , blueprint = Blueprint.init
+      , tools = Tool.init
+      , picker = Entity.Picker.init
+      }
+    , Cmd.map GridMsg gridCmd
+    )
 
 
 subscriptions : Model -> Sub Msg
@@ -67,28 +67,28 @@ update msg model =
                 ( gridModel, gridCmd ) =
                     GridUpdate.update msg { model = model.grid, tools = model.tools, picker = model.picker }
             in
-                ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
+            ( { model | grid = gridModel }, Cmd.map GridMsg gridCmd )
 
         PickerMsg msg ->
             let
                 ( pickerModel, pickerCmd ) =
                     Entity.Picker.update msg model.picker
             in
-                ( { model | picker = pickerModel }, Cmd.map PickerMsg pickerCmd )
+            ( { model | picker = pickerModel }, Cmd.map PickerMsg pickerCmd )
 
         BlueprintMsg msg ->
             let
                 ( blueprintModel, blueprintCmd ) =
                     Blueprint.update msg { model = model.blueprint, entities = model.grid.entities }
             in
-                ( { model | blueprint = blueprintModel }, Cmd.map BlueprintMsg blueprintCmd )
+            ( { model | blueprint = blueprintModel }, Cmd.map BlueprintMsg blueprintCmd )
 
         ToolMsg msg ->
             let
                 ( toolsModel, toolsCmd ) =
                     Tool.update msg model.tools
             in
-                ( { model | tools = toolsModel }, Cmd.map ToolMsg toolsCmd )
+            ( { model | tools = toolsModel }, Cmd.map ToolMsg toolsCmd )
 
 
 

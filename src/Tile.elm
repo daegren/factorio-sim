@@ -1,6 +1,6 @@
 module Tile exposing (..)
 
-import Random exposing (Generator, map, int)
+import Random exposing (Generator, int, map)
 
 
 type alias Tile =
@@ -10,7 +10,7 @@ type alias Tile =
 
 getGrassTile : Int -> Tile
 getGrassTile num =
-    Tile ("/assets/images/grass/" ++ (toString num) ++ ".png")
+    Tile ("/assets/images/grass/" ++ toString num ++ ".png")
 
 
 getRandomGrassTile : Generator Tile

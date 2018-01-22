@@ -1,23 +1,23 @@
 module Grid.View exposing (view)
 
-import Html exposing (Html, div, text, input, textarea, label)
-import Html.Attributes exposing (type_, value, checked)
-import Html.Events exposing (onWithOptions, onMouseEnter, onMouseLeave, onClick, onInput)
-import Html.CssHelpers
-import Mouse
-import Json.Decode as Json
-import Grid.Styles as GridStyles
 import Collage
-import Element
-import Entity.Picker
-import Tool exposing (Tool(..))
 import Color
-import Grid.Messages exposing (Msg(..))
-import Grid.Model exposing (Model, BackgroundCell)
-import Grid
+import Element
+import Entity exposing (Entity, Size(..))
 import Entity.Image
-import Entity exposing (Size(..), Entity)
+import Entity.Picker
+import Grid
+import Grid.Messages exposing (Msg(..))
+import Grid.Model exposing (BackgroundCell, Model)
+import Grid.Styles as GridStyles
+import Html exposing (Html, div, input, label, text, textarea)
+import Html.Attributes exposing (checked, type_, value)
+import Html.CssHelpers
+import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave, onWithOptions)
+import Json.Decode as Json
+import Mouse
 import Point exposing (Point)
+import Tool exposing (Tool(..))
 
 
 -- CSS
@@ -42,7 +42,6 @@ onMouseDown msg =
 
 
 {-| Converts a grid point into an (x, y) coordinate in the collage. This represents the center of the cell.
-
 -}
 pointToCollageOffset : Model -> Point -> ( Float, Float )
 pointToCollageOffset { cellSize, size } point =
@@ -60,12 +59,12 @@ addEntityOffset { cellSize } entity ( x, y ) =
         allowedEntities =
             [ Entity.WoodenChest, Entity.IronChest, Entity.SteelChest ]
     in
-        if List.member entity.name allowedEntities then
-            case Entity.sizeFor entity.name of
-                Square size ->
-                    ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
-        else
-            ( x, y )
+    if List.member entity.name allowedEntities then
+        case Entity.sizeFor entity.name of
+            Square size ->
+                ( x + (toFloat imageSizeX - toFloat cellSize * toFloat size) / 2, y + (toFloat imageSizeY - toFloat cellSize * toFloat size) / 2 )
+    else
+        ( x, y )
 
 
 
@@ -85,26 +84,26 @@ view context =
         gridSize =
             context.model.cellSize * context.model.size
     in
-        div []
-            [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
-                [ Collage.collage gridSize
-                    gridSize
-                    [ backgroundGrid context.model
-                    , entities context.model
-                    , dragPreview context
-                    , drawGridLines context.model
-                    ]
-                    |> Element.toHtml
+    div []
+        [ div [ id [ GridStyles.Grid ], onMouseEnter MouseEntered, onMouseLeave MouseLeft, onMouseDown DragStart ]
+            [ Collage.collage gridSize
+                gridSize
+                [ backgroundGrid context.model
+                , entities context.model
+                , dragPreview context
+                , drawGridLines context.model
                 ]
-            , gridSizeView context.model
+                |> Element.toHtml
             ]
+        , gridSizeView context.model
+        ]
 
 
 drawGridLines : Model -> Collage.Form
 drawGridLines model =
     let
         stops =
-            List.range 0 (model.size)
+            List.range 0 model.size
                 |> List.map (\i -> toFloat (i * model.cellSize))
 
         fullSize =
@@ -122,12 +121,12 @@ drawGridLines model =
             List.map (\y -> buildLine ( 0, y ) ( fullSize, y )) stops
                 |> Collage.group
     in
-        if model.debug then
-            [ horizLines, vertLines ]
-                |> Collage.group
-                |> Collage.move ( -fullSize / 2, -fullSize / 2 )
-        else
-            Collage.group []
+    if model.debug then
+        [ horizLines, vertLines ]
+            |> Collage.group
+            |> Collage.move ( -fullSize / 2, -fullSize / 2 )
+    else
+        Collage.group []
 
 
 gridSizeView : Model -> Html Msg
@@ -199,35 +198,35 @@ buildEntity model entity =
         ( x, y ) =
             Entity.Image.sizeFor entity
     in
-        let
-            elem =
-                Element.image x y (Entity.Image.image entity)
-                    |> Collage.toForm
+    let
+        elem =
+            Element.image x y (Entity.Image.image entity)
+                |> Collage.toForm
 
-            collage =
-                case entity.recipe of
-                    Just name ->
-                        let
-                            icon =
-                                [ Collage.circle 32
-                                    |> Collage.gradient recipeGradient
-                                , Element.image 32 32 (Entity.Image.icon name)
-                                    |> Collage.toForm
-                                ]
-                                    |> Collage.group
-                                    |> Collage.move ( 0, 10 )
-                        in
-                            [ elem, icon ]
+        collage =
+            case entity.recipe of
+                Just name ->
+                    let
+                        icon =
+                            [ Collage.circle 32
+                                |> Collage.gradient recipeGradient
+                            , Element.image 32 32 (Entity.Image.icon name)
+                                |> Collage.toForm
+                            ]
                                 |> Collage.group
+                                |> Collage.move ( 0, 10 )
+                    in
+                    [ elem, icon ]
+                        |> Collage.group
 
-                    Nothing ->
-                        elem
-        in
-            collage
-                |> Collage.move
-                    (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
-                        |> addEntityOffset model entity
-                    )
+                Nothing ->
+                    elem
+    in
+    collage
+        |> Collage.move
+            (pointToCollageOffset model { x = floor entity.position.x, y = floor entity.position.y }
+                |> addEntityOffset model entity
+            )
 
 
 entityPreview : Context -> Point -> Collage.Form
@@ -247,13 +246,13 @@ entityPreview { model, tools, picker } point =
                 ( sizeX, sizeY ) =
                     Entity.Image.sizeFor dummyEntity
             in
-                Element.image sizeX sizeY (Entity.Image.image dummyEntity)
-                    |> Element.opacity 0.66
-                    |> Collage.toForm
-                    |> Collage.move
-                        (pointToCollageOffset model point
-                            |> addEntityOffset model dummyEntity
-                        )
+            Element.image sizeX sizeY (Entity.Image.image dummyEntity)
+                |> Element.opacity 0.66
+                |> Collage.toForm
+                |> Collage.move
+                    (pointToCollageOffset model point
+                        |> addEntityOffset model dummyEntity
+                    )
 
         SetRecipe ->
             Collage.rect 0 0

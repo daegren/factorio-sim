@@ -1,8 +1,8 @@
 module Grid.Styles exposing (..)
 
 import Css exposing (..)
-import Css.Namespace exposing (namespace)
 import Css.Colors exposing (yellow)
+import Css.Namespace exposing (namespace)
 
 
 type Classes

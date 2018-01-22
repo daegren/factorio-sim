@@ -1,13 +1,13 @@
 module Tool exposing (..)
 
-import Html exposing (Html, div, img)
-import Html.Attributes exposing (src, alt)
-import Html.Events exposing (onClick)
 import Css exposing (Stylesheet)
-import Css.Namespace exposing (namespace)
-import Html.CssHelpers
 import Css.Elements
+import Css.Namespace exposing (namespace)
 import Entity exposing (Direction(..))
+import Html exposing (Html, div, img)
+import Html.Attributes exposing (alt, src)
+import Html.CssHelpers
+import Html.Events exposing (onClick)
 import Input exposing (Input(..))
 import Keyboard
 
@@ -152,8 +152,8 @@ toolView currentTool tool =
             else
                 class [ Button ]
     in
-        div [ classes, onClick (SelectTool tool) ]
-            [ img [ src (imageFor tool), alt (altFor tool) ] [] ]
+    div [ classes, onClick (SelectTool tool) ]
+        [ img [ src (imageFor tool), alt (altFor tool) ] [] ]
 
 
 

@@ -1,12 +1,12 @@
 module Entity.Picker exposing (..)
 
-import Html exposing (Html, div, img)
-import Html.Attributes exposing (src, alt)
-import Html.Events exposing (onClick)
 import Entity exposing (EntityName(..))
 import Entity.Image
+import Entity.PickerStyles as PickerStyles exposing (Classes(..), Ids(..))
+import Html exposing (Html, div, img)
+import Html.Attributes exposing (alt, src)
 import Html.CssHelpers
-import Entity.PickerStyles as PickerStyles exposing (Ids(..), Classes(..))
+import Html.Events exposing (onClick)
 
 
 -- MODEL
@@ -114,7 +114,7 @@ tabView model group =
             else
                 class [ Item ]
     in
-        div [ classes, onClick (SelectGroup group) ] [ img [ src (imageForGroup group) ] [] ]
+    div [ classes, onClick (SelectGroup group) ] [ img [ src (imageForGroup group) ] [] ]
 
 
 groupView : Model -> Html Msg
@@ -142,9 +142,9 @@ enitityView model entity =
             else
                 [ Button ]
     in
-        div [ class classes ]
-            [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity) ] []
-            ]
+    div [ class classes ]
+        [ img [ src (Entity.Image.icon entity), alt (Entity.readableName entity) ] []
+        ]
 
 
 

@@ -96,7 +96,7 @@ getBoundingRect entity =
                 ( minY, maxY ) =
                     ( point.y + min, point.y + max )
             in
-                ( Point minX minY, Point maxX maxY )
+            ( Point minX minY, Point maxX maxY )
 
 
 sizeFor : EntityName -> Size
